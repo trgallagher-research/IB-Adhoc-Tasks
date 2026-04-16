@@ -24,7 +24,7 @@
   <div class="container">
     <h1><span>Melbourne Metrics</span> — Prototype Sketches (Learning Lab, April 2026)</h1>
 
-    <!-- Collapsible methodology note -->
+    <!-- Collapsible methodology note (stays collapsed) -->
     <details class="methodology">
       <summary>Methodology note</summary>
       <div class="note-body">
@@ -32,79 +32,63 @@
         <p>This is expert-led prototyping with stakeholder validation, not full co-design. Given the timeline, it is the closest version of co-design the exercise can support.</p>
       </div>
     </details>
+
+    <!-- Global illustrative-prototype caveat -->
+    <div class="global-caveat">
+      <strong>Illustrative prototypes.</strong> These are rough sketches for stakeholder review. Pricing, budgets, sample data, competency descriptors, and thresholds are placeholders where shown.
+    </div>
   </div>
 </header>
 
-<!-- ========== VIEW TOGGLE ========== -->
+<!-- ========== PROBLEM TILES (Table of contents) ========== -->
 <section class="container">
-  <div class="view-toggle">
-    <button class="view-btn active" data-view="problems">Browse by problem</button>
-    <button class="view-btn" data-view="sketches">Browse all sketches</button>
-  </div>
-</section>
-
-<!-- ========== BROWSE BY PROBLEM ========== -->
-<section class="container" id="problemsView">
-  <p class="view-intro">Select a problem statement to see the prototype sketch(es) that respond to it.</p>
+  <p class="toc-intro">Select a problem to jump to the prototype sketch(es) responding to it. All sketches are on this page — scroll to browse.</p>
   <div class="problem-tiles">
 
-    <button class="problem-tile" data-problem="1" data-sketches="sketch2,sketch4">
+    <a href="#sketch2" class="problem-tile" data-problem="1">
       <div class="tile-num">Problem 1</div>
       <div class="tile-text">Using MM to evidence complex competencies is time-intensive for teachers, which limits how often and consistently it can be done.</div>
-      <div class="tile-sketches">Sketch 2: Exhibition Review Form &middot; Sketch 4: Unit Planner</div>
-    </button>
+      <div class="tile-framing">Two complementary approaches: event-anchored (Sketch 2) and planning-anchored (Sketch 4).</div>
+      <div class="tile-sketches">→ Sketch 2: Exhibition Review Form &middot; Sketch 4: Unit Planner</div>
+    </a>
 
-    <button class="problem-tile" data-problem="2" data-sketches="sketch5">
+    <a href="#sketch5" class="problem-tile" data-problem="2">
       <div class="tile-num">Problem 2</div>
       <div class="tile-text">MM adds to teacher workload in a context of wider pressure on teacher wellbeing, raising questions about sustainability of use.</div>
-      <div class="tile-sketches">Sketch 5: Wellbeing Dashboard</div>
-    </button>
+      <div class="tile-sketches">→ Sketch 5: Wellbeing Dashboard</div>
+    </a>
 
-    <button class="problem-tile" data-problem="3" data-sketches="sketch1">
+    <a href="#sketch1" class="problem-tile" data-problem="3">
       <div class="tile-num">Problem 3</div>
       <div class="tile-text">Using MM well requires professional learning that IB does not currently provide, leaving schools to develop capability on their own.</div>
-      <div class="tile-sketches">Sketch 1: Micro-Credential Stack</div>
-    </button>
+      <div class="tile-sketches">→ Sketch 1: Micro-Credential Stack</div>
+    </a>
 
-    <button class="problem-tile" data-problem="4" data-sketches="sketch3">
+    <a href="#sketch3" class="problem-tile" data-problem="4">
       <div class="tile-num">Problem 4</div>
       <div class="tile-text">MM has been tested primarily in middle-class school contexts, so its applicability across the broader range of IB schools is not established.</div>
-      <div class="tile-sketches">Sketch 3: Request for Proposal</div>
-    </button>
+      <div class="tile-sketches">→ Sketch 3: Request for Proposal</div>
+    </a>
 
   </div>
 </section>
 
-<!-- ========== TAB NAVIGATION (Browse All Sketches) ========== -->
-<nav class="container" id="sketchesView" style="display:none;">
-  <div class="problems-strip">
-    <div class="problem-card"><span class="num">1</span>Using MM to evidence complex competencies is time-intensive for teachers, which limits how often and consistently it can be done.</div>
-    <div class="problem-card"><span class="num">2</span>MM adds to teacher workload in a context of wider pressure on teacher wellbeing, raising questions about sustainability of use.</div>
-    <div class="problem-card"><span class="num">3</span>Using MM well requires professional learning that IB does not currently provide, leaving schools to develop capability on their own.</div>
-    <div class="problem-card"><span class="num">4</span>MM has been tested primarily in middle-class school contexts, so its applicability across the broader range of IB schools is not established.</div>
-  </div>
-  <div class="tab-nav">
-    <button class="tab-btn active" data-tab="sketch1">Sketch 1 — Micro-Credential Stack</button>
-    <button class="tab-btn" data-tab="sketch2">Sketch 2 — Exhibition Review Form</button>
-    <button class="tab-btn" data-tab="sketch3">Sketch 3 — Request for Proposal</button>
-    <button class="tab-btn" data-tab="sketch4">Sketch 4 — MM-Integrated Unit Planner</button>
-    <button class="tab-btn" data-tab="sketch5">Sketch 5 — Wellbeing Dashboard</button>
-  </div>
-</nav>
-
-<!-- ========== TAB PANELS ========== -->
+<!-- ========== SKETCHES (single scrollable page) ========== -->
 <main class="container">
+
 
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      SKETCH 1 — Micro-Credential Stack
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-<section id="sketch1" class="tab-panel active" data-problem="3">
-  <div class="problem-banner" style="display:none;">
-    <div><div class="banner-label">Responding to</div><span class="banner-num">3</span></div>
+<section id="sketch1" class="sketch-section">
+
+  <div class="problem-header">
+    <div class="banner-label">Responding to Problem 3</div>
     <div class="banner-text">Using MM well requires professional learning that IB does not currently provide, leaving schools to develop capability on their own.</div>
   </div>
-  <h2 class="sketch-title">EDD — Micro-Credential Stack</h2>
-  <p class="sketch-subtitle">Problem 3: Schools currently develop MM capability on their own with no IB professional learning offer.</p>
+
+  <h2 class="sketch-title">Sketch 1 &middot; EDD — Micro-Credential Stack</h2>
+  <div class="sketch-caveat">Pricing shown is indicative. Actual pricing TBD.</div>
 
   <div class="tier-stack">
 
@@ -115,14 +99,14 @@
         <span class="label-tag">Open access — no login required</span>
       </div>
       <div class="tier-body">
-        <p style="font-size:.86rem;color:#52525b;margin-bottom:10px;">6–8 modules, ~15 min each, asynchronous</p>
+        <p class="tier-desc">6–8 modules, ~15 min each, asynchronous</p>
         <div class="module-cards">
           <div class="module-card">What is Melbourne Metrics?</div>
           <div class="module-card">Understanding MM Descriptors</div>
           <div class="module-card">Evidence Types and Sources</div>
           <div class="module-card">Recognising Competencies in Student Work</div>
           <div class="module-card">Using Descriptor Language</div>
-          <div class="module-card">MM in Your Programme Context</div>
+          <div class="module-card">MM across PYP, MYP and DP</div>
         </div>
       </div>
     </div>
@@ -136,21 +120,21 @@
         <span class="label-tag">Individual enrolment or school purchase</span>
       </div>
       <div class="tier-body">
-        <p style="font-size:.86rem;color:#52525b;margin-bottom:10px;">Each credential: asynchronous content + 1 facilitated session + assessed task</p>
+        <p class="tier-desc">Each credential: asynchronous content + 1 facilitated session + assessed task</p>
         <div class="credential-cards">
           <div class="credential-card">
             <strong>MC1: Evidence Capture</strong>
-            <span class="price">~USD 150</span>
+            <span class="price">~USD 150 <em>(TBD)</em></span>
             <div class="desc">Identify, gather, and document MM-aligned evidence from classroom activities.</div>
           </div>
           <div class="credential-card">
             <strong>MC2: Judgement Against Descriptors</strong>
-            <span class="price">~USD 200</span>
+            <span class="price">~USD 200 <em>(TBD)</em></span>
             <div class="desc">Apply MM descriptors to student evidence and produce defensible judgements.</div>
           </div>
           <div class="credential-card">
             <strong>MC3: Internal Moderation</strong>
-            <span class="price">~USD 250</span>
+            <span class="price">~USD 250 <em>(TBD)</em></span>
             <div class="desc">Lead and participate in school-level moderation of MM judgements.</div>
           </div>
         </div>
@@ -166,86 +150,83 @@
         <span class="label-tag">For schools committing to full MM implementation</span>
       </div>
       <div class="tier-body">
-        <p style="font-size:.86rem;color:#52525b;margin-bottom:6px;">Bundles all three Micro-Credentials + facilitated cohort sessions</p>
-        <p style="font-size:.86rem;color:#52525b;">~USD 500/teacher, school-level volume pricing available</p>
+        <p class="tier-desc">Bundles all three Micro-Credentials + facilitated cohort sessions</p>
+        <p class="tier-desc">~USD 500/teacher <em>(TBD)</em>, school-level volume pricing available</p>
       </div>
     </div>
 
   </div>
 
   <!-- Pricing summary table -->
-  <table class="pricing-table">
-    <thead>
-      <tr>
-        <th>Product</th>
-        <th>Format</th>
-        <th>Price</th>
-        <th>Notes</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>MM Micro-Lessons (Tier 1)</td>
-        <td>6–8 async modules, ~15 min each</td>
-        <td>Free</td>
-        <td>Open access, no login</td>
-      </tr>
-      <tr>
-        <td>MC1: Evidence Capture</td>
-        <td>Async + 1 facilitated session + assessed task</td>
-        <td>~USD 150</td>
-        <td>Individual or school purchase</td>
-      </tr>
-      <tr>
-        <td>MC2: Judgement Against Descriptors</td>
-        <td>Async + 1 facilitated session + assessed task</td>
-        <td>~USD 200</td>
-        <td>Individual or school purchase</td>
-      </tr>
-      <tr>
-        <td>MC3: Internal Moderation</td>
-        <td>Async + 1 facilitated session + assessed task</td>
-        <td>~USD 250</td>
-        <td>Individual or school purchase</td>
-      </tr>
-      <tr>
-        <td>MM Practitioner Credential (Tier 3)</td>
-        <td>MC1 + MC2 + MC3 + cohort sessions</td>
-        <td>~USD 500</td>
-        <td>Volume pricing for schools</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="pricing-wrap">
+    <div class="pricing-caveat">Indicative pricing, TBD</div>
+    <table class="pricing-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Format</th>
+          <th>Price</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>MM Micro-Lessons (Tier 1)</td>
+          <td>6–8 async modules, ~15 min each</td>
+          <td>Free</td>
+          <td>Open access, no login</td>
+        </tr>
+        <tr>
+          <td>MC1: Evidence Capture</td>
+          <td>Async + 1 facilitated session + assessed task</td>
+          <td>~USD 150 <em>(TBD)</em></td>
+          <td>Individual or school purchase</td>
+        </tr>
+        <tr>
+          <td>MC2: Judgement Against Descriptors</td>
+          <td>Async + 1 facilitated session + assessed task</td>
+          <td>~USD 200 <em>(TBD)</em></td>
+          <td>Individual or school purchase</td>
+        </tr>
+        <tr>
+          <td>MC3: Internal Moderation</td>
+          <td>Async + 1 facilitated session + assessed task</td>
+          <td>~USD 250 <em>(TBD)</em></td>
+          <td>Individual or school purchase</td>
+        </tr>
+        <tr>
+          <td>MM Practitioner Credential (Tier 3)</td>
+          <td>MC1 + MC2 + MC3 + cohort sessions</td>
+          <td>~USD 500 <em>(TBD)</em></td>
+          <td>Volume pricing for schools</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-  <!-- What this addresses -->
   <div class="addresses-box">
-    <strong>What this addresses:</strong> Responds to Problem 3. Schools currently develop MM capability on their own because IB does not provide a professional learning offer. This sketch provides a structured, tiered pathway from free foundational modules through to a full practitioner credential, allowing teachers and schools to build capability at a pace and depth that suits their needs.
+    <strong>What this addresses:</strong> Schools currently develop MM capability on their own because IB does not provide a professional learning offer. This sketch provides a structured, tiered pathway from free foundational modules through to a full practitioner credential, allowing teachers and schools to build capability at a pace and depth that suits their needs.
   </div>
 
-  <!-- Feedback prompts -->
-  <div class="feedback-prompts">
-    <h4>Feedback prompts</h4>
-    <ul>
-      <li>Does this sketch address the problem statement?</li>
-      <li>What would you change?</li>
-      <li>What is missing?</li>
-    </ul>
-  </div>
 </section>
+
 
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      SKETCH 2 — Exhibition Review Form
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-<section id="sketch2" class="tab-panel" data-problem="1">
-  <div class="problem-banner" style="display:none;">
-    <div><div class="banner-label">Responding to</div><span class="banner-num">1</span></div>
+<section id="sketch2" class="sketch-section">
+
+  <div class="problem-header">
+    <div class="banner-label">Responding to Problem 1</div>
     <div class="banner-text">Using MM to evidence complex competencies is time-intensive for teachers, which limits how often and consistently it can be done.</div>
   </div>
-  <h2 class="sketch-title">Core &amp; Coherence — MM Exhibition Review Form</h2>
-  <p class="sketch-subtitle">Problem 1: Evidencing complex competencies is time-intensive for teachers.</p>
 
-  <!-- Assessor tabs -->
+  <h2 class="sketch-title">Sketch 2 &middot; Core &amp; Coherence — MM Exhibition Review Form</h2>
+  <div class="sketch-caveat">The 7-level progression shown uses real MM competency names with <em>illustrative</em> nutshell descriptors. Final form would use MM's actual level-descriptor language from the New Metrics empirical progressions. Note: different MM competencies use different scales — this form uses a common 7-level layout for illustration only.</div>
+
   <div class="form-mockup">
+
+    <!-- Assessor tabs -->
     <div class="assessor-tabs">
       <button class="assessor-tab active" data-role="Teacher">Teacher</button>
       <button class="assessor-tab" data-role="Student (self)">Student (self)</button>
@@ -253,7 +234,7 @@
       <button class="assessor-tab" data-role="Parent/Community">Parent / Community</button>
     </div>
 
-    <!-- Form header -->
+    <!-- Form header bar -->
     <div class="form-header-bar">Melbourne Metrics — Exhibition Competency Review</div>
 
     <!-- Form fields -->
@@ -281,97 +262,180 @@
       </div>
     </div>
 
-    <!-- Competency table -->
-    <table class="competency-table">
-      <thead>
-        <tr>
-          <th class="descriptor-col">MM Competency Descriptor</th>
-          <th class="evidence-col">Evidence Observed</th>
-          <th class="judgement-col">Judgement</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Communicates ideas clearly and adapts communication to audience and purpose</td>
-          <td><textarea class="evidence-textarea" placeholder="Describe the evidence observed..."></textarea></td>
-          <td>
-            <select class="judgement-select">
-              <option value="">Select…</option>
-              <option>Not yet evident</option>
-              <option>Emerging</option>
-              <option>Developing</option>
-              <option>Demonstrated</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td>Collaborates effectively, contributing to group goals while respecting diverse perspectives</td>
-          <td><textarea class="evidence-textarea" placeholder="Describe the evidence observed..."></textarea></td>
-          <td>
-            <select class="judgement-select">
-              <option value="">Select…</option>
-              <option>Not yet evident</option>
-              <option>Emerging</option>
-              <option>Developing</option>
-              <option>Demonstrated</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td>Thinks critically, evaluating evidence and reasoning to form well-supported conclusions</td>
-          <td><textarea class="evidence-textarea" placeholder="Describe the evidence observed..."></textarea></td>
-          <td>
-            <select class="judgement-select">
-              <option value="">Select…</option>
-              <option>Not yet evident</option>
-              <option>Emerging</option>
-              <option>Developing</option>
-              <option>Demonstrated</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td>Demonstrates self-management, setting goals and reflecting on own learning</td>
-          <td><textarea class="evidence-textarea" placeholder="Describe the evidence observed..."></textarea></td>
-          <td>
-            <select class="judgement-select">
-              <option value="">Select…</option>
-              <option>Not yet evident</option>
-              <option>Emerging</option>
-              <option>Developing</option>
-              <option>Demonstrated</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td>Applies learning to unfamiliar contexts, transferring understanding across situations</td>
-          <td><textarea class="evidence-textarea" placeholder="Describe the evidence observed..."></textarea></td>
-          <td>
-            <select class="judgement-select">
-              <option value="">Select…</option>
-              <option>Not yet evident</option>
-              <option>Emerging</option>
-              <option>Developing</option>
-              <option>Demonstrated</option>
-            </select>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- Competency rows -->
+    <div class="competency-rows">
+
+      <!-- Competency 1: Acting Ethically -->
+      <div class="competency-row">
+        <div class="comp-header">
+          <div class="comp-name">Acting Ethically</div>
+          <div class="comp-desc">Responding to ethical questions and making principled decisions</div>
+        </div>
+        <div class="comp-body">
+          <div class="evidence-col">
+            <label>Evidence observed</label>
+            <textarea class="evidence-textarea" placeholder="Describe what you observed during the Exhibition..."></textarea>
+          </div>
+          <div class="level-col">
+            <label>Level (1–7)</label>
+            <div class="level-radios">
+              <label class="level-radio"><input type="radio" name="acting-ethically"><span class="lv">1</span><span class="nut">React with immediate judgement, often reflecting rules they have been told.</span></label>
+              <label class="level-radio"><input type="radio" name="acting-ethically"><span class="lv">2</span><span class="nut">Apply familiar rules or expectations when making ethical decisions.</span></label>
+              <label class="level-radio"><input type="radio" name="acting-ethically"><span class="lv">3</span><span class="nut">Consider others' perspectives when making ethical decisions.</span></label>
+              <label class="level-radio"><input type="radio" name="acting-ethically"><span class="lv">4</span><span class="nut">Weigh competing values and consequences for different people affected.</span></label>
+              <label class="level-radio"><input type="radio" name="acting-ethically"><span class="lv">5</span><span class="nut">Seek out different ethical perspectives before acting on complex questions.</span></label>
+              <label class="level-radio"><input type="radio" name="acting-ethically"><span class="lv">6</span><span class="nut">Produce principled responses that address underlying values, not only surface rules.</span></label>
+              <label class="level-radio"><input type="radio" name="acting-ethically"><span class="lv">7</span><span class="nut">Challenge foundational ethical assumptions and reshape ethical practice in their community.</span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Competency 2: Active Citizenship -->
+      <div class="competency-row">
+        <div class="comp-header">
+          <div class="comp-name">Active Citizenship</div>
+          <div class="comp-desc">Contributing to community and civic life</div>
+        </div>
+        <div class="comp-body">
+          <div class="evidence-col">
+            <label>Evidence observed</label>
+            <textarea class="evidence-textarea" placeholder="Describe what you observed during the Exhibition..."></textarea>
+          </div>
+          <div class="level-col">
+            <label>Level (1–7)</label>
+            <div class="level-radios">
+              <label class="level-radio"><input type="radio" name="active-citizenship"><span class="lv">1</span><span class="nut">Notice issues in their immediate environment.</span></label>
+              <label class="level-radio"><input type="radio" name="active-citizenship"><span class="lv">2</span><span class="nut">Follow established expectations for participating in their community.</span></label>
+              <label class="level-radio"><input type="radio" name="active-citizenship"><span class="lv">3</span><span class="nut">Take part constructively in group or community activities.</span></label>
+              <label class="level-radio"><input type="radio" name="active-citizenship"><span class="lv">4</span><span class="nut">Connect local concerns to wider contexts and act with others.</span></label>
+              <label class="level-radio"><input type="radio" name="active-citizenship"><span class="lv">5</span><span class="nut">Work across differences to address shared community challenges.</span></label>
+              <label class="level-radio"><input type="radio" name="active-citizenship"><span class="lv">6</span><span class="nut">Lead inclusive action that creates change beyond themselves.</span></label>
+              <label class="level-radio"><input type="radio" name="active-citizenship"><span class="lv">7</span><span class="nut">Reshape how their community approaches civic challenges.</span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Competency 3: Agency in Learning -->
+      <div class="competency-row">
+        <div class="comp-header">
+          <div class="comp-name">Agency in Learning</div>
+          <div class="comp-desc">Directing and taking ownership of one's own learning</div>
+        </div>
+        <div class="comp-body">
+          <div class="evidence-col">
+            <label>Evidence observed</label>
+            <textarea class="evidence-textarea" placeholder="Describe what you observed during the Exhibition..."></textarea>
+          </div>
+          <div class="level-col">
+            <label>Level (1–7)</label>
+            <div class="level-radios">
+              <label class="level-radio"><input type="radio" name="agency-learning"><span class="lv">1</span><span class="nut">Respond to immediate tasks set by others.</span></label>
+              <label class="level-radio"><input type="radio" name="agency-learning"><span class="lv">2</span><span class="nut">Follow expected routines for learning with familiar support.</span></label>
+              <label class="level-radio"><input type="radio" name="agency-learning"><span class="lv">3</span><span class="nut">Set personal learning goals with some guidance.</span></label>
+              <label class="level-radio"><input type="radio" name="agency-learning"><span class="lv">4</span><span class="nut">Plan learning, monitor progress, and adjust strategy with occasional support.</span></label>
+              <label class="level-radio"><input type="radio" name="agency-learning"><span class="lv">5</span><span class="nut">Direct own learning across contexts, seeking out resources and expertise.</span></label>
+              <label class="level-radio"><input type="radio" name="agency-learning"><span class="lv">6</span><span class="nut">Innovate in how they approach learning, creating pathways for themselves.</span></label>
+              <label class="level-radio"><input type="radio" name="agency-learning"><span class="lv">7</span><span class="nut">Transform how they approach learning and help others do the same.</span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Competency 4: Character -->
+      <div class="competency-row">
+        <div class="comp-header">
+          <div class="comp-name">Character</div>
+          <div class="comp-desc">Showing consistent values and dispositions in action</div>
+        </div>
+        <div class="comp-body">
+          <div class="evidence-col">
+            <label>Evidence observed</label>
+            <textarea class="evidence-textarea" placeholder="Describe what you observed during the Exhibition..."></textarea>
+          </div>
+          <div class="level-col">
+            <label>Level (1–7)</label>
+            <div class="level-radios">
+              <label class="level-radio"><input type="radio" name="character"><span class="lv">1</span><span class="nut">React to immediate situations based on familiar dispositions.</span></label>
+              <label class="level-radio"><input type="radio" name="character"><span class="lv">2</span><span class="nut">Apply familiar values in familiar contexts.</span></label>
+              <label class="level-radio"><input type="radio" name="character"><span class="lv">3</span><span class="nut">Show consistency between stated values and actions.</span></label>
+              <label class="level-radio"><input type="radio" name="character"><span class="lv">4</span><span class="nut">Adapt dispositions thoughtfully across different contexts.</span></label>
+              <label class="level-radio"><input type="radio" name="character"><span class="lv">5</span><span class="nut">Bring considered values to complex or challenging situations.</span></label>
+              <label class="level-radio"><input type="radio" name="character"><span class="lv">6</span><span class="nut">Demonstrate integrity under pressure and inspire others.</span></label>
+              <label class="level-radio"><input type="radio" name="character"><span class="lv">7</span><span class="nut">Reshape the values-in-action of their community.</span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Competency 5: Collaboration -->
+      <div class="competency-row">
+        <div class="comp-header">
+          <div class="comp-name">Collaboration</div>
+          <div class="comp-desc">Working effectively with others towards shared goals</div>
+        </div>
+        <div class="comp-body">
+          <div class="evidence-col">
+            <label>Evidence observed</label>
+            <textarea class="evidence-textarea" placeholder="Describe what you observed during the Exhibition..."></textarea>
+          </div>
+          <div class="level-col">
+            <label>Level (1–7)</label>
+            <div class="level-radios">
+              <label class="level-radio"><input type="radio" name="collaboration"><span class="lv">1</span><span class="nut">Work alongside others on shared tasks.</span></label>
+              <label class="level-radio"><input type="radio" name="collaboration"><span class="lv">2</span><span class="nut">Follow expected roles and contribute to familiar group tasks.</span></label>
+              <label class="level-radio"><input type="radio" name="collaboration"><span class="lv">3</span><span class="nut">Contribute to group goals while respecting others' contributions.</span></label>
+              <label class="level-radio"><input type="radio" name="collaboration"><span class="lv">4</span><span class="nut">Coordinate with others and adjust to different perspectives in the group.</span></label>
+              <label class="level-radio"><input type="radio" name="collaboration"><span class="lv">5</span><span class="nut">Build effective collaboration across differences of view or role.</span></label>
+              <label class="level-radio"><input type="radio" name="collaboration"><span class="lv">6</span><span class="nut">Lead productive collaboration in complex or challenging situations.</span></label>
+              <label class="level-radio"><input type="radio" name="collaboration"><span class="lv">7</span><span class="nut">Reshape how groups work together and develop new collaborative practice.</span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Competency 6: Communication -->
+      <div class="competency-row">
+        <div class="comp-header">
+          <div class="comp-name">Communication</div>
+          <div class="comp-desc">Expressing and receiving ideas effectively across contexts</div>
+        </div>
+        <div class="comp-body">
+          <div class="evidence-col">
+            <label>Evidence observed</label>
+            <textarea class="evidence-textarea" placeholder="Describe what you observed during the Exhibition..."></textarea>
+          </div>
+          <div class="level-col">
+            <label>Level (1–7)</label>
+            <div class="level-radios">
+              <label class="level-radio"><input type="radio" name="communication"><span class="lv">1</span><span class="nut">Express ideas immediately and directly, often in familiar formats.</span></label>
+              <label class="level-radio"><input type="radio" name="communication"><span class="lv">2</span><span class="nut">Communicate in expected ways for familiar audiences.</span></label>
+              <label class="level-radio"><input type="radio" name="communication"><span class="lv">3</span><span class="nut">Adapt communication to different audiences or purposes.</span></label>
+              <label class="level-radio"><input type="radio" name="communication"><span class="lv">4</span><span class="nut">Structure communication to achieve specific effects on the audience.</span></label>
+              <label class="level-radio"><input type="radio" name="communication"><span class="lv">5</span><span class="nut">Communicate complex ideas clearly across different contexts and formats.</span></label>
+              <label class="level-radio"><input type="radio" name="communication"><span class="lv">6</span><span class="nut">Produce communication that changes how others see an issue.</span></label>
+              <label class="level-radio"><input type="radio" name="communication"><span class="lv">7</span><span class="nut">Transform how ideas are communicated in a field.</span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
 
     <!-- Form footer -->
     <div class="form-footer">
       <div class="form-field full-width">
-        <label>Overall Comment</label>
+        <label>Overall comment</label>
         <textarea class="evidence-textarea" style="min-height:64px;" placeholder="Overall comment on this student's demonstration of MM competencies during the Exhibition..."></textarea>
       </div>
       <div class="form-field">
-        <label>Assessor Name</label>
+        <label>Assessor name</label>
         <div class="field-input">J. Smith</div>
       </div>
       <div class="form-field">
         <label>Signature</label>
-        <div class="field-input" style="font-style:italic;color:#a1a1aa;">Digital signature</div>
+        <div class="field-input sig">Digital signature</div>
       </div>
       <div class="form-field">
         <label>Date</label>
@@ -380,32 +444,25 @@
     </div>
   </div>
 
-  <!-- What this addresses -->
   <div class="addresses-box">
-    <strong>What this addresses:</strong> Responds to Problem 1. The PYP Exhibition already happens in every school. This form generates MM evidence from that existing event without creating additional assessment events. Multiple assessor perspectives (teacher, student, peer, parent/community) use the same descriptors and the same form structure, producing consistent evidence from different viewpoints.
+    <strong>What this addresses:</strong> The PYP Exhibition already happens in every school. This form generates MM evidence from that existing event without creating additional assessment events. Multiple assessor perspectives (teacher, student, peer, parent/community) use the same descriptors and the same form structure, producing consistent evidence from different viewpoints. <em>This sketch is PYP-only; equivalent anchor events (Personal Project, Community Project, extended essay) would need their own form versions.</em>
   </div>
 
-  <!-- Feedback prompts -->
-  <div class="feedback-prompts">
-    <h4>Feedback prompts</h4>
-    <ul>
-      <li>Does this sketch address the problem statement?</li>
-      <li>What would you change?</li>
-      <li>What is missing?</li>
-    </ul>
-  </div>
 </section>
+
 
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      SKETCH 3 — Request for Proposal
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-<section id="sketch3" class="tab-panel" data-problem="4">
-  <div class="problem-banner" style="display:none;">
-    <div><div class="banner-label">Responding to</div><span class="banner-num">4</span></div>
+<section id="sketch3" class="sketch-section">
+
+  <div class="problem-header">
+    <div class="banner-label">Responding to Problem 4</div>
     <div class="banner-text">MM has been tested primarily in middle-class school contexts, so its applicability across the broader range of IB schools is not established.</div>
   </div>
-  <h2 class="sketch-title">Research — Request for Proposal</h2>
-  <p class="sketch-subtitle">Problem 4: MM applicability across the broader range of IB schools is not established.</p>
+
+  <h2 class="sketch-title">Sketch 3 &middot; Research — Request for Proposal</h2>
+  <div class="sketch-caveat">Draft RFP shown for illustration. Budget range and eligibility criteria would be confirmed before issue.</div>
 
   <div class="rfp-document">
     <div class="rfp-border-top rfp-border-bottom">
@@ -425,7 +482,7 @@
     <h3>3. Sample Requirements</h3>
     <ul>
       <li>Minimum 10 schools across at least 3 IB regions</li>
-      <li>Must include: schools with annual fees below USD 5,000</li>
+      <li>Must include: schools serving lower-socioeconomic communities (eligibility criteria to be confirmed with Research)</li>
       <li>Must include: government-funded or government-assisted schools</li>
       <li>Must include: schools where the primary language of instruction is not English</li>
       <li>Must include: schools not in the current 28-school MM cohort</li>
@@ -447,38 +504,31 @@
     <p>12–18 months from contract signature.</p>
 
     <h3>7. Budget</h3>
-    <p>Proposals should include a detailed budget. Indicative range: USD 80,000–150,000.</p>
+    <p>Proposals should include a detailed budget. Indicative scope and budget envelope to be confirmed before issue.</p>
 
     <h3>8. Submission</h3>
     <p>Proposals due [date TBC]. Contact: [TBC].</p>
   </div>
 
-  <!-- What this addresses -->
   <div class="addresses-box">
-    <strong>What this addresses:</strong> Responds to Problem 4. MM has been tested primarily in middle-class school contexts. This sketch produces a procurement-ready artefact that the IB can use to commission a scoping study investigating applicability across the broader range of IB schools.
+    <strong>What this addresses:</strong> MM has been tested primarily in middle-class school contexts. This sketch produces a procurement-ready artefact that the IB can use to commission a scoping study investigating applicability across the broader range of IB schools.
   </div>
 
-  <!-- Feedback prompts -->
-  <div class="feedback-prompts">
-    <h4>Feedback prompts</h4>
-    <ul>
-      <li>Does this sketch address the problem statement?</li>
-      <li>What would you change?</li>
-      <li>What is missing?</li>
-    </ul>
-  </div>
 </section>
+
 
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      SKETCH 4 — MM-Integrated Unit Planner
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-<section id="sketch4" class="tab-panel" data-problem="1">
-  <div class="problem-banner" style="display:none;">
-    <div><div class="banner-label">Responding to</div><span class="banner-num">1</span></div>
+<section id="sketch4" class="sketch-section">
+
+  <div class="problem-header">
+    <div class="banner-label">Responding to Problem 1</div>
     <div class="banner-text">Using MM to evidence complex competencies is time-intensive for teachers, which limits how often and consistently it can be done.</div>
   </div>
-  <h2 class="sketch-title">Curriculum Development — MM-Integrated Unit Planner</h2>
-  <p class="sketch-subtitle">Problem 1: Evidencing complex competencies is time-intensive for teachers.</p>
+
+  <h2 class="sketch-title">Sketch 4 &middot; Curriculum Development — MM-Integrated Unit Planner</h2>
+  <div class="sketch-caveat">Worked example shown for DP Economics. Planner columns and content are illustrative.</div>
 
   <!-- Planner header -->
   <div class="planner-header-bar">
@@ -488,7 +538,6 @@
     <div class="ph-item"><strong>Teacher:</strong> M. Chen</div>
   </div>
 
-  <!-- Legend -->
   <div class="mm-legend">
     <span class="swatch"></span> Shaded columns = new MM additions to existing planner structure
   </div>
@@ -514,7 +563,7 @@
           <td>Critical thinking, Research</td>
           <td>Written analysis of a local externality using real data</td>
           <td>Examine, Evaluate</td>
-          <td class="mm-col">Thinks critically, evaluating evidence and reasoning to form well-supported conclusions</td>
+          <td class="mm-col">Agency in Learning (Level 4–5); Acting Ethically (Level 3–4)</td>
           <td class="mm-col">Written (submitted task)</td>
         </tr>
         <tr>
@@ -523,7 +572,7 @@
           <td>Communication, Social</td>
           <td>Group policy debate with position paper</td>
           <td>Discuss, Compare</td>
-          <td class="mm-col">Communicates ideas clearly and adapts communication to audience and purpose; Collaborates effectively, contributing to group goals</td>
+          <td class="mm-col">Communication (Level 4–5); Collaboration (Level 4–5)</td>
           <td class="mm-col">Oral (observed) + Written (position paper)</td>
         </tr>
         <tr>
@@ -532,92 +581,120 @@
           <td>Transfer, Self-management</td>
           <td>Individual research report on a common pool resource problem in a different national context</td>
           <td>Analyse, To what extent</td>
-          <td class="mm-col">Applies learning to unfamiliar contexts, transferring understanding across situations; Demonstrates self-management, setting goals and reflecting on own learning</td>
+          <td class="mm-col">Agency in Learning (Level 5); Active Citizenship (Level 4)</td>
           <td class="mm-col">Written (submitted task)</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <!-- What this addresses -->
-  <div class="addresses-box">
-    <strong>What this addresses:</strong> Responds to Problem 1. The MM evidence columns are added to planning that teachers already do. There is no separate evidence-gathering step. This approach shows curriculum reviewers how to embed MM into subject specifications so that competency evidence arises naturally from existing assessment tasks.
+  <!-- Flow diagram: planner → activity → Ruby -->
+  <div class="flow-diagram">
+    <div class="flow-step">
+      <div class="flow-step-num">1</div>
+      <div class="flow-step-title">Unit planner</div>
+      <div class="flow-step-body">Identifies where MM evidence will be captured during the unit</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="flow-step-num">2</div>
+      <div class="flow-step-title">Classroom activity</div>
+      <div class="flow-step-body">Teachers run the assessment task; student work and observations generate the evidence</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="flow-step-num">3</div>
+      <div class="flow-step-title">Ruby</div>
+      <div class="flow-step-body">Evidence uploaded to the MM platform for judgement against descriptors and internal moderation</div>
+    </div>
   </div>
 
-  <!-- Feedback prompts -->
-  <div class="feedback-prompts">
-    <h4>Feedback prompts</h4>
-    <ul>
-      <li>Does this sketch address the problem statement?</li>
-      <li>What would you change?</li>
-      <li>What is missing?</li>
-    </ul>
+  <div class="addresses-box">
+    <strong>What this addresses:</strong> The MM evidence columns are added to planning that teachers already do. There is no separate evidence-gathering step. This approach shows curriculum reviewers how to embed MM into subject specifications so that competency evidence arises naturally from existing assessment tasks.
   </div>
+
 </section>
+
 
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      SKETCH 5 — Wellbeing Dashboard
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-<section id="sketch5" class="tab-panel" data-problem="2">
-  <div class="problem-banner" style="display:none;">
-    <div><div class="banner-label">Responding to</div><span class="banner-num">2</span></div>
+<section id="sketch5" class="sketch-section">
+
+  <div class="problem-header">
+    <div class="banner-label">Responding to Problem 2</div>
     <div class="banner-text">MM adds to teacher workload in a context of wider pressure on teacher wellbeing, raising questions about sustainability of use.</div>
   </div>
-  <h2 class="sketch-title">Research (Wellbeing) — Wellbeing Dashboard</h2>
-  <p class="sketch-subtitle">Problem 2: MM adds to teacher workload, raising questions about sustainability.</p>
+
+  <h2 class="sketch-title">Sketch 5 &middot; Research — Wellbeing &amp; Sustainability Dashboard</h2>
+  <div class="sketch-caveat">All chart data is simulated for illustration. Thresholds shown are placeholders. The dashboard is a monitoring tool — it flags where indicators move together; it does not establish MM as the cause of wellbeing changes.</div>
+
+  <!-- Data sources strip -->
+  <div class="data-sources-strip">
+    <strong>Data sources:</strong>
+    <ul>
+      <li><strong>Activity volume</strong> — derived from Ruby platform telemetry (evidence items uploaded, moderation events).</li>
+      <li><strong>Perceived time investment</strong> — termly staff survey, Likert-scale question.</li>
+      <li><strong>Perceived workload burden</strong> — termly staff survey, Likert-scale question.</li>
+      <li><strong>Staff wellbeing</strong> — WHO-5 Wellbeing Index (validated 5-item instrument, 0–100 scale; threshold 50 indicates need for attention). Designed to integrate with IB wellbeing measurement work currently in development.</li>
+    </ul>
+    <p class="no-individual">All metrics are aggregated at school level. No individual teacher data is displayed.</p>
+  </div>
 
   <!-- Alert banner -->
   <div class="dashboard-alert">
-    &#9888; Amber alert: Time on MM Activities has exceeded 5 hrs/week for 2 consecutive collection points
+    ⚠ <strong>Red alert:</strong> Summit International — workload burden and WHO-5 wellbeing have crossed threshold for two consecutive collection points. Recommend follow-up with school leadership.
   </div>
 
   <!-- School selector -->
-  <div class="school-selector">
-    <label for="schoolSelect"><strong>School:</strong></label>
-    <select id="schoolSelect">
-      <option selected>Greenfield International School</option>
-    </select>
+  <div class="dashboard-controls">
+    <div class="control-item">
+      <label for="schoolSelect"><strong>View:</strong></label>
+      <select id="schoolSelect">
+        <option selected>All schools (cohort comparison)</option>
+      </select>
+    </div>
+    <div class="control-item">
+      <label><strong>Term range:</strong></label>
+      <span class="field-input">Term 1 2025 – Term 2 2026</span>
+    </div>
   </div>
 
   <!-- Dashboard panels -->
   <div class="dashboard-grid">
 
-    <!-- Panel 1: Time on MM Activities -->
     <div class="dash-panel full-width">
-      <h3>Time on MM Activities (hours/week) — rolling weekly average</h3>
-      <canvas id="chartTime" height="90"></canvas>
+      <h3>Activity volume — evidence items uploaded per teacher per month</h3>
+      <p class="panel-sub">Source: Ruby platform telemetry</p>
+      <canvas id="chartActivity" height="90"></canvas>
     </div>
 
-    <!-- Panel 2: Perceived Workload Burden -->
     <div class="dash-panel">
-      <h3>Perceived Workload Burden (termly)</h3>
-      <canvas id="chartWorkload" height="160"></canvas>
+      <h3>Perceived time investment</h3>
+      <p class="panel-sub">Source: termly staff survey. Scale 1 (none) → 5 (very heavy)</p>
+      <canvas id="chartTime" height="180"></canvas>
     </div>
 
-    <!-- Panel 3: Teacher Wellbeing Index -->
     <div class="dash-panel">
-      <h3>Teacher Wellbeing Index (termly)</h3>
-      <p style="font-size:.8rem;color:#71717a;margin-bottom:8px;">Aligned to IB Wellbeing Measurement Platform</p>
-      <canvas id="chartWellbeing" height="160"></canvas>
+      <h3>Perceived workload burden</h3>
+      <p class="panel-sub">Source: termly staff survey. Scale 1 (very manageable) → 5 (unsustainable)</p>
+      <canvas id="chartWorkload" height="180"></canvas>
+    </div>
+
+    <div class="dash-panel full-width">
+      <h3>Staff wellbeing — WHO-5 Wellbeing Index</h3>
+      <p class="panel-sub">Source: termly staff survey. Score 0–100. WHO-5 threshold: 50 indicates need for attention.</p>
+      <canvas id="chartWellbeing" height="90"></canvas>
     </div>
 
   </div>
 
-  <!-- What this addresses -->
   <div class="addresses-box">
-    <strong>What this addresses:</strong> Responds to Problem 2. This dashboard provides an early warning system for unsustainable MM implementation by tracking time spent, perceived workload, and teacher wellbeing over time. Amber and red thresholds trigger alerts before workload becomes unsustainable. The design feeds into the IB's broader wellbeing measurement platform work.
+    <strong>What this addresses:</strong> MM adds to teacher workload in a context of wider pressure on teacher wellbeing. This dashboard provides ongoing monitoring of whether MM implementation is sustainable at school level. It draws on data sources that are realistic to collect (Ruby telemetry, a short termly survey using the validated WHO-5 instrument), and flags schools where indicators are trending toward unsustainable levels so that conversations with school leadership can happen early. The dashboard does not claim MM is causing wellbeing changes; attribution requires separate analysis.
   </div>
 
-  <!-- Feedback prompts -->
-  <div class="feedback-prompts">
-    <h4>Feedback prompts</h4>
-    <ul>
-      <li>Does this sketch address the problem statement?</li>
-      <li>What would you change?</li>
-      <li>What is missing?</li>
-    </ul>
-  </div>
 </section>
+
 
 </main>
 

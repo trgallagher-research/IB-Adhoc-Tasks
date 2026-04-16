@@ -1,6 +1,7 @@
 /* ===================================================
    Melbourne Metrics — Prototype Sketches
    Static site styles. Open Sans from Google Fonts CDN.
+   Single scrollable page, problem tiles as TOC.
    =================================================== */
 
 /* --- Reset & base --- */
@@ -24,6 +25,8 @@
   --tier2: #dbeafe;
   --tier3: #c7d2fe;
   --mm-highlight: #f0fdf4;
+  --caveat-bg: #fef3c7;
+  --caveat-border: #f59e0b;
   --radius: 8px;
   --shadow: 0 1px 3px rgba(0,0,0,.08);
 }
@@ -87,78 +90,30 @@ header h1 span { color: var(--accent); }
   line-height: 1.7;
 }
 
-/* --- Problem statement cards --- */
-.problems-strip {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 14px;
-  margin: 28px 0 32px;
-}
-.problem-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+/* --- Global caveat banner --- */
+.global-caveat {
+  margin-top: 20px;
+  padding: 14px 18px;
+  background: var(--caveat-bg);
+  border: 1px solid var(--caveat-border);
   border-radius: var(--radius);
-  padding: 16px 18px;
   font-size: .88rem;
   line-height: 1.55;
-  box-shadow: var(--shadow);
+  color: #78350f;
 }
-.problem-card .num {
-  display: inline-block;
-  background: var(--accent);
-  color: #fff;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  text-align: center;
-  line-height: 24px;
-  font-size: .78rem;
-  font-weight: 700;
-  margin-right: 8px;
-  flex-shrink: 0;
-}
+.global-caveat strong { color: #78350f; }
 
-/* --- View toggle (problem-first vs sketch-first) --- */
-.view-toggle {
-  display: flex;
-  gap: 0;
-  margin: 28px 0 0;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  width: fit-content;
-}
-.view-btn {
-  padding: 10px 24px;
-  font-family: inherit;
-  font-size: .9rem;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  background: var(--surface);
-  color: var(--text-muted);
-  transition: background .15s, color .15s;
-}
-.view-btn.active {
-  background: var(--accent);
-  color: #fff;
-}
-.view-btn:not(.active):hover {
-  background: var(--bg);
-  color: var(--text);
-}
-
-/* --- Browse by Problem tiles --- */
-.view-intro {
+/* --- Problem tiles as TOC --- */
+.toc-intro {
   font-size: .92rem;
   color: var(--text-muted);
-  margin: 20px 0 16px;
+  margin: 32px 0 16px;
 }
 .problem-tiles {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-  margin-bottom: 32px;
+  margin-bottom: 40px;
 }
 @media (max-width: 768px) {
   .problem-tiles { grid-template-columns: 1fr; }
@@ -167,11 +122,13 @@ header h1 span { color: var(--accent); }
   display: flex;
   flex-direction: column;
   text-align: left;
-  padding: 24px 26px;
+  padding: 22px 24px;
   background: var(--surface);
   border: 2px solid var(--border);
   border-radius: var(--radius);
   cursor: pointer;
+  text-decoration: none;
+  color: inherit;
   font-family: inherit;
   transition: border-color .2s, box-shadow .2s, transform .15s;
   box-shadow: var(--shadow);
@@ -182,7 +139,7 @@ header h1 span { color: var(--accent); }
   transform: translateY(-2px);
 }
 .problem-tile .tile-num {
-  font-size: .82rem;
+  font-size: .78rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .05em;
@@ -191,107 +148,73 @@ header h1 span { color: var(--accent); }
 }
 .problem-tile .tile-text {
   font-size: .95rem;
-  line-height: 1.55;
+  line-height: 1.5;
   color: var(--text);
-  margin-bottom: 14px;
-  flex: 1;
+  margin-bottom: 10px;
+}
+.problem-tile .tile-framing {
+  font-size: .82rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 10px;
+  line-height: 1.45;
 }
 .problem-tile .tile-sketches {
   font-size: .82rem;
-  color: var(--text-muted);
-  padding-top: 12px;
+  color: var(--accent);
+  padding-top: 10px;
   border-top: 1px solid var(--border);
+  font-weight: 600;
 }
 
-/* --- Problem statement banner (shown above sketch when arriving from tile) --- */
-.problem-banner {
+/* --- Sketch sections --- */
+.sketch-section {
+  padding: 48px 0;
+  border-top: 1px solid var(--border);
+  scroll-margin-top: 24px;
+}
+.sketch-section:first-of-type { border-top: none; }
+
+/* --- Problem header (always visible on each sketch) --- */
+.problem-header {
+  padding: 14px 18px;
   background: var(--accent-light);
-  border: 1px solid #93c5fd;
-  border-radius: var(--radius);
-  padding: 16px 22px;
-  margin-bottom: 24px;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  border-left: 4px solid var(--accent);
+  border-radius: 4px;
+  margin-bottom: 20px;
 }
-.problem-banner .banner-num {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--accent);
-  color: #fff;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  font-size: .82rem;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-.problem-banner .banner-text {
-  font-size: .92rem;
-  line-height: 1.5;
-  color: var(--text);
-}
-.problem-banner .banner-label {
+.problem-header .banner-label {
   font-size: .78rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: .04em;
+  letter-spacing: .05em;
   color: var(--accent);
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
-
-/* --- Tab navigation --- */
-.tab-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0;
-  border-bottom: 2px solid var(--border);
-  margin-bottom: 0;
-}
-.tab-btn {
-  padding: 12px 22px;
-  background: none;
-  border: none;
-  border-bottom: 3px solid transparent;
-  font-family: inherit;
+.problem-header .banner-text {
   font-size: .92rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: color .15s, border-color .15s;
-  white-space: nowrap;
-}
-.tab-btn:hover { color: var(--text); }
-.tab-btn.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-}
-.tab-btn.problem-match:not(.active) {
-  color: var(--accent);
-  background: var(--accent-light);
-  border-radius: 4px 4px 0 0;
+  color: var(--text);
+  line-height: 1.5;
 }
 
-/* --- Tab panels --- */
-.tab-panel {
-  display: none;
-  padding: 32px 0 48px;
-}
-.tab-panel.active { display: block; }
-
+/* --- Sketch title and per-sketch caveat --- */
 .sketch-title {
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
-.sketch-subtitle {
-  font-size: .92rem;
-  color: var(--text-muted);
+.sketch-caveat {
+  padding: 10px 14px;
+  background: var(--caveat-bg);
+  border-left: 3px solid var(--caveat-border);
+  border-radius: 4px;
+  font-size: .82rem;
+  color: #78350f;
   margin-bottom: 28px;
+  line-height: 1.55;
 }
 
-/* --- Shared: "What this addresses" box --- */
+/* --- "What this addresses" box --- */
 .addresses-box {
   margin-top: 36px;
   padding: 18px 22px;
@@ -301,33 +224,17 @@ header h1 span { color: var(--accent); }
   line-height: 1.6;
 }
 .addresses-box strong { color: var(--accent); }
-
-/* --- Shared: feedback prompts --- */
-.feedback-prompts {
-  margin-top: 28px;
-  padding: 18px 22px;
-  background: var(--bg);
-  border: 1px dashed var(--border);
-  border-radius: var(--radius);
-}
-.feedback-prompts h4 {
-  font-size: .92rem;
-  margin-bottom: 10px;
-  color: var(--text-muted);
-}
-.feedback-prompts ul {
-  list-style: disc;
-  padding-left: 20px;
+.addresses-box em {
+  display: block;
+  margin-top: 8px;
   font-size: .88rem;
   color: var(--text-muted);
-  line-height: 1.7;
 }
 
 /* ============================================
    Sketch 1 — Micro-Credential Stack
    ============================================ */
 
-/* Tier diagram */
 .tier-stack {
   display: flex;
   flex-direction: column;
@@ -346,6 +253,8 @@ header h1 span { color: var(--accent); }
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 .tier-header .label-tag {
   font-size: .78rem;
@@ -358,6 +267,8 @@ header h1 span { color: var(--accent); }
 .tier-2 .tier-header { background: var(--tier2); }
 .tier-3 .tier-header { background: var(--tier3); }
 .tier-body { padding: 18px 20px; background: var(--surface); }
+.tier-desc { font-size: .86rem; color: var(--text-muted); margin-bottom: 10px; }
+.tier-desc em { font-style: normal; font-weight: 600; color: var(--amber); font-size: .78rem; }
 
 .module-cards, .credential-cards {
   display: grid;
@@ -378,20 +289,18 @@ header h1 span { color: var(--accent); }
   color: var(--accent);
   font-size: .82rem;
 }
+.credential-card .price em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--amber);
+  font-size: .75rem;
+}
 .credential-card .desc {
   margin-top: 4px;
   font-size: .8rem;
   color: var(--text-muted);
 }
 
-.tier-access-label {
-  font-size: .82rem;
-  margin-top: 12px;
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-/* Pathway arrow */
 .pathway-arrow {
   display: flex;
   align-items: center;
@@ -404,11 +313,23 @@ header h1 span { color: var(--accent); }
 }
 .pathway-arrow .arrow { font-size: 1.2rem; }
 
-/* Pricing summary */
+.pricing-wrap {
+  margin-top: 28px;
+}
+.pricing-caveat {
+  display: inline-block;
+  padding: 4px 10px;
+  background: var(--caveat-bg);
+  border: 1px solid var(--caveat-border);
+  border-radius: 4px;
+  font-size: .78rem;
+  color: #78350f;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
 .pricing-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 28px;
   font-size: .88rem;
 }
 .pricing-table th, .pricing-table td {
@@ -419,6 +340,12 @@ header h1 span { color: var(--accent); }
 .pricing-table th {
   background: var(--bg);
   font-weight: 600;
+}
+.pricing-table em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--amber);
+  font-size: .78rem;
 }
 
 /* ============================================
@@ -463,12 +390,14 @@ header h1 span { color: var(--accent); }
   background: var(--bg);
   color: var(--text-muted);
 }
+.form-field .field-input.sig { font-style: italic; color: #a1a1aa; }
 
 /* Assessor tabs inside form */
 .assessor-tabs {
   display: flex;
   gap: 0;
   border-bottom: 1px solid var(--border);
+  background: var(--bg);
 }
 .assessor-tab {
   padding: 10px 18px;
@@ -487,51 +416,104 @@ header h1 span { color: var(--accent); }
   border-bottom-color: var(--accent);
 }
 
-/* Competency table */
-.competency-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: .86rem;
+/* Competency rows */
+.competency-rows {
+  padding: 8px 0;
 }
-.competency-table th {
-  background: var(--bg);
-  padding: 10px 14px;
-  text-align: left;
+.competency-row {
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--border);
+}
+.competency-row:last-child { border-bottom: none; }
+
+.comp-header {
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed var(--border);
+}
+.comp-name {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.comp-desc {
+  font-size: .84rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.comp-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 900px) {
+  .comp-body { grid-template-columns: 1fr; }
+}
+
+.evidence-col label,
+.level-col label {
+  display: block;
+  font-size: .78rem;
   font-weight: 600;
-  font-size: .82rem;
-  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: .03em;
 }
-.competency-table td {
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: top;
-}
-.competency-table .descriptor-col { width: 35%; }
-.competency-table .evidence-col { width: 40%; }
-.competency-table .judgement-col { width: 25%; }
 
 .evidence-textarea {
   width: 100%;
-  min-height: 48px;
-  padding: 8px;
+  min-height: 160px;
+  padding: 10px;
   border: 1px solid var(--border);
   border-radius: 4px;
-  font-size: .84rem;
+  font-size: .85rem;
   background: var(--bg);
   resize: vertical;
   font-family: inherit;
-  color: var(--text-muted);
+  color: var(--text);
+  line-height: 1.5;
 }
 
-.judgement-select {
-  width: 100%;
-  padding: 8px;
+/* Level radios — 7 vertical options with nutshell text */
+.level-radios {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   border: 1px solid var(--border);
   border-radius: 4px;
-  font-size: .84rem;
+  padding: 8px 10px;
   background: var(--bg);
-  font-family: inherit;
-  color: var(--text-muted);
+}
+.level-radio {
+  display: grid;
+  grid-template-columns: auto 28px 1fr;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 4px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background .12s;
+}
+.level-radio:hover {
+  background: rgba(29,78,216,.06);
+}
+.level-radio input {
+  margin-top: 3px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.level-radio .lv {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: .88rem;
+  line-height: 1.45;
+}
+.level-radio .nut {
+  font-size: .82rem;
+  line-height: 1.45;
+  color: var(--text);
 }
 
 .form-footer {
@@ -540,6 +522,7 @@ header h1 span { color: var(--accent); }
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 14px;
+  background: var(--bg);
 }
 .form-footer .full-width {
   grid-column: 1 / -1;
@@ -628,7 +611,7 @@ header h1 span { color: var(--accent); }
   padding: 12px 14px;
   text-align: left;
   font-weight: 700;
-  font-size: .8rem;
+  font-size: .78rem;
   text-transform: uppercase;
   letter-spacing: .03em;
   border-bottom: 2px solid var(--border);
@@ -638,6 +621,7 @@ header h1 span { color: var(--accent); }
 .planner-table th.mm-col {
   background: var(--mm-highlight);
   color: var(--green);
+  white-space: normal;
 }
 .planner-table td {
   padding: 14px;
@@ -664,33 +648,128 @@ header h1 span { color: var(--accent); }
   border-radius: 3px;
 }
 
+/* Flow diagram: planner → activity → Ruby */
+.flow-diagram {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  margin-top: 28px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.flow-step {
+  flex: 1;
+  padding: 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  position: relative;
+}
+.flow-step-num {
+  position: absolute;
+  top: -10px;
+  left: 14px;
+  background: var(--accent);
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+.flow-step-title {
+  font-size: .95rem;
+  font-weight: 700;
+  margin-top: 4px;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.flow-step-body {
+  font-size: .82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.flow-arrow {
+  display: flex;
+  align-items: center;
+  color: var(--accent);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+@media (max-width: 768px) {
+  .flow-diagram { flex-direction: column; }
+  .flow-arrow { justify-content: center; transform: rotate(90deg); }
+}
+
 /* ============================================
    Sketch 5 — Wellbeing Dashboard
    ============================================ */
-.dashboard-alert {
-  background: var(--amber-bg);
-  border: 1px solid var(--amber);
+
+/* Data sources strip */
+.data-sources-strip {
+  padding: 18px 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 12px 18px;
-  font-size: .9rem;
-  font-weight: 600;
   margin-bottom: 20px;
+  font-size: .88rem;
 }
-.school-selector {
+.data-sources-strip strong {
+  color: var(--accent);
+}
+.data-sources-strip ul {
+  margin: 10px 0 10px 4px;
+  padding-left: 18px;
+}
+.data-sources-strip li {
+  margin-bottom: 6px;
+  line-height: 1.55;
+}
+.data-sources-strip .no-individual {
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+  font-size: .82rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.dashboard-alert {
+  background: var(--red-bg);
+  border: 1px solid var(--red);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  font-size: .9rem;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.dashboard-alert strong { color: var(--red); }
+
+.dashboard-controls {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 18px;
   margin-bottom: 24px;
   font-size: .9rem;
 }
-.school-selector select {
+.control-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dashboard-controls select,
+.dashboard-controls .field-input {
   padding: 8px 14px;
   border: 1px solid var(--border);
   border-radius: 4px;
   font-size: .88rem;
   font-family: inherit;
   background: var(--surface);
+  color: var(--text);
 }
+
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -708,8 +787,14 @@ header h1 span { color: var(--accent); }
 }
 .dash-panel.full-width { grid-column: 1 / -1; }
 .dash-panel h3 {
-  font-size: .95rem;
+  font-size: .98rem;
+  margin-bottom: 4px;
+}
+.dash-panel .panel-sub {
+  font-size: .8rem;
+  color: var(--text-muted);
   margin-bottom: 14px;
+  line-height: 1.45;
 }
 .dash-panel canvas { width: 100% !important; }
 
@@ -728,10 +813,9 @@ footer {
   .form-fields { grid-template-columns: 1fr 1fr; }
   .form-footer { grid-template-columns: 1fr; }
   .rfp-document { padding: 24px 20px; }
-  .tab-btn { padding: 10px 14px; font-size: .84rem; }
   .planner-header-bar { gap: 10px; }
 }
 @media (max-width: 480px) {
   .form-fields { grid-template-columns: 1fr; }
-  .problems-strip { grid-template-columns: 1fr; }
+  .problem-tiles { grid-template-columns: 1fr; }
 }

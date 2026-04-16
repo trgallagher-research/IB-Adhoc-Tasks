@@ -1,155 +1,14 @@
 /* ===================================================
    Melbourne Metrics — Prototype Sketches
    Main JavaScript file.
-   Handles tab switching, assessor tabs, and Chart.js
-   dashboard charts for Sketch 5.
+   Handles assessor role tabs and Chart.js dashboard
+   charts for Sketch 5 (multi-school comparison).
    =================================================== */
 
 document.addEventListener('DOMContentLoaded', function () {
 
   /* -------------------------------------------------
-     0. View toggle: "Browse by problem" vs "Browse all sketches"
-     ------------------------------------------------- */
-  var viewButtons = document.querySelectorAll('.view-btn');
-  var problemsView = document.getElementById('problemsView');
-  var sketchesView = document.getElementById('sketchesView');
-  var mainContent = document.querySelector('main.container');
-  var currentView = 'problems'; // track which view is active
-
-  viewButtons.forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      viewButtons.forEach(function (b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      currentView = btn.dataset.view;
-
-      if (currentView === 'problems') {
-        // Show problem tiles, hide tab nav, hide all sketch panels
-        problemsView.style.display = '';
-        sketchesView.style.display = 'none';
-        hidePanels();
-        hideBanners();
-      } else {
-        // Show tab nav with problem cards, hide problem tiles
-        problemsView.style.display = 'none';
-        sketchesView.style.display = '';
-        hideBanners();
-        // Activate the first tab by default
-        activateTab('sketch1');
-      }
-    });
-  });
-
-  /* Helper: hide all panels */
-  function hidePanels() {
-    tabPanels.forEach(function (p) { p.classList.remove('active'); });
-    tabButtons.forEach(function (b) { b.classList.remove('active'); });
-  }
-
-  /* Helper: hide all problem banners */
-  function hideBanners() {
-    document.querySelectorAll('.problem-banner').forEach(function (b) {
-      b.style.display = 'none';
-    });
-  }
-
-  /* Helper: activate a specific tab */
-  function activateTab(tabId) {
-    tabButtons.forEach(function (b) { b.classList.remove('active'); });
-    tabPanels.forEach(function (p) { p.classList.remove('active'); });
-    var target = document.getElementById(tabId);
-    if (target) {
-      target.classList.add('active');
-    }
-    // Highlight matching tab button
-    tabButtons.forEach(function (b) {
-      if (b.dataset.tab === tabId) { b.classList.add('active'); }
-    });
-    // Init charts if needed
-    if (tabId === 'sketch5' && !chartsInitialised) {
-      initDashboardCharts();
-      chartsInitialised = true;
-    }
-  }
-
-  /* -------------------------------------------------
-     0b. Problem tile clicks
-     ------------------------------------------------- */
-  var problemTiles = document.querySelectorAll('.problem-tile');
-
-  problemTiles.forEach(function (tile) {
-    tile.addEventListener('click', function () {
-      var sketchIds = tile.dataset.sketches.split(',');
-      var problemNum = tile.dataset.problem;
-
-      // Hide problem tiles view, show sketches view
-      problemsView.style.display = 'none';
-      sketchesView.style.display = '';
-
-      // Update the view toggle button state
-      viewButtons.forEach(function (b) { b.classList.remove('active'); });
-      viewButtons.forEach(function (b) {
-        if (b.dataset.view === 'sketches') { b.classList.add('active'); }
-      });
-      currentView = 'sketches';
-
-      // Activate the first matching sketch
-      activateTab(sketchIds[0]);
-
-      // Show problem banners on matching sketches
-      hideBanners();
-      sketchIds.forEach(function (sid) {
-        var panel = document.getElementById(sid);
-        if (panel) {
-          var banner = panel.querySelector('.problem-banner');
-          if (banner) { banner.style.display = ''; }
-        }
-      });
-
-      // If multiple sketches for this problem, highlight their tab buttons
-      tabButtons.forEach(function (b) {
-        if (sketchIds.indexOf(b.dataset.tab) !== -1) {
-          b.classList.add('problem-match');
-        } else {
-          b.classList.remove('problem-match');
-        }
-      });
-
-      // Scroll to the sketches area
-      sketchesView.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  });
-
-  /* -------------------------------------------------
-     1. Main sketch tab navigation
-     ------------------------------------------------- */
-  var tabButtons = document.querySelectorAll('.tab-btn');
-  var tabPanels = document.querySelectorAll('.tab-panel');
-
-  tabButtons.forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      // Deactivate all
-      tabButtons.forEach(function (b) { b.classList.remove('active'); });
-      tabPanels.forEach(function (p) { p.classList.remove('active'); });
-      // Activate clicked
-      btn.classList.add('active');
-      var target = document.getElementById(btn.dataset.tab);
-      if (target) {
-        target.classList.add('active');
-      }
-      // Hide banners when manually switching tabs
-      hideBanners();
-      // Remove problem-match highlights
-      tabButtons.forEach(function (b) { b.classList.remove('problem-match'); });
-      // Initialise charts if switching to sketch 5 for the first time
-      if (btn.dataset.tab === 'sketch5' && !chartsInitialised) {
-        initDashboardCharts();
-        chartsInitialised = true;
-      }
-    });
-  });
-
-  /* -------------------------------------------------
-     2. Assessor role tabs (Sketch 2)
+     1. Assessor role tabs (Sketch 2)
      ------------------------------------------------- */
   var assessorTabs = document.querySelectorAll('.assessor-tab');
   var assessorSelect = document.getElementById('assessorRoleSelect');
@@ -158,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     tab.addEventListener('click', function () {
       assessorTabs.forEach(function (t) { t.classList.remove('active'); });
       tab.classList.add('active');
-      // Update the dropdown in the form header to match
+      // Keep the dropdown in the form header in sync
       if (assessorSelect) {
         assessorSelect.value = tab.dataset.role;
       }
@@ -166,156 +25,146 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* -------------------------------------------------
-     3. Chart.js — Wellbeing Dashboard (Sketch 5)
+     2. Chart.js — Wellbeing & Sustainability Dashboard
+     Multi-school comparison with realistic noisy data.
      ------------------------------------------------- */
-  var chartsInitialised = false;
+  initDashboardCharts();
 
   function initDashboardCharts() {
 
-    // Shared defaults
+    // Shared chart defaults
     Chart.defaults.font.family = "'Open Sans', Arial, sans-serif";
     Chart.defaults.font.size = 12;
     Chart.defaults.color = '#52525b';
 
-    /* --- Panel 1: Time on MM Activities --- */
-    var weeks = [];
-    for (var w = 1; w <= 20; w++) { weeks.push('Wk ' + w); }
+    /* ---------------------------------------------
+       Sample data for four schools + cohort average.
+       Terms are spaced at standard IB collection
+       points. Data includes realistic noise and
+       seasonal patterns (dips in holiday terms,
+       peaks around moderation windows).
+       --------------------------------------------- */
+    var terms = ['T1 2025', 'T2 2025', 'T3 2025', 'T4 2025', 'T1 2026', 'T2 2026'];
 
-    // Sample data — gradual increase with some variation
-    var evidenceCapture = [1.2,1.3,1.5,1.4,1.8,2.0,2.1,2.3,2.5,2.4,2.7,2.9,3.1,3.3,3.5,3.4,3.7,3.9,4.1,4.3];
-    var judgement =       [0.8,0.9,0.9,1.0,1.1,1.2,1.4,1.5,1.6,1.8,1.9,2.0,2.1,2.3,2.4,2.5,2.7,2.8,3.0,3.1];
-    var admin =           [0.5,0.5,0.6,0.6,0.7,0.7,0.8,0.8,0.9,0.9,1.0,1.0,1.1,1.1,1.2,1.2,1.3,1.3,1.4,1.5];
+    // School colour assignments — neutral, legible
+    var colours = {
+      greenfield: '#1d4ed8',     // steady blue
+      riverside:  '#059669',     // teal-green (recovery school)
+      summit:     '#dc2626',     // red (at-risk)
+      horizon:    '#7c3aed',     // purple
+      cohort:     '#64748b'      // grey, dashed
+    };
 
-    // Compute total for threshold checking
-    var totalHours = evidenceCapture.map(function (v, i) { return v + judgement[i] + admin[i]; });
+    /* --- Panel: Activity volume (Ruby telemetry) ---
+       Evidence items uploaded per teacher per month.
+       Reflects a term-by-term picture with noise. */
+    var activityGreenfield = [4.2, 5.1, 6.3, 5.8, 5.4, 6.0];
+    var activityRiverside  = [2.8, 5.2, 8.1, 9.8, 8.4, 7.6];
+    var activitySummit     = [6.4, 8.2, 11.5, 13.8, 15.2, 16.4];
+    var activityHorizon    = [3.6, 4.2, 5.8, 6.4, 6.1, 6.5];
+    var activityCohort     = [4.3, 5.7, 7.9, 8.9, 8.8, 9.1];
+
+    new Chart(document.getElementById('chartActivity'), {
+      type: 'line',
+      data: {
+        labels: terms,
+        datasets: [
+          makeDataset('Greenfield International', activityGreenfield, colours.greenfield),
+          makeDataset('Riverside Academy',        activityRiverside,  colours.riverside),
+          makeDataset('Summit International',     activitySummit,     colours.summit),
+          makeDataset('Horizon College',          activityHorizon,    colours.horizon),
+          makeCohortDataset('Cohort average',     activityCohort,     colours.cohort)
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          y: {
+            min: 0,
+            max: 20,
+            title: { display: true, text: 'Evidence items per teacher per month' }
+          }
+        }
+      }
+    });
+
+    /* --- Panel: Perceived time investment (survey) ---
+       Likert 1 (none) to 5 (very heavy). Termly.      */
+    var timeGreenfield = [2.3, 2.5, 2.6, 2.4, 2.5, 2.6];
+    var timeRiverside  = [2.8, 3.4, 4.0, 3.8, 3.6, 3.5];
+    var timeSummit     = [3.2, 3.8, 4.1, 4.3, 4.5, 4.6];
+    var timeHorizon    = [2.4, 2.7, 2.9, 3.0, 2.9, 3.0];
+    var timeCohort     = [2.7, 3.1, 3.4, 3.4, 3.4, 3.4];
 
     new Chart(document.getElementById('chartTime'), {
       type: 'line',
       data: {
-        labels: weeks,
+        labels: terms,
         datasets: [
-          {
-            label: 'Evidence capture',
-            data: evidenceCapture,
-            borderColor: '#1d4ed8',
-            backgroundColor: 'rgba(29,78,216,.1)',
-            tension: 0.3,
-            fill: false,
-            pointRadius: 2
-          },
-          {
-            label: 'Judgement & moderation',
-            data: judgement,
-            borderColor: '#7c3aed',
-            backgroundColor: 'rgba(124,58,237,.1)',
-            tension: 0.3,
-            fill: false,
-            pointRadius: 2
-          },
-          {
-            label: 'Administration',
-            data: admin,
-            borderColor: '#64748b',
-            backgroundColor: 'rgba(100,116,139,.1)',
-            tension: 0.3,
-            fill: false,
-            pointRadius: 2
-          }
+          makeDataset('Greenfield International', timeGreenfield, colours.greenfield),
+          makeDataset('Riverside Academy',        timeRiverside,  colours.riverside),
+          makeDataset('Summit International',     timeSummit,     colours.summit),
+          makeDataset('Horizon College',          timeHorizon,    colours.horizon),
+          makeCohortDataset('Cohort average',     timeCohort,     colours.cohort)
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: true,
+        interaction: { mode: 'index', intersect: false },
         scales: {
           y: {
-            min: 0,
-            max: 8,
-            title: { display: true, text: 'Hours / week' }
-          }
-        },
-        plugins: {
-          annotation: {
-            annotations: {
-              amber: {
-                type: 'line',
-                yMin: 5,
-                yMax: 5,
-                borderColor: '#f59e0b',
-                borderWidth: 2,
-                borderDash: [6, 4],
-                label: { display: true, content: 'Amber (5 hrs)', position: 'start', font: { size: 10 } }
-              },
-              red: {
-                type: 'line',
-                yMin: 7,
-                yMax: 7,
-                borderColor: '#dc2626',
-                borderWidth: 2,
-                borderDash: [6, 4],
-                label: { display: true, content: 'Red (7 hrs)', position: 'start', font: { size: 10 } }
-              }
-            }
+            min: 1, max: 5,
+            title: { display: true, text: 'Likert (1 none → 5 very heavy)' }
           }
         }
       }
     });
 
-    /* --- Panel 2: Perceived Workload Burden --- */
-    var terms = ['Term 1 2025', 'Term 2 2025', 'Term 3 2025', 'Term 4 2025'];
+    /* --- Panel: Perceived workload burden (survey) ---
+       Likert 1 (very manageable) to 5 (unsustainable). */
+    var burdenGreenfield = [2.1, 2.3, 2.4, 2.3, 2.3, 2.4];
+    var burdenRiverside  = [2.5, 2.9, 3.6, 3.8, 3.3, 3.2];  // intervention after T4
+    var burdenSummit     = [2.9, 3.4, 3.8, 4.1, 4.3, 4.4];
+    var burdenHorizon    = [2.3, 2.5, 2.7, 2.8, 2.7, 2.8];
+    var burdenCohort     = [2.5, 2.8, 3.1, 3.3, 3.2, 3.2];
 
     new Chart(document.getElementById('chartWorkload'), {
-      type: 'bar',
+      type: 'line',
       data: {
         labels: terms,
         datasets: [
-          {
-            label: 'Classroom teacher',
-            data: [2.1, 2.6, 3.0, 3.4],
-            backgroundColor: '#60a5fa'
-          },
-          {
-            label: 'Coordinator',
-            data: [2.8, 3.2, 3.6, 3.9],
-            backgroundColor: '#1d4ed8'
-          }
+          makeDataset('Greenfield International', burdenGreenfield, colours.greenfield),
+          makeDataset('Riverside Academy',        burdenRiverside,  colours.riverside),
+          makeDataset('Summit International',     burdenSummit,     colours.summit),
+          makeDataset('Horizon College',          burdenHorizon,    colours.horizon),
+          makeCohortDataset('Cohort average',     burdenCohort,     colours.cohort)
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: true,
+        interaction: { mode: 'index', intersect: false },
         scales: {
           y: {
-            min: 0,
-            max: 5,
-            title: { display: true, text: 'Perceived burden (1-5 scale)' },
-            ticks: {
-              callback: function (value) {
-                var labels = { 1: '1 — Very manageable', 2: '2', 3: '3', 4: '4', 5: '5 — Unsustainable' };
-                return labels[value] || value;
-              }
-            }
+            min: 1, max: 5,
+            title: { display: true, text: 'Likert (1 very manageable → 5 unsustainable)' }
           }
         },
         plugins: {
           annotation: {
             annotations: {
               amber: {
-                type: 'line',
-                yMin: 3.5,
-                yMax: 3.5,
-                borderColor: '#f59e0b',
-                borderWidth: 2,
-                borderDash: [6, 4],
-                label: { display: true, content: 'Amber', position: 'start', font: { size: 10 } }
+                type: 'line', yMin: 3.5, yMax: 3.5,
+                borderColor: '#f59e0b', borderWidth: 1.5, borderDash: [5, 4],
+                label: { display: true, content: 'Amber threshold (3.5)', position: 'start', font: { size: 10 }, backgroundColor: 'rgba(254,243,199,.9)', color: '#78350f' }
               },
               red: {
-                type: 'line',
-                yMin: 4.0,
-                yMax: 4.0,
-                borderColor: '#dc2626',
-                borderWidth: 2,
-                borderDash: [6, 4],
-                label: { display: true, content: 'Red', position: 'start', font: { size: 10 } }
+                type: 'line', yMin: 4.0, yMax: 4.0,
+                borderColor: '#dc2626', borderWidth: 1.5, borderDash: [5, 4],
+                label: { display: true, content: 'Red threshold (4.0)', position: 'start', font: { size: 10 }, backgroundColor: 'rgba(254,226,226,.9)', color: '#991b1b' }
               }
             }
           }
@@ -323,54 +172,44 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
 
-    /* --- Panel 3: Teacher Wellbeing Index --- */
+    /* --- Panel: WHO-5 Wellbeing Index ---
+       Validated 5-item instrument, 0–100. Threshold
+       50 indicates need for attention. Termly survey. */
+    var wellbeingGreenfield = [72, 70, 71, 73, 72, 71];
+    var wellbeingRiverside  = [68, 65, 58, 55, 62, 64];  // dipped then recovered
+    var wellbeingSummit     = [66, 62, 56, 50, 47, 45];  // crossed threshold
+    var wellbeingHorizon    = [70, 69, 67, 68, 67, 68];
+    var wellbeingCohort     = [69, 66, 63, 61, 62, 62];
+
     new Chart(document.getElementById('chartWellbeing'), {
       type: 'line',
       data: {
         labels: terms,
         datasets: [
-          {
-            label: 'Wellbeing Index',
-            data: [74, 68, 63, 58],
-            borderColor: '#16a34a',
-            backgroundColor: 'rgba(22,163,74,.1)',
-            tension: 0.3,
-            fill: true,
-            pointRadius: 5,
-            pointBackgroundColor: '#16a34a'
-          }
+          makeDataset('Greenfield International', wellbeingGreenfield, colours.greenfield),
+          makeDataset('Riverside Academy',        wellbeingRiverside,  colours.riverside),
+          makeDataset('Summit International',     wellbeingSummit,     colours.summit),
+          makeDataset('Horizon College',          wellbeingHorizon,    colours.horizon),
+          makeCohortDataset('Cohort average',     wellbeingCohort,     colours.cohort)
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: true,
+        interaction: { mode: 'index', intersect: false },
         scales: {
           y: {
-            min: 0,
-            max: 100,
-            title: { display: true, text: 'Composite score (0–100)' }
+            min: 30, max: 100,
+            title: { display: true, text: 'WHO-5 Wellbeing Index (0–100)' }
           }
         },
         plugins: {
           annotation: {
             annotations: {
-              amber: {
-                type: 'line',
-                yMin: 60,
-                yMax: 60,
-                borderColor: '#f59e0b',
-                borderWidth: 2,
-                borderDash: [6, 4],
-                label: { display: true, content: 'Amber (60)', position: 'start', font: { size: 10 } }
-              },
-              red: {
-                type: 'line',
-                yMin: 50,
-                yMax: 50,
-                borderColor: '#dc2626',
-                borderWidth: 2,
-                borderDash: [6, 4],
-                label: { display: true, content: 'Red (50)', position: 'start', font: { size: 10 } }
+              who5Threshold: {
+                type: 'line', yMin: 50, yMax: 50,
+                borderColor: '#dc2626', borderWidth: 1.5, borderDash: [5, 4],
+                label: { display: true, content: 'WHO-5 threshold (50)', position: 'start', font: { size: 10 }, backgroundColor: 'rgba(254,226,226,.9)', color: '#991b1b' }
               }
             }
           }
@@ -378,4 +217,43 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
+
+  /* -------------------------------------------------
+     Helper: build a standard school dataset for the
+     line charts. Returns a Chart.js dataset object.
+     ------------------------------------------------- */
+  function makeDataset(label, data, colour) {
+    return {
+      label: label,
+      data: data,
+      borderColor: colour,
+      backgroundColor: colour,
+      tension: 0.3,
+      fill: false,
+      pointRadius: 3,
+      pointHoverRadius: 5,
+      borderWidth: 2
+    };
+  }
+
+  /* -------------------------------------------------
+     Helper: build a dashed cohort-average dataset so
+     that the benchmark line stands out from the
+     per-school series.
+     ------------------------------------------------- */
+  function makeCohortDataset(label, data, colour) {
+    return {
+      label: label,
+      data: data,
+      borderColor: colour,
+      backgroundColor: colour,
+      tension: 0.3,
+      fill: false,
+      pointRadius: 2,
+      pointHoverRadius: 4,
+      borderWidth: 2,
+      borderDash: [6, 4]
+    };
+  }
+
 });
