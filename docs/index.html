@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Melbourne Metrics — Prototype Sketches</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Chart.js + annotation plugin (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.1.0/dist/chartjs-plugin-annotation.min.js"></script>
+
+  <!-- Local styles -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<header>
+  <div class="container">
+    <h1><span>Melbourne Metrics</span> — Prototype Sketches (Learning Lab, April 2026)</h1>
+
+    <!-- Collapsible methodology note -->
+    <details class="methodology">
+      <summary>Methodology note</summary>
+      <div class="note-body">
+        <p><strong>How these sketches were produced:</strong> The Learning Lab was asked to generate prototype sketches responding to the problem statements below, drawn from the Melbourne Metrics work. Initial drafts were produced by the Learning Lab drawing on its expertise and knowledge of the project. These drafts have been shared with internal stakeholders across the Education Office for validation and input. Sketches will be adjusted in response to their feedback, and the final set shared with Jeeva for the Education Committee of the board.</p>
+        <p>This is expert-led prototyping with stakeholder validation, not full co-design. Given the timeline, it is the closest version of co-design the exercise can support.</p>
+      </div>
+    </details>
+  </div>
+</header>
+
+<!-- ========== PROBLEM STATEMENTS ========== -->
+<section class="container">
+  <div class="problems-strip">
+    <div class="problem-card"><span class="num">1</span>Using MM to evidence complex competencies is time-intensive for teachers, which limits how often and consistently it can be done.</div>
+    <div class="problem-card"><span class="num">2</span>MM adds to teacher workload in a context of wider pressure on teacher wellbeing, raising questions about sustainability of use.</div>
+    <div class="problem-card"><span class="num">3</span>Using MM well requires professional learning that IB does not currently provide, leaving schools to develop capability on their own.</div>
+    <div class="problem-card"><span class="num">4</span>MM has been tested primarily in middle-class school contexts, so its applicability across the broader range of IB schools is not established.</div>
+  </div>
+</section>
+
+<!-- ========== TAB NAVIGATION ========== -->
+<nav class="container">
+  <div class="tab-nav">
+    <button class="tab-btn active" data-tab="sketch1">Sketch 1 — Micro-Credential Stack</button>
+    <button class="tab-btn" data-tab="sketch2">Sketch 2 — Exhibition Review Form</button>
+    <button class="tab-btn" data-tab="sketch3">Sketch 3 — Request for Proposal</button>
+    <button class="tab-btn" data-tab="sketch4">Sketch 4 — MM-Integrated Unit Planner</button>
+    <button class="tab-btn" data-tab="sketch5">Sketch 5 — Wellbeing Dashboard</button>
+  </div>
+</nav>
+
+<!-- ========== TAB PANELS ========== -->
+<main class="container">
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     SKETCH 1 — Micro-Credential Stack
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<section id="sketch1" class="tab-panel active">
+  <h2 class="sketch-title">EDD — Micro-Credential Stack</h2>
+  <p class="sketch-subtitle">Problem 3: Schools currently develop MM capability on their own with no IB professional learning offer.</p>
+
+  <div class="tier-stack">
+
+    <!-- Tier 1 -->
+    <div class="tier tier-1">
+      <div class="tier-header">
+        Tier 1 (Free): MM Micro-Lessons
+        <span class="label-tag">Open access — no login required</span>
+      </div>
+      <div class="tier-body">
+        <p style="font-size:.86rem;color:#52525b;margin-bottom:10px;">6–8 modules, ~15 min each, asynchronous</p>
+        <div class="module-cards">
+          <div class="module-card">What is Melbourne Metrics?</div>
+          <div class="module-card">Understanding MM Descriptors</div>
+          <div class="module-card">Evidence Types and Sources</div>
+          <div class="module-card">Recognising Competencies in Student Work</div>
+          <div class="module-card">Using Descriptor Language</div>
+          <div class="module-card">MM in Your Programme Context</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pathway-arrow"><span class="arrow">↓</span> Pathway progression <span class="arrow">↓</span></div>
+
+    <!-- Tier 2 -->
+    <div class="tier tier-2">
+      <div class="tier-header">
+        Tier 2 (Paid): MM Micro-Credentials
+        <span class="label-tag">Individual enrolment or school purchase</span>
+      </div>
+      <div class="tier-body">
+        <p style="font-size:.86rem;color:#52525b;margin-bottom:10px;">Each credential: asynchronous content + 1 facilitated session + assessed task</p>
+        <div class="credential-cards">
+          <div class="credential-card">
+            <strong>MC1: Evidence Capture</strong>
+            <span class="price">~USD 150</span>
+            <div class="desc">Identify, gather, and document MM-aligned evidence from classroom activities.</div>
+          </div>
+          <div class="credential-card">
+            <strong>MC2: Judgement Against Descriptors</strong>
+            <span class="price">~USD 200</span>
+            <div class="desc">Apply MM descriptors to student evidence and produce defensible judgements.</div>
+          </div>
+          <div class="credential-card">
+            <strong>MC3: Internal Moderation</strong>
+            <span class="price">~USD 250</span>
+            <div class="desc">Lead and participate in school-level moderation of MM judgements.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pathway-arrow"><span class="arrow">↓</span> Bundle pathway <span class="arrow">↓</span></div>
+
+    <!-- Tier 3 -->
+    <div class="tier tier-3">
+      <div class="tier-header">
+        Tier 3 (Paid, Bundle): MM Practitioner Credential
+        <span class="label-tag">For schools committing to full MM implementation</span>
+      </div>
+      <div class="tier-body">
+        <p style="font-size:.86rem;color:#52525b;margin-bottom:6px;">Bundles all three Micro-Credentials + facilitated cohort sessions</p>
+        <p style="font-size:.86rem;color:#52525b;">~USD 500/teacher, school-level volume pricing available</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Pricing summary table -->
+  <table class="pricing-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Format</th>
+        <th>Price</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>MM Micro-Lessons (Tier 1)</td>
+        <td>6–8 async modules, ~15 min each</td>
+        <td>Free</td>
+        <td>Open access, no login</td>
+      </tr>
+      <tr>
+        <td>MC1: Evidence Capture</td>
+        <td>Async + 1 facilitated session + assessed task</td>
+        <td>~USD 150</td>
+        <td>Individual or school purchase</td>
+      </tr>
+      <tr>
+        <td>MC2: Judgement Against Descriptors</td>
+        <td>Async + 1 facilitated session + assessed task</td>
+        <td>~USD 200</td>
+        <td>Individual or school purchase</td>
+      </tr>
+      <tr>
+        <td>MC3: Internal Moderation</td>
+        <td>Async + 1 facilitated session + assessed task</td>
+        <td>~USD 250</td>
+        <td>Individual or school purchase</td>
+      </tr>
+      <tr>
+        <td>MM Practitioner Credential (Tier 3)</td>
+        <td>MC1 + MC2 + MC3 + cohort sessions</td>
+        <td>~USD 500</td>
+        <td>Volume pricing for schools</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- What this addresses -->
+  <div class="addresses-box">
+    <strong>What this addresses:</strong> Responds to Problem 3. Schools currently develop MM capability on their own because IB does not provide a professional learning offer. This sketch provides a structured, tiered pathway from free foundational modules through to a full practitioner credential, allowing teachers and schools to build capability at a pace and depth that suits their needs.
+  </div>
+
+  <!-- Feedback prompts -->
+  <div class="feedback-prompts">
+    <h4>Feedback prompts</h4>
+    <ul>
+      <li>Does this sketch address the problem statement?</li>
+      <li>What would you change?</li>
+      <li>What is missing?</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     SKETCH 2 — Exhibition Review Form
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<section id="sketch2" class="tab-panel">
+  <h2 class="sketch-title">Core &amp; Coherence — MM Exhibition Review Form</h2>
+  <p class="sketch-subtitle">Problem 1: Evidencing complex competencies is time-intensive for teachers.</p>
+
+  <!-- Assessor tabs -->
+  <div class="form-mockup">
+    <div class="assessor-tabs">
+      <button class="assessor-tab active" data-role="Teacher">Teacher</button>
+      <button class="assessor-tab" data-role="Student (self)">Student (self)</button>
+      <button class="assessor-tab" data-role="Peer">Peer</button>
+      <button class="assessor-tab" data-role="Parent/Community">Parent / Community</button>
+    </div>
+
+    <!-- Form header -->
+    <div class="form-header-bar">Melbourne Metrics — Exhibition Competency Review</div>
+
+    <!-- Form fields -->
+    <div class="form-fields">
+      <div class="form-field">
+        <label>Student Name</label>
+        <div class="field-input">A. Student</div>
+      </div>
+      <div class="form-field">
+        <label>Exhibition Title</label>
+        <div class="field-input">How can we reduce plastic waste in our community?</div>
+      </div>
+      <div class="form-field">
+        <label>Date</label>
+        <div class="field-input">15 / 04 / 2026</div>
+      </div>
+      <div class="form-field">
+        <label>Assessor Role</label>
+        <select class="field-input" id="assessorRoleSelect">
+          <option value="Teacher" selected>Teacher</option>
+          <option value="Student (self)">Student (self-assessment)</option>
+          <option value="Peer">Peer</option>
+          <option value="Parent/Community">Parent / Community</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Competency table -->
+    <table class="competency-table">
+      <thead>
+        <tr>
+          <th class="descriptor-col">MM Competency Descriptor</th>
+          <th class="evidence-col">Evidence Observed</th>
+          <th class="judgement-col">Judgement</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Communicates ideas clearly and adapts communication to audience and purpose</td>
+          <td><textarea class="evidence-textarea" placeholder="Describe the evidence observed..."></textarea></td>
+          <td>
+            <select class="judgement-select">
+              <option value="">Select…</option>
+              <option>Not yet evident</option>
+              <option>Emerging</option>
+              <option>Developing</option>
+              <option>Demonstrated</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Collaborates effectively, contributing to group goals while respecting diverse perspectives</td>
+          <td><textarea class="evidence-textarea" placeholder="Describe the evidence observed..."></textarea></td>
+          <td>
+            <select class="judgement-select">
+              <option value="">Select…</option>
+              <option>Not yet evident</option>
+              <option>Emerging</option>
+              <option>Developing</option>
+              <option>Demonstrated</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Thinks critically, evaluating evidence and reasoning to form well-supported conclusions</td>
+          <td><textarea class="evidence-textarea" placeholder="Describe the evidence observed..."></textarea></td>
+          <td>
+            <select class="judgement-select">
+              <option value="">Select…</option>
+              <option>Not yet evident</option>
+              <option>Emerging</option>
+              <option>Developing</option>
+              <option>Demonstrated</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Demonstrates self-management, setting goals and reflecting on own learning</td>
+          <td><textarea class="evidence-textarea" placeholder="Describe the evidence observed..."></textarea></td>
+          <td>
+            <select class="judgement-select">
+              <option value="">Select…</option>
+              <option>Not yet evident</option>
+              <option>Emerging</option>
+              <option>Developing</option>
+              <option>Demonstrated</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Applies learning to unfamiliar contexts, transferring understanding across situations</td>
+          <td><textarea class="evidence-textarea" placeholder="Describe the evidence observed..."></textarea></td>
+          <td>
+            <select class="judgement-select">
+              <option value="">Select…</option>
+              <option>Not yet evident</option>
+              <option>Emerging</option>
+              <option>Developing</option>
+              <option>Demonstrated</option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Form footer -->
+    <div class="form-footer">
+      <div class="form-field full-width">
+        <label>Overall Comment</label>
+        <textarea class="evidence-textarea" style="min-height:64px;" placeholder="Overall comment on this student's demonstration of MM competencies during the Exhibition..."></textarea>
+      </div>
+      <div class="form-field">
+        <label>Assessor Name</label>
+        <div class="field-input">J. Smith</div>
+      </div>
+      <div class="form-field">
+        <label>Signature</label>
+        <div class="field-input" style="font-style:italic;color:#a1a1aa;">Digital signature</div>
+      </div>
+      <div class="form-field">
+        <label>Date</label>
+        <div class="field-input">15 / 04 / 2026</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- What this addresses -->
+  <div class="addresses-box">
+    <strong>What this addresses:</strong> Responds to Problem 1. The PYP Exhibition already happens in every school. This form generates MM evidence from that existing event without creating additional assessment events. Multiple assessor perspectives (teacher, student, peer, parent/community) use the same descriptors and the same form structure, producing consistent evidence from different viewpoints.
+  </div>
+
+  <!-- Feedback prompts -->
+  <div class="feedback-prompts">
+    <h4>Feedback prompts</h4>
+    <ul>
+      <li>Does this sketch address the problem statement?</li>
+      <li>What would you change?</li>
+      <li>What is missing?</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     SKETCH 3 — Request for Proposal
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<section id="sketch3" class="tab-panel">
+  <h2 class="sketch-title">Research — Request for Proposal</h2>
+  <p class="sketch-subtitle">Problem 4: MM applicability across the broader range of IB schools is not established.</p>
+
+  <div class="rfp-document">
+    <div class="rfp-border-top rfp-border-bottom">
+      <h2>Request for Proposal:<br />Scoping Study on Melbourne Metrics Applicability Across Diverse IB School Contexts</h2>
+    </div>
+
+    <h3>1. Background</h3>
+    <p>Melbourne Metrics (MM) is a framework for evidencing complex student competencies developed through a partnership between the IB and the University of Melbourne. To date, the framework has been tested in a cohort of 28 schools. These schools are predominantly well-resourced, English-medium institutions. Before the IB can consider broader adoption of MM, it needs to understand whether the framework is applicable, adaptable, or viable across the full range of IB World Schools, including schools with different resourcing levels, languages of instruction, and regulatory environments.</p>
+
+    <h3>2. Research Questions</h3>
+    <ol>
+      <li><strong>RQ1:</strong> In what school contexts does MM work well with minimal adaptation?</li>
+      <li><strong>RQ2:</strong> In what contexts does MM require significant adaptation, and what form would those adaptations take?</li>
+      <li><strong>RQ3:</strong> Are there school contexts where MM is unlikely to be viable, and what are the defining characteristics of those contexts?</li>
+    </ol>
+
+    <h3>3. Sample Requirements</h3>
+    <ul>
+      <li>Minimum 10 schools across at least 3 IB regions</li>
+      <li>Must include: schools with annual fees below USD 5,000</li>
+      <li>Must include: government-funded or government-assisted schools</li>
+      <li>Must include: schools where the primary language of instruction is not English</li>
+      <li>Must include: schools not in the current 28-school MM cohort</li>
+      <li>Desirable: range of programme levels (PYP, MYP, DP)</li>
+    </ul>
+
+    <h3>4. Methodology</h3>
+    <p>The study should employ mixed methods, including classroom observation, teacher interviews, and document analysis of MM evidence portfolios. Proposals should specify their methodological approach and justify their design choices.</p>
+
+    <h3>5. Deliverables</h3>
+    <ul>
+      <li>Interim report (6 months from contract signature)</li>
+      <li>Final report with recommendations</li>
+      <li>Anonymised data set</li>
+      <li>Executive summary for the IB Board</li>
+    </ul>
+
+    <h3>6. Timeline</h3>
+    <p>12–18 months from contract signature.</p>
+
+    <h3>7. Budget</h3>
+    <p>Proposals should include a detailed budget. Indicative range: USD 80,000–150,000.</p>
+
+    <h3>8. Submission</h3>
+    <p>Proposals due [date TBC]. Contact: [TBC].</p>
+  </div>
+
+  <!-- What this addresses -->
+  <div class="addresses-box">
+    <strong>What this addresses:</strong> Responds to Problem 4. MM has been tested primarily in middle-class school contexts. This sketch produces a procurement-ready artefact that the IB can use to commission a scoping study investigating applicability across the broader range of IB schools.
+  </div>
+
+  <!-- Feedback prompts -->
+  <div class="feedback-prompts">
+    <h4>Feedback prompts</h4>
+    <ul>
+      <li>Does this sketch address the problem statement?</li>
+      <li>What would you change?</li>
+      <li>What is missing?</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     SKETCH 4 — MM-Integrated Unit Planner
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<section id="sketch4" class="tab-panel">
+  <h2 class="sketch-title">Curriculum Development — MM-Integrated Unit Planner</h2>
+  <p class="sketch-subtitle">Problem 1: Evidencing complex competencies is time-intensive for teachers.</p>
+
+  <!-- Planner header -->
+  <div class="planner-header-bar">
+    <div class="ph-item"><strong>Subject:</strong> Economics (DP)</div>
+    <div class="ph-item"><strong>Unit:</strong> Market Failure</div>
+    <div class="ph-item"><strong>Duration:</strong> 6 weeks</div>
+    <div class="ph-item"><strong>Teacher:</strong> M. Chen</div>
+  </div>
+
+  <!-- Legend -->
+  <div class="mm-legend">
+    <span class="swatch"></span> Shaded columns = new MM additions to existing planner structure
+  </div>
+
+  <!-- Planner table -->
+  <div class="planner-table-wrap">
+    <table class="planner-table">
+      <thead>
+        <tr>
+          <th>Inquiry Question</th>
+          <th>Content / Topic</th>
+          <th>ATL Skills</th>
+          <th>Assessment Task</th>
+          <th>IB Command Terms</th>
+          <th class="mm-col">MM Competency Descriptors Evidenced</th>
+          <th class="mm-col">Evidence Form</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Why do markets fail to allocate resources efficiently?</td>
+          <td>Externalities — positive and negative</td>
+          <td>Critical thinking, Research</td>
+          <td>Written analysis of a local externality using real data</td>
+          <td>Examine, Evaluate</td>
+          <td class="mm-col">Thinks critically, evaluating evidence and reasoning to form well-supported conclusions</td>
+          <td class="mm-col">Written (submitted task)</td>
+        </tr>
+        <tr>
+          <td>Who should bear the cost of market failure?</td>
+          <td>Government intervention — taxes, subsidies, regulation</td>
+          <td>Communication, Social</td>
+          <td>Group policy debate with position paper</td>
+          <td>Discuss, Compare</td>
+          <td class="mm-col">Communicates ideas clearly and adapts communication to audience and purpose; Collaborates effectively, contributing to group goals</td>
+          <td class="mm-col">Oral (observed) + Written (position paper)</td>
+        </tr>
+        <tr>
+          <td>How do we measure what markets cannot price?</td>
+          <td>Common pool resources and sustainability</td>
+          <td>Transfer, Self-management</td>
+          <td>Individual research report on a common pool resource problem in a different national context</td>
+          <td>Analyse, To what extent</td>
+          <td class="mm-col">Applies learning to unfamiliar contexts, transferring understanding across situations; Demonstrates self-management, setting goals and reflecting on own learning</td>
+          <td class="mm-col">Written (submitted task)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- What this addresses -->
+  <div class="addresses-box">
+    <strong>What this addresses:</strong> Responds to Problem 1. The MM evidence columns are added to planning that teachers already do. There is no separate evidence-gathering step. This approach shows curriculum reviewers how to embed MM into subject specifications so that competency evidence arises naturally from existing assessment tasks.
+  </div>
+
+  <!-- Feedback prompts -->
+  <div class="feedback-prompts">
+    <h4>Feedback prompts</h4>
+    <ul>
+      <li>Does this sketch address the problem statement?</li>
+      <li>What would you change?</li>
+      <li>What is missing?</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     SKETCH 5 — Wellbeing Dashboard
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<section id="sketch5" class="tab-panel">
+  <h2 class="sketch-title">Research (Wellbeing) — Wellbeing Dashboard</h2>
+  <p class="sketch-subtitle">Problem 2: MM adds to teacher workload, raising questions about sustainability.</p>
+
+  <!-- Alert banner -->
+  <div class="dashboard-alert">
+    &#9888; Amber alert: Time on MM Activities has exceeded 5 hrs/week for 2 consecutive collection points
+  </div>
+
+  <!-- School selector -->
+  <div class="school-selector">
+    <label for="schoolSelect"><strong>School:</strong></label>
+    <select id="schoolSelect">
+      <option selected>Greenfield International School</option>
+    </select>
+  </div>
+
+  <!-- Dashboard panels -->
+  <div class="dashboard-grid">
+
+    <!-- Panel 1: Time on MM Activities -->
+    <div class="dash-panel full-width">
+      <h3>Time on MM Activities (hours/week) — rolling weekly average</h3>
+      <canvas id="chartTime" height="90"></canvas>
+    </div>
+
+    <!-- Panel 2: Perceived Workload Burden -->
+    <div class="dash-panel">
+      <h3>Perceived Workload Burden (termly)</h3>
+      <canvas id="chartWorkload" height="160"></canvas>
+    </div>
+
+    <!-- Panel 3: Teacher Wellbeing Index -->
+    <div class="dash-panel">
+      <h3>Teacher Wellbeing Index (termly)</h3>
+      <p style="font-size:.8rem;color:#71717a;margin-bottom:8px;">Aligned to IB Wellbeing Measurement Platform</p>
+      <canvas id="chartWellbeing" height="160"></canvas>
+    </div>
+
+  </div>
+
+  <!-- What this addresses -->
+  <div class="addresses-box">
+    <strong>What this addresses:</strong> Responds to Problem 2. This dashboard provides an early warning system for unsustainable MM implementation by tracking time spent, perceived workload, and teacher wellbeing over time. Amber and red thresholds trigger alerts before workload becomes unsustainable. The design feeds into the IB's broader wellbeing measurement platform work.
+  </div>
+
+  <!-- Feedback prompts -->
+  <div class="feedback-prompts">
+    <h4>Feedback prompts</h4>
+    <ul>
+      <li>Does this sketch address the problem statement?</li>
+      <li>What would you change?</li>
+      <li>What is missing?</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<!-- ========== FOOTER ========== -->
+<footer>
+  <div class="container">
+    Melbourne Metrics — Prototype Sketches &middot; Learning Lab, April 2026 &middot; Internal use only
+  </div>
+</footer>
+
+<!-- Local script -->
+<script src="app.js"></script>
+
+</body>
+</html>
