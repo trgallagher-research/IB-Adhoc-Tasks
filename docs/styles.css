@@ -1,10 +1,9 @@
 /* ===================================================
    Melbourne Metrics — Prototype Sketches
-   Static site styles. Open Sans from Google Fonts CDN.
-   Single scrollable page, problem tiles as TOC.
+   Tile-landing + per-problem views. One prototype
+   at a time. Open Sans from Google Fonts CDN.
    =================================================== */
 
-/* --- Reset & base --- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -41,17 +40,16 @@ body {
   min-height: 100vh;
 }
 
-/* --- Layout --- */
 .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
 
 /* --- Header --- */
 header {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 32px 0 24px;
+  padding: 28px 0 22px;
 }
 header h1 {
-  font-size: 1.65rem;
+  font-size: 1.6rem;
   font-weight: 700;
   letter-spacing: -.02em;
   color: var(--text);
@@ -60,12 +58,12 @@ header h1 span { color: var(--accent); }
 
 /* --- Collapsible methodology note --- */
 .methodology {
-  margin-top: 20px;
+  margin-top: 16px;
 }
 .methodology summary {
   cursor: pointer;
   font-weight: 600;
-  font-size: .95rem;
+  font-size: .92rem;
   color: var(--accent);
   list-style: none;
   display: flex;
@@ -85,35 +83,46 @@ header h1 span { color: var(--accent); }
   background: var(--bg);
   border-left: 3px solid var(--accent);
   border-radius: var(--radius);
-  font-size: .9rem;
+  font-size: .88rem;
   color: var(--text-muted);
-  line-height: 1.7;
+  line-height: 1.65;
 }
 
 /* --- Global caveat banner --- */
 .global-caveat {
-  margin-top: 20px;
-  padding: 14px 18px;
+  margin-top: 16px;
+  padding: 12px 16px;
   background: var(--caveat-bg);
   border: 1px solid var(--caveat-border);
   border-radius: var(--radius);
-  font-size: .88rem;
-  line-height: 1.55;
+  font-size: .86rem;
+  line-height: 1.5;
   color: #78350f;
 }
 .global-caveat strong { color: #78350f; }
 
-/* --- Problem tiles as TOC --- */
+/* ===================================================
+   VIEW SYSTEM
+   Only one view is visible at a time.
+   =================================================== */
+.view {
+  display: none;
+  padding: 40px 0 48px;
+}
+.view.view-active {
+  display: block;
+}
+
+/* --- Landing view: tiles --- */
 .toc-intro {
-  font-size: .92rem;
+  font-size: 1rem;
   color: var(--text-muted);
-  margin: 32px 0 16px;
+  margin: 0 0 20px;
 }
 .problem-tiles {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 40px;
+  gap: 18px;
 }
 @media (max-width: 768px) {
   .problem-tiles { grid-template-columns: 1fr; }
@@ -122,7 +131,7 @@ header h1 span { color: var(--accent); }
   display: flex;
   flex-direction: column;
   text-align: left;
-  padding: 22px 24px;
+  padding: 24px 26px;
   background: var(--surface);
   border: 2px solid var(--border);
   border-radius: var(--radius);
@@ -162,46 +171,76 @@ header h1 span { color: var(--accent); }
 .problem-tile .tile-sketches {
   font-size: .82rem;
   color: var(--accent);
-  padding-top: 10px;
+  padding-top: 12px;
   border-top: 1px solid var(--border);
   font-weight: 600;
 }
 
-/* --- Sketch sections --- */
-.sketch-section {
-  padding: 48px 0;
-  border-top: 1px solid var(--border);
-  scroll-margin-top: 24px;
-}
-.sketch-section:first-of-type { border-top: none; }
-
-/* --- Problem header (always visible on each sketch) --- */
-.problem-header {
-  padding: 14px 18px;
-  background: var(--accent-light);
-  border-left: 4px solid var(--accent);
+/* --- Back link at top of a problem view --- */
+.back-link {
+  display: inline-block;
+  margin-bottom: 18px;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 6px 12px;
   border-radius: 4px;
-  margin-bottom: 20px;
+  transition: background .15s;
 }
-.problem-header .banner-label {
-  font-size: .78rem;
+.back-link:hover { background: var(--accent-light); }
+
+/* --- Problem hero (prominent header inside a problem view) --- */
+.problem-hero {
+  padding: 24px 28px;
+  background: var(--surface);
+  border-left: 5px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 32px;
+}
+.problem-hero .hero-label {
+  font-size: .82rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .05em;
   color: var(--accent);
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
-.problem-header .banner-text {
-  font-size: .92rem;
-  color: var(--text);
+.problem-hero .hero-text {
+  font-size: 1.12rem;
   line-height: 1.5;
+  color: var(--text);
+  font-weight: 600;
+}
+.problem-hero .hero-framing {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: .9rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+.problem-hero .hero-framing strong {
+  color: var(--text);
+  font-weight: 600;
 }
 
-/* --- Sketch title and per-sketch caveat --- */
+/* --- Sketch block (each sketch inside a view) --- */
+.sketch-block {
+  margin-bottom: 48px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--border);
+}
+.sketch-block:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
 .sketch-title {
-  font-size: 1.35rem;
+  font-size: 1.3rem;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 .sketch-caveat {
   padding: 10px 14px;
@@ -210,13 +249,13 @@ header h1 span { color: var(--accent); }
   border-radius: 4px;
   font-size: .82rem;
   color: #78350f;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
   line-height: 1.55;
 }
 
 /* --- "What this addresses" box --- */
 .addresses-box {
-  margin-top: 36px;
+  margin-top: 32px;
   padding: 18px 22px;
   background: var(--accent-light);
   border-radius: var(--radius);
@@ -234,12 +273,7 @@ header h1 span { color: var(--accent); }
 /* ============================================
    Sketch 1 — Micro-Credential Stack
    ============================================ */
-
-.tier-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
+.tier-stack { display: flex; flex-direction: column; gap: 20px; }
 .tier {
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -309,13 +343,11 @@ header h1 span { color: var(--accent); }
   color: var(--accent);
   font-weight: 600;
   font-size: .88rem;
-  padding: 6px 0;
+  padding: 4px 0;
 }
 .pathway-arrow .arrow { font-size: 1.2rem; }
 
-.pricing-wrap {
-  margin-top: 28px;
-}
+.pricing-wrap { margin-top: 28px; }
 .pricing-caveat {
   display: inline-block;
   padding: 4px 10px;
@@ -337,15 +369,9 @@ header h1 span { color: var(--accent); }
   border: 1px solid var(--border);
   text-align: left;
 }
-.pricing-table th {
-  background: var(--bg);
-  font-weight: 600;
-}
+.pricing-table th { background: var(--bg); font-weight: 600; }
 .pricing-table em {
-  font-style: normal;
-  font-weight: 600;
-  color: var(--amber);
-  font-size: .78rem;
+  font-style: normal; font-weight: 600; color: var(--amber); font-size: .78rem;
 }
 
 /* ============================================
@@ -374,12 +400,12 @@ header h1 span { color: var(--accent); }
 }
 .form-field label {
   display: block;
-  font-size: .78rem;
+  font-size: .76rem;
   font-weight: 600;
   color: var(--text-muted);
   margin-bottom: 4px;
   text-transform: uppercase;
-  letter-spacing: .03em;
+  letter-spacing: .04em;
 }
 .form-field .field-input {
   width: 100%;
@@ -392,7 +418,7 @@ header h1 span { color: var(--accent); }
 }
 .form-field .field-input.sig { font-style: italic; color: #a1a1aa; }
 
-/* Assessor tabs inside form */
+/* Assessor tabs */
 .assessor-tabs {
   display: flex;
   gap: 0;
@@ -417,11 +443,9 @@ header h1 span { color: var(--accent); }
 }
 
 /* Competency rows */
-.competency-rows {
-  padding: 8px 0;
-}
+.competency-rows { padding: 4px 0; }
 .competency-row {
-  padding: 20px 22px;
+  padding: 22px 22px;
   border-bottom: 1px solid var(--border);
 }
 .competency-row:last-child { border-bottom: none; }
@@ -451,15 +475,16 @@ header h1 span { color: var(--accent); }
   .comp-body { grid-template-columns: 1fr; }
 }
 
-.evidence-col label,
-.level-col label {
-  display: block;
-  font-size: .78rem;
+/* Column label (section heading inside evidence-col / level-col).
+   NOTE: this is a <div>, not a <label>, so the form-field label
+   uppercase rule does not apply. */
+.col-label {
+  font-size: .76rem;
   font-weight: 600;
   color: var(--text-muted);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   text-transform: uppercase;
-  letter-spacing: .03em;
+  letter-spacing: .04em;
 }
 
 .evidence-textarea {
@@ -468,7 +493,7 @@ header h1 span { color: var(--accent); }
   padding: 10px;
   border: 1px solid var(--border);
   border-radius: 4px;
-  font-size: .85rem;
+  font-size: .88rem;
   background: var(--bg);
   resize: vertical;
   font-family: inherit;
@@ -476,44 +501,55 @@ header h1 span { color: var(--accent); }
   line-height: 1.5;
 }
 
-/* Level radios — 7 vertical options with nutshell text */
+/* Level radios (7 options per competency) --- FIXED LAYOUT --- */
 .level-radios {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
   border: 1px solid var(--border);
   border-radius: 4px;
-  padding: 8px 10px;
+  padding: 6px;
   background: var(--bg);
 }
 .level-radio {
-  display: grid;
-  grid-template-columns: auto 28px 1fr;
+  display: flex;
   align-items: flex-start;
-  gap: 8px;
-  padding: 6px 4px;
-  border-radius: 3px;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 4px;
   cursor: pointer;
   transition: background .12s;
+  /* Force no text-transform — overrides any inherited rule */
+  text-transform: none;
+  letter-spacing: 0;
+}
+.level-radio + .level-radio {
+  border-top: 1px solid var(--border);
 }
 .level-radio:hover {
   background: rgba(29,78,216,.06);
 }
-.level-radio input {
-  margin-top: 3px;
+.level-radio input[type="radio"] {
+  margin-top: 4px;
+  flex-shrink: 0;
   accent-color: var(--accent);
   cursor: pointer;
 }
 .level-radio .lv {
+  flex-shrink: 0;
+  display: inline-block;
+  min-width: 22px;
   font-weight: 700;
   color: var(--accent);
-  font-size: .88rem;
-  line-height: 1.45;
+  font-size: .92rem;
+  line-height: 1.5;
+  text-align: center;
 }
 .level-radio .nut {
-  font-size: .82rem;
-  line-height: 1.45;
+  flex: 1;
+  font-size: .85rem;
+  line-height: 1.5;
   color: var(--text);
+  font-weight: 400;
+  /* Explicitly normal case */
+  text-transform: none;
 }
 
 .form-footer {
@@ -524,9 +560,7 @@ header h1 span { color: var(--accent); }
   gap: 14px;
   background: var(--bg);
 }
-.form-footer .full-width {
-  grid-column: 1 / -1;
-}
+.form-footer .full-width { grid-column: 1 / -1; }
 
 /* ============================================
    Sketch 3 — RFP Document
@@ -558,8 +592,7 @@ header h1 span { color: var(--accent); }
 }
 .rfp-document p { margin-bottom: 12px; }
 .rfp-document ul, .rfp-document ol {
-  padding-left: 22px;
-  margin-bottom: 12px;
+  padding-left: 22px; margin-bottom: 12px;
 }
 .rfp-document li { margin-bottom: 6px; }
 .rfp-document .rfp-border-top {
@@ -629,9 +662,7 @@ header h1 span { color: var(--accent); }
   vertical-align: top;
   background: var(--surface);
 }
-.planner-table td.mm-col {
-  background: var(--mm-highlight);
-}
+.planner-table td.mm-col { background: var(--mm-highlight); }
 
 .mm-legend {
   display: inline-flex;
@@ -648,7 +679,6 @@ header h1 span { color: var(--accent); }
   border-radius: 3px;
 }
 
-/* Flow diagram: planner → activity → Ruby */
 .flow-diagram {
   display: flex;
   align-items: stretch;
@@ -706,8 +736,6 @@ header h1 span { color: var(--accent); }
 /* ============================================
    Sketch 5 — Wellbeing Dashboard
    ============================================ */
-
-/* Data sources strip */
 .data-sources-strip {
   padding: 18px 22px;
   background: var(--surface);
@@ -716,17 +744,11 @@ header h1 span { color: var(--accent); }
   margin-bottom: 20px;
   font-size: .88rem;
 }
-.data-sources-strip strong {
-  color: var(--accent);
-}
+.data-sources-strip strong { color: var(--accent); }
 .data-sources-strip ul {
-  margin: 10px 0 10px 4px;
-  padding-left: 18px;
+  margin: 10px 0 10px 4px; padding-left: 18px;
 }
-.data-sources-strip li {
-  margin-bottom: 6px;
-  line-height: 1.55;
-}
+.data-sources-strip li { margin-bottom: 6px; line-height: 1.55; }
 .data-sources-strip .no-individual {
   margin-top: 8px;
   padding-top: 10px;
@@ -754,11 +776,7 @@ header h1 span { color: var(--accent); }
   margin-bottom: 24px;
   font-size: .9rem;
 }
-.control-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+.control-item { display: flex; align-items: center; gap: 10px; }
 .dashboard-controls select,
 .dashboard-controls .field-input {
   padding: 8px 14px;
@@ -786,10 +804,7 @@ header h1 span { color: var(--accent); }
   box-shadow: var(--shadow);
 }
 .dash-panel.full-width { grid-column: 1 / -1; }
-.dash-panel h3 {
-  font-size: .98rem;
-  margin-bottom: 4px;
-}
+.dash-panel h3 { font-size: .98rem; margin-bottom: 4px; }
 .dash-panel .panel-sub {
   font-size: .8rem;
   color: var(--text-muted);
@@ -801,11 +816,11 @@ header h1 span { color: var(--accent); }
 /* --- Footer --- */
 footer {
   text-align: center;
-  padding: 32px 0;
+  padding: 28px 0;
   font-size: .82rem;
   color: var(--text-muted);
   border-top: 1px solid var(--border);
-  margin-top: 48px;
+  margin-top: 32px;
 }
 
 /* --- Responsive --- */
