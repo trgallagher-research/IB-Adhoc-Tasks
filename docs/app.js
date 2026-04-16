@@ -8,6 +8,118 @@
 document.addEventListener('DOMContentLoaded', function () {
 
   /* -------------------------------------------------
+     0. View toggle: "Browse by problem" vs "Browse all sketches"
+     ------------------------------------------------- */
+  var viewButtons = document.querySelectorAll('.view-btn');
+  var problemsView = document.getElementById('problemsView');
+  var sketchesView = document.getElementById('sketchesView');
+  var mainContent = document.querySelector('main.container');
+  var currentView = 'problems'; // track which view is active
+
+  viewButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      viewButtons.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentView = btn.dataset.view;
+
+      if (currentView === 'problems') {
+        // Show problem tiles, hide tab nav, hide all sketch panels
+        problemsView.style.display = '';
+        sketchesView.style.display = 'none';
+        hidePanels();
+        hideBanners();
+      } else {
+        // Show tab nav with problem cards, hide problem tiles
+        problemsView.style.display = 'none';
+        sketchesView.style.display = '';
+        hideBanners();
+        // Activate the first tab by default
+        activateTab('sketch1');
+      }
+    });
+  });
+
+  /* Helper: hide all panels */
+  function hidePanels() {
+    tabPanels.forEach(function (p) { p.classList.remove('active'); });
+    tabButtons.forEach(function (b) { b.classList.remove('active'); });
+  }
+
+  /* Helper: hide all problem banners */
+  function hideBanners() {
+    document.querySelectorAll('.problem-banner').forEach(function (b) {
+      b.style.display = 'none';
+    });
+  }
+
+  /* Helper: activate a specific tab */
+  function activateTab(tabId) {
+    tabButtons.forEach(function (b) { b.classList.remove('active'); });
+    tabPanels.forEach(function (p) { p.classList.remove('active'); });
+    var target = document.getElementById(tabId);
+    if (target) {
+      target.classList.add('active');
+    }
+    // Highlight matching tab button
+    tabButtons.forEach(function (b) {
+      if (b.dataset.tab === tabId) { b.classList.add('active'); }
+    });
+    // Init charts if needed
+    if (tabId === 'sketch5' && !chartsInitialised) {
+      initDashboardCharts();
+      chartsInitialised = true;
+    }
+  }
+
+  /* -------------------------------------------------
+     0b. Problem tile clicks
+     ------------------------------------------------- */
+  var problemTiles = document.querySelectorAll('.problem-tile');
+
+  problemTiles.forEach(function (tile) {
+    tile.addEventListener('click', function () {
+      var sketchIds = tile.dataset.sketches.split(',');
+      var problemNum = tile.dataset.problem;
+
+      // Hide problem tiles view, show sketches view
+      problemsView.style.display = 'none';
+      sketchesView.style.display = '';
+
+      // Update the view toggle button state
+      viewButtons.forEach(function (b) { b.classList.remove('active'); });
+      viewButtons.forEach(function (b) {
+        if (b.dataset.view === 'sketches') { b.classList.add('active'); }
+      });
+      currentView = 'sketches';
+
+      // Activate the first matching sketch
+      activateTab(sketchIds[0]);
+
+      // Show problem banners on matching sketches
+      hideBanners();
+      sketchIds.forEach(function (sid) {
+        var panel = document.getElementById(sid);
+        if (panel) {
+          var banner = panel.querySelector('.problem-banner');
+          if (banner) { banner.style.display = ''; }
+        }
+      });
+
+      // If multiple sketches for this problem, highlight their tab buttons
+      tabButtons.forEach(function (b) {
+        if (sketchIds.indexOf(b.dataset.tab) !== -1) {
+          b.classList.add('problem-match');
+        } else {
+          b.classList.remove('problem-match');
+        }
+      });
+
+      // Scroll to the sketches area
+      sketchesView.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  /* -------------------------------------------------
      1. Main sketch tab navigation
      ------------------------------------------------- */
   var tabButtons = document.querySelectorAll('.tab-btn');
@@ -24,6 +136,10 @@ document.addEventListener('DOMContentLoaded', function () {
       if (target) {
         target.classList.add('active');
       }
+      // Hide banners when manually switching tabs
+      hideBanners();
+      // Remove problem-match highlights
+      tabButtons.forEach(function (b) { b.classList.remove('problem-match'); });
       // Initialise charts if switching to sketch 5 for the first time
       if (btn.dataset.tab === 'sketch5' && !chartsInitialised) {
         initDashboardCharts();

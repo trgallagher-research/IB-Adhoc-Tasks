@@ -35,18 +35,54 @@
   </div>
 </header>
 
-<!-- ========== PROBLEM STATEMENTS ========== -->
+<!-- ========== VIEW TOGGLE ========== -->
 <section class="container">
+  <div class="view-toggle">
+    <button class="view-btn active" data-view="problems">Browse by problem</button>
+    <button class="view-btn" data-view="sketches">Browse all sketches</button>
+  </div>
+</section>
+
+<!-- ========== BROWSE BY PROBLEM ========== -->
+<section class="container" id="problemsView">
+  <p class="view-intro">Select a problem statement to see the prototype sketch(es) that respond to it.</p>
+  <div class="problem-tiles">
+
+    <button class="problem-tile" data-problem="1" data-sketches="sketch2,sketch4">
+      <div class="tile-num">Problem 1</div>
+      <div class="tile-text">Using MM to evidence complex competencies is time-intensive for teachers, which limits how often and consistently it can be done.</div>
+      <div class="tile-sketches">Sketch 2: Exhibition Review Form &middot; Sketch 4: Unit Planner</div>
+    </button>
+
+    <button class="problem-tile" data-problem="2" data-sketches="sketch5">
+      <div class="tile-num">Problem 2</div>
+      <div class="tile-text">MM adds to teacher workload in a context of wider pressure on teacher wellbeing, raising questions about sustainability of use.</div>
+      <div class="tile-sketches">Sketch 5: Wellbeing Dashboard</div>
+    </button>
+
+    <button class="problem-tile" data-problem="3" data-sketches="sketch1">
+      <div class="tile-num">Problem 3</div>
+      <div class="tile-text">Using MM well requires professional learning that IB does not currently provide, leaving schools to develop capability on their own.</div>
+      <div class="tile-sketches">Sketch 1: Micro-Credential Stack</div>
+    </button>
+
+    <button class="problem-tile" data-problem="4" data-sketches="sketch3">
+      <div class="tile-num">Problem 4</div>
+      <div class="tile-text">MM has been tested primarily in middle-class school contexts, so its applicability across the broader range of IB schools is not established.</div>
+      <div class="tile-sketches">Sketch 3: Request for Proposal</div>
+    </button>
+
+  </div>
+</section>
+
+<!-- ========== TAB NAVIGATION (Browse All Sketches) ========== -->
+<nav class="container" id="sketchesView" style="display:none;">
   <div class="problems-strip">
     <div class="problem-card"><span class="num">1</span>Using MM to evidence complex competencies is time-intensive for teachers, which limits how often and consistently it can be done.</div>
     <div class="problem-card"><span class="num">2</span>MM adds to teacher workload in a context of wider pressure on teacher wellbeing, raising questions about sustainability of use.</div>
     <div class="problem-card"><span class="num">3</span>Using MM well requires professional learning that IB does not currently provide, leaving schools to develop capability on their own.</div>
     <div class="problem-card"><span class="num">4</span>MM has been tested primarily in middle-class school contexts, so its applicability across the broader range of IB schools is not established.</div>
   </div>
-</section>
-
-<!-- ========== TAB NAVIGATION ========== -->
-<nav class="container">
   <div class="tab-nav">
     <button class="tab-btn active" data-tab="sketch1">Sketch 1 — Micro-Credential Stack</button>
     <button class="tab-btn" data-tab="sketch2">Sketch 2 — Exhibition Review Form</button>
@@ -62,7 +98,11 @@
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      SKETCH 1 — Micro-Credential Stack
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-<section id="sketch1" class="tab-panel active">
+<section id="sketch1" class="tab-panel active" data-problem="3">
+  <div class="problem-banner" style="display:none;">
+    <div><div class="banner-label">Responding to</div><span class="banner-num">3</span></div>
+    <div class="banner-text">Using MM well requires professional learning that IB does not currently provide, leaving schools to develop capability on their own.</div>
+  </div>
   <h2 class="sketch-title">EDD — Micro-Credential Stack</h2>
   <p class="sketch-subtitle">Problem 3: Schools currently develop MM capability on their own with no IB professional learning offer.</p>
 
@@ -196,7 +236,11 @@
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      SKETCH 2 — Exhibition Review Form
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-<section id="sketch2" class="tab-panel">
+<section id="sketch2" class="tab-panel" data-problem="1">
+  <div class="problem-banner" style="display:none;">
+    <div><div class="banner-label">Responding to</div><span class="banner-num">1</span></div>
+    <div class="banner-text">Using MM to evidence complex competencies is time-intensive for teachers, which limits how often and consistently it can be done.</div>
+  </div>
   <h2 class="sketch-title">Core &amp; Coherence — MM Exhibition Review Form</h2>
   <p class="sketch-subtitle">Problem 1: Evidencing complex competencies is time-intensive for teachers.</p>
 
@@ -355,7 +399,11 @@
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      SKETCH 3 — Request for Proposal
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-<section id="sketch3" class="tab-panel">
+<section id="sketch3" class="tab-panel" data-problem="4">
+  <div class="problem-banner" style="display:none;">
+    <div><div class="banner-label">Responding to</div><span class="banner-num">4</span></div>
+    <div class="banner-text">MM has been tested primarily in middle-class school contexts, so its applicability across the broader range of IB schools is not established.</div>
+  </div>
   <h2 class="sketch-title">Research — Request for Proposal</h2>
   <p class="sketch-subtitle">Problem 4: MM applicability across the broader range of IB schools is not established.</p>
 
@@ -424,7 +472,11 @@
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      SKETCH 4 — MM-Integrated Unit Planner
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-<section id="sketch4" class="tab-panel">
+<section id="sketch4" class="tab-panel" data-problem="1">
+  <div class="problem-banner" style="display:none;">
+    <div><div class="banner-label">Responding to</div><span class="banner-num">1</span></div>
+    <div class="banner-text">Using MM to evidence complex competencies is time-intensive for teachers, which limits how often and consistently it can be done.</div>
+  </div>
   <h2 class="sketch-title">Curriculum Development — MM-Integrated Unit Planner</h2>
   <p class="sketch-subtitle">Problem 1: Evidencing complex competencies is time-intensive for teachers.</p>
 
@@ -506,7 +558,11 @@
 <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      SKETCH 5 — Wellbeing Dashboard
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-<section id="sketch5" class="tab-panel">
+<section id="sketch5" class="tab-panel" data-problem="2">
+  <div class="problem-banner" style="display:none;">
+    <div><div class="banner-label">Responding to</div><span class="banner-num">2</span></div>
+    <div class="banner-text">MM adds to teacher workload in a context of wider pressure on teacher wellbeing, raising questions about sustainability of use.</div>
+  </div>
   <h2 class="sketch-title">Research (Wellbeing) — Wellbeing Dashboard</h2>
   <p class="sketch-subtitle">Problem 2: MM adds to teacher workload, raising questions about sustainability.</p>
 
