@@ -113,12 +113,18 @@ header h1 span { color: var(--accent); }
   display: block;
 }
 
-/* --- Landing view: tiles --- */
-.toc-intro {
-  font-size: 1rem;
-  color: var(--text-muted);
-  margin: 0 0 20px;
+/* --- Landing view: "About this page" callout --- */
+.how-to-use {
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: .92rem;
+  line-height: 1.55;
+  margin: 0 0 24px;
+  color: var(--text);
 }
+.how-to-use strong { color: var(--accent); }
 .problem-tiles {
   display: grid;
   grid-template-columns: 1fr 1fr;
