@@ -140,8 +140,9 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true,
+        maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 18, padding: 12, font: { size: 12 } } } },
         scales: {
           y: { min: 0, max: 20, title: { display: true, text: 'Evidence items per teacher per month' } }
         }
@@ -163,8 +164,9 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true,
+        maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 18, padding: 12, font: { size: 12 } } } },
         scales: {
           y: { min: 1, max: 5, title: { display: true, text: 'Likert (1 none → 5 very heavy)' } }
         }
@@ -186,12 +188,13 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true,
+        maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
         scales: {
           y: { min: 1, max: 5, title: { display: true, text: 'Likert (1 very manageable → 5 unsustainable)' } }
         },
         plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 18, padding: 12, font: { size: 12 } } },
           annotation: {
             annotations: {
               amber: {
@@ -225,12 +228,13 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true,
+        maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
         scales: {
           y: { min: 30, max: 100, title: { display: true, text: 'WHO-5 Wellbeing Index (0–100)' } }
         },
         plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 18, padding: 12, font: { size: 12 } } },
           annotation: {
             annotations: {
               who5Threshold: {
