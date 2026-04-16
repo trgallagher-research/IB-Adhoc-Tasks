@@ -1,13 +1,43 @@
 # IB Adhoc Tasks
 
-Public repo hosting the Melbourne Metrics prototype sketches site via GitHub Pages.
+Private repo containing the Melbourne Metrics prototype sketches site.
 
-## Site
+## Running the site locally (for walkthroughs)
 
-**Live site:** https://trgallagher-research.github.io/IB-Adhoc-Tasks/
+The site is a static HTML/CSS/JS page. To show it during a walkthrough, run a local HTTP server from the `docs/` folder.
 
-Source lives in `docs/` and is served directly by Pages from the `master` branch.
+### One-time setup
+
+None. Python 3 is already installed.
+
+### Each session
+
+Open a terminal, then:
+
+```bash
+cd C:/Users/trgal/IB-Adhoc-Tasks/docs && python -m http.server 8000
+```
+
+Open this URL in your browser:
+
+```
+http://localhost:8000
+```
+
+Leave the terminal running during the walkthrough. Press `Ctrl+C` in the terminal to stop the server when you're done.
+
+### Why a local server and not just opening index.html?
+
+A couple of interactions (tile-based view routing, Chart.js dashboard) work more reliably over HTTP than from `file://`. `python -m http.server` is built into Python, no install needed.
+
+### If port 8000 is already in use
+
+Use a different port, e.g. `python -m http.server 8080`, then visit `http://localhost:8080`.
 
 ## Folders
 
-- **`docs/`** — static site (HTML, CSS, JS). Deployed automatically on push.
+- **`docs/`** — static site (HTML, CSS, JS).
+
+## Related
+
+- **Private content:** https://github.com/trgallagher-research/Melbourne-Metrics (walkthrough script, Miro board builder)
