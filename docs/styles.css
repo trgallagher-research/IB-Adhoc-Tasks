@@ -387,7 +387,139 @@ header h1 span { color: var(--accent); }
 }
 
 /* ============================================
-   Sketch 2 — Exhibition Review Form
+   Competency Crumbs — Formative Assessment
+   ============================================ */
+
+/* Concept cards (three-step summary) */
+.crumbs-concept { margin-bottom: 8px; }
+.concept-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+@media (max-width: 768px) {
+  .concept-row { grid-template-columns: 1fr; }
+}
+.concept-card {
+  padding: 20px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  position: relative;
+}
+.concept-num {
+  position: absolute;
+  top: -10px;
+  left: 14px;
+  background: var(--accent);
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+.concept-title {
+  font-size: .98rem;
+  font-weight: 700;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.concept-body {
+  font-size: .88rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+.concept-target {
+  padding: 12px 16px;
+  background: var(--green-bg);
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius);
+  font-size: .9rem;
+  color: #166534;
+}
+
+/* Crumb entry form */
+.crumb-entry {
+  border-top: 1px solid var(--border);
+  padding-top: 0;
+}
+.crumb-label {
+  padding: 14px 18px 0;
+  font-size: .82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--accent);
+}
+.crumb-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+  padding: 14px 18px;
+}
+@media (max-width: 768px) {
+  .crumb-fields { grid-template-columns: 1fr; }
+}
+.crumb-field label {
+  display: block;
+  font-size: .76rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.crumb-field .field-input,
+.crumb-field select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: .88rem;
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+}
+.crumb-field.full-width { grid-column: 1 / -1; }
+
+/* Evidence log table */
+.crumbs-log {
+  border-top: 1px solid var(--border);
+}
+.log-label {
+  padding: 14px 18px 8px;
+  font-size: .82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--text-muted);
+}
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .86rem;
+}
+.log-table th {
+  background: var(--bg);
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: .8rem;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  border-bottom: 1px solid var(--border);
+}
+.log-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+/* ============================================
+   Exhibition Review Form (retained for reference)
    ============================================ */
 .form-mockup {
   background: var(--surface);

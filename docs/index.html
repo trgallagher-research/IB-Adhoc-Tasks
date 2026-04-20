@@ -86,321 +86,230 @@
   <div class="problem-hero">
     <div class="hero-label">Problem 1</div>
     <div class="hero-text">Using MM to evidence complex competencies is time-intensive for teachers, which limits how often and consistently it can be done.</div>
-    <div class="hero-framing">Two complementary approaches below: <strong>event-anchored</strong> (Sketch 2 uses an existing event — the Primary Exhibition) and <strong>planning-anchored</strong> (Sketch 4 embeds evidence capture in routine unit planning).</div>
+    <div class="hero-framing">Strawman concept: <strong>Competency Crumbs</strong>. Instead of periodic, comprehensive assessment across all competencies, a teacher captures one small observation per week. Over a term, these accumulate into a usable evidence picture.</div>
   </div>
 
-  <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-       SKETCH 2 — Exhibition Review Form
-       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
   <div class="sketch-block">
-    <h2 class="sketch-title">Core &amp; Coherence — MM Exhibition Review Form</h2>
-    <div class="sketch-caveat">The 7-level progression shown uses real MM competency names with <em>illustrative</em> nutshell descriptors. Final form would use MM's actual level-descriptor language from the New Metrics empirical progressions. Note: different MM competencies use different scales — this form uses a common 7-level layout for illustration only.</div>
+    <h2 class="sketch-title">Formative Assessment — Competency Crumbs</h2>
+    <div class="sketch-caveat">This is a deliberately rough strawman for conversation, not a finished design. The question is whether sparse, distributed evidence can produce MM-quality signal at a fraction of the evidence burden.</div>
+
+    <!-- Concept summary -->
+    <div class="crumbs-concept">
+      <div class="concept-row">
+        <div class="concept-card">
+          <div class="concept-num">1</div>
+          <div class="concept-title">One observation per week</div>
+          <div class="concept-body">Teacher picks ONE student and ONE competency. Writes 2–3 sentences using shared MM descriptor language. Takes ~3 minutes.</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num">2</div>
+          <div class="concept-title">Evidence accumulates</div>
+          <div class="concept-body">Over a 10-week term, each student in a class of 25 gets ~10 observations spread across competencies. No single assessment event needed.</div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num">3</div>
+          <div class="concept-title">Fortnightly moderation</div>
+          <div class="concept-body">Teachers bring a handful of crumbs to a 20-minute staff conversation. Calibrate descriptor use. No formal marking sessions.</div>
+        </div>
+      </div>
+      <div class="concept-target">
+        <strong>Target:</strong> MM-quality signal from &lt;20% of the current evidence burden.
+      </div>
+    </div>
+
+    <!-- Evidence log mockup -->
+    <h3 style="margin-top:32px; margin-bottom:16px; font-size:1.05rem;">What a teacher's weekly log looks like</h3>
 
     <div class="form-mockup">
-
-      <div class="assessor-tabs">
-        <button class="assessor-tab active" data-role="Teacher">Teacher</button>
-        <button class="assessor-tab" data-role="Student (self)">Student (self)</button>
-        <button class="assessor-tab" data-role="Peer">Peer</button>
-        <button class="assessor-tab" data-role="Parent/Community">Parent / Community</button>
-      </div>
-
-      <div class="form-header-bar">MM — Exhibition Competency Review</div>
+      <div class="form-header-bar">Competency Crumbs — Weekly Evidence Log</div>
 
       <div class="form-fields">
         <div class="form-field">
-          <label>Student Name</label>
-          <div class="field-input">A. Student</div>
+          <label>Teacher</label>
+          <div class="field-input">M. Chen</div>
         </div>
         <div class="form-field">
-          <label>Exhibition Title</label>
-          <div class="field-input">How can we reduce plastic waste in our community?</div>
+          <label>Week</label>
+          <div class="field-input">Week 4, Term 2</div>
         </div>
         <div class="form-field">
-          <label>Date</label>
-          <div class="field-input">15 / 04 / 2026</div>
-        </div>
-        <div class="form-field">
-          <label>Assessor Role</label>
-          <select class="field-input" id="assessorRoleSelect">
-            <option value="Teacher" selected>Teacher</option>
-            <option value="Student (self)">Student (self-assessment)</option>
-            <option value="Peer">Peer</option>
-            <option value="Parent/Community">Parent / Community</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="competency-rows">
-
-        <!-- 1. Acting Ethically -->
-        <div class="competency-row">
-          <div class="comp-header">
-            <div class="comp-name">Acting Ethically</div>
-            <div class="comp-desc">Responding to ethical questions and making principled decisions</div>
-          </div>
-          <div class="comp-body">
-            <div class="evidence-col">
-              <div class="col-label">Evidence observed</div>
-              <textarea class="evidence-textarea" placeholder="Describe what you observed during the Exhibition..."></textarea>
-            </div>
-            <div class="level-col">
-              <div class="col-label">Level (1–7)</div>
-              <div class="level-radios">
-                <label class="level-radio"><input type="radio" name="acting-ethically"><span class="lv">1</span><span class="nut">React with immediate judgement, often reflecting rules they have been told.</span></label>
-                <label class="level-radio"><input type="radio" name="acting-ethically"><span class="lv">2</span><span class="nut">Apply familiar rules or expectations when making ethical decisions.</span></label>
-                <label class="level-radio"><input type="radio" name="acting-ethically"><span class="lv">3</span><span class="nut">Consider others' perspectives when making ethical decisions.</span></label>
-                <label class="level-radio"><input type="radio" name="acting-ethically"><span class="lv">4</span><span class="nut">Weigh competing values and consequences for different people affected.</span></label>
-                <label class="level-radio"><input type="radio" name="acting-ethically"><span class="lv">5</span><span class="nut">Seek out different ethical perspectives before acting on complex questions.</span></label>
-                <label class="level-radio"><input type="radio" name="acting-ethically"><span class="lv">6</span><span class="nut">Produce principled responses that address underlying values, not only surface rules.</span></label>
-                <label class="level-radio"><input type="radio" name="acting-ethically"><span class="lv">7</span><span class="nut">Challenge foundational ethical assumptions and reshape ethical practice in their community.</span></label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 2. Active Citizenship -->
-        <div class="competency-row">
-          <div class="comp-header">
-            <div class="comp-name">Active Citizenship</div>
-            <div class="comp-desc">Contributing to community and civic life</div>
-          </div>
-          <div class="comp-body">
-            <div class="evidence-col">
-              <div class="col-label">Evidence observed</div>
-              <textarea class="evidence-textarea" placeholder="Describe what you observed during the Exhibition..."></textarea>
-            </div>
-            <div class="level-col">
-              <div class="col-label">Level (1–7)</div>
-              <div class="level-radios">
-                <label class="level-radio"><input type="radio" name="active-citizenship"><span class="lv">1</span><span class="nut">Notice issues in their immediate environment.</span></label>
-                <label class="level-radio"><input type="radio" name="active-citizenship"><span class="lv">2</span><span class="nut">Follow established expectations for participating in their community.</span></label>
-                <label class="level-radio"><input type="radio" name="active-citizenship"><span class="lv">3</span><span class="nut">Take part constructively in group or community activities.</span></label>
-                <label class="level-radio"><input type="radio" name="active-citizenship"><span class="lv">4</span><span class="nut">Connect local concerns to wider contexts and act with others.</span></label>
-                <label class="level-radio"><input type="radio" name="active-citizenship"><span class="lv">5</span><span class="nut">Work across differences to address shared community challenges.</span></label>
-                <label class="level-radio"><input type="radio" name="active-citizenship"><span class="lv">6</span><span class="nut">Lead inclusive action that creates change beyond themselves.</span></label>
-                <label class="level-radio"><input type="radio" name="active-citizenship"><span class="lv">7</span><span class="nut">Reshape how their community approaches civic challenges.</span></label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. Agency in Learning -->
-        <div class="competency-row">
-          <div class="comp-header">
-            <div class="comp-name">Agency in Learning</div>
-            <div class="comp-desc">Directing and taking ownership of one's own learning</div>
-          </div>
-          <div class="comp-body">
-            <div class="evidence-col">
-              <div class="col-label">Evidence observed</div>
-              <textarea class="evidence-textarea" placeholder="Describe what you observed during the Exhibition..."></textarea>
-            </div>
-            <div class="level-col">
-              <div class="col-label">Level (1–7)</div>
-              <div class="level-radios">
-                <label class="level-radio"><input type="radio" name="agency-learning"><span class="lv">1</span><span class="nut">Respond to immediate tasks set by others.</span></label>
-                <label class="level-radio"><input type="radio" name="agency-learning"><span class="lv">2</span><span class="nut">Follow expected routines for learning with familiar support.</span></label>
-                <label class="level-radio"><input type="radio" name="agency-learning"><span class="lv">3</span><span class="nut">Set personal learning goals with some guidance.</span></label>
-                <label class="level-radio"><input type="radio" name="agency-learning"><span class="lv">4</span><span class="nut">Plan learning, monitor progress, and adjust strategy with occasional support.</span></label>
-                <label class="level-radio"><input type="radio" name="agency-learning"><span class="lv">5</span><span class="nut">Direct own learning across contexts, seeking out resources and expertise.</span></label>
-                <label class="level-radio"><input type="radio" name="agency-learning"><span class="lv">6</span><span class="nut">Innovate in how they approach learning, creating pathways for themselves.</span></label>
-                <label class="level-radio"><input type="radio" name="agency-learning"><span class="lv">7</span><span class="nut">Transform how they approach learning and help others do the same.</span></label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 4. Character -->
-        <div class="competency-row">
-          <div class="comp-header">
-            <div class="comp-name">Character</div>
-            <div class="comp-desc">Showing consistent values and dispositions in action</div>
-          </div>
-          <div class="comp-body">
-            <div class="evidence-col">
-              <div class="col-label">Evidence observed</div>
-              <textarea class="evidence-textarea" placeholder="Describe what you observed during the Exhibition..."></textarea>
-            </div>
-            <div class="level-col">
-              <div class="col-label">Level (1–7)</div>
-              <div class="level-radios">
-                <label class="level-radio"><input type="radio" name="character"><span class="lv">1</span><span class="nut">React to immediate situations based on familiar dispositions.</span></label>
-                <label class="level-radio"><input type="radio" name="character"><span class="lv">2</span><span class="nut">Apply familiar values in familiar contexts.</span></label>
-                <label class="level-radio"><input type="radio" name="character"><span class="lv">3</span><span class="nut">Show consistency between stated values and actions.</span></label>
-                <label class="level-radio"><input type="radio" name="character"><span class="lv">4</span><span class="nut">Adapt dispositions thoughtfully across different contexts.</span></label>
-                <label class="level-radio"><input type="radio" name="character"><span class="lv">5</span><span class="nut">Bring considered values to complex or challenging situations.</span></label>
-                <label class="level-radio"><input type="radio" name="character"><span class="lv">6</span><span class="nut">Demonstrate integrity under pressure and inspire others.</span></label>
-                <label class="level-radio"><input type="radio" name="character"><span class="lv">7</span><span class="nut">Reshape the values-in-action of their community.</span></label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 5. Collaboration -->
-        <div class="competency-row">
-          <div class="comp-header">
-            <div class="comp-name">Collaboration</div>
-            <div class="comp-desc">Working effectively with others towards shared goals</div>
-          </div>
-          <div class="comp-body">
-            <div class="evidence-col">
-              <div class="col-label">Evidence observed</div>
-              <textarea class="evidence-textarea" placeholder="Describe what you observed during the Exhibition..."></textarea>
-            </div>
-            <div class="level-col">
-              <div class="col-label">Level (1–7)</div>
-              <div class="level-radios">
-                <label class="level-radio"><input type="radio" name="collaboration"><span class="lv">1</span><span class="nut">Work alongside others on shared tasks.</span></label>
-                <label class="level-radio"><input type="radio" name="collaboration"><span class="lv">2</span><span class="nut">Follow expected roles and contribute to familiar group tasks.</span></label>
-                <label class="level-radio"><input type="radio" name="collaboration"><span class="lv">3</span><span class="nut">Contribute to group goals while respecting others' contributions.</span></label>
-                <label class="level-radio"><input type="radio" name="collaboration"><span class="lv">4</span><span class="nut">Coordinate with others and adjust to different perspectives in the group.</span></label>
-                <label class="level-radio"><input type="radio" name="collaboration"><span class="lv">5</span><span class="nut">Build effective collaboration across differences of view or role.</span></label>
-                <label class="level-radio"><input type="radio" name="collaboration"><span class="lv">6</span><span class="nut">Lead productive collaboration in complex or challenging situations.</span></label>
-                <label class="level-radio"><input type="radio" name="collaboration"><span class="lv">7</span><span class="nut">Reshape how groups work together and develop new collaborative practice.</span></label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 6. Communication -->
-        <div class="competency-row">
-          <div class="comp-header">
-            <div class="comp-name">Communication</div>
-            <div class="comp-desc">Expressing and receiving ideas effectively across contexts</div>
-          </div>
-          <div class="comp-body">
-            <div class="evidence-col">
-              <div class="col-label">Evidence observed</div>
-              <textarea class="evidence-textarea" placeholder="Describe what you observed during the Exhibition..."></textarea>
-            </div>
-            <div class="level-col">
-              <div class="col-label">Level (1–7)</div>
-              <div class="level-radios">
-                <label class="level-radio"><input type="radio" name="communication"><span class="lv">1</span><span class="nut">Express ideas immediately and directly, often in familiar formats.</span></label>
-                <label class="level-radio"><input type="radio" name="communication"><span class="lv">2</span><span class="nut">Communicate in expected ways for familiar audiences.</span></label>
-                <label class="level-radio"><input type="radio" name="communication"><span class="lv">3</span><span class="nut">Adapt communication to different audiences or purposes.</span></label>
-                <label class="level-radio"><input type="radio" name="communication"><span class="lv">4</span><span class="nut">Structure communication to achieve specific effects on the audience.</span></label>
-                <label class="level-radio"><input type="radio" name="communication"><span class="lv">5</span><span class="nut">Communicate complex ideas clearly across different contexts and formats.</span></label>
-                <label class="level-radio"><input type="radio" name="communication"><span class="lv">6</span><span class="nut">Produce communication that changes how others see an issue.</span></label>
-                <label class="level-radio"><input type="radio" name="communication"><span class="lv">7</span><span class="nut">Transform how ideas are communicated in a field.</span></label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="form-footer">
-        <div class="form-field full-width">
-          <label>Overall comment</label>
-          <textarea class="evidence-textarea" style="min-height:64px;" placeholder="Overall comment on this student's demonstration of MM competencies during the Exhibition..."></textarea>
-        </div>
-        <div class="form-field">
-          <label>Assessor name</label>
-          <div class="field-input">J. Smith</div>
-        </div>
-        <div class="form-field">
-          <label>Signature</label>
-          <div class="field-input sig">Digital signature</div>
+          <label>Class</label>
+          <div class="field-input">Year 10 Humanities</div>
         </div>
         <div class="form-field">
           <label>Date</label>
-          <div class="field-input">15 / 04 / 2026</div>
+          <div class="field-input">18 / 04 / 2026</div>
         </div>
+      </div>
+
+      <!-- This week's crumb -->
+      <div class="crumb-entry">
+        <div class="crumb-label">This week's crumb</div>
+        <div class="crumb-fields">
+          <div class="crumb-field">
+            <label>Student</label>
+            <select class="field-input">
+              <option>Select student...</option>
+              <option selected>Anika Patel</option>
+              <option>Ben Torres</option>
+              <option>Chloe Ng</option>
+              <option>David Okafor</option>
+            </select>
+          </div>
+          <div class="crumb-field">
+            <label>Competency</label>
+            <select class="field-input">
+              <option>Select competency...</option>
+              <option>Acting Ethically</option>
+              <option>Active Citizenship</option>
+              <option>Agency in Learning</option>
+              <option>Character</option>
+              <option selected>Collaboration</option>
+              <option>Communication</option>
+            </select>
+          </div>
+          <div class="crumb-field">
+            <label>Estimated level (1–7)</label>
+            <select class="field-input">
+              <option>Select...</option>
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option selected>4</option>
+              <option>5</option>
+              <option>6</option>
+              <option>7</option>
+            </select>
+          </div>
+        </div>
+        <div class="crumb-field full-width" style="padding:0 18px 18px;">
+          <label>What you observed (2–3 sentences)</label>
+          <textarea class="evidence-textarea" style="min-height:80px;">During the group research task on water access, Anika coordinated the division of sources across three team members and adjusted the plan when Ben's section overlapped with hers. She checked in with each person before the group presented. I'd place this at Level 4 — coordinating with others and adjusting to different perspectives.</textarea>
+        </div>
+      </div>
+
+      <!-- Previous crumbs (read-only log) -->
+      <div class="crumbs-log">
+        <div class="log-label">Previous crumbs this term</div>
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th>Week</th>
+              <th>Student</th>
+              <th>Competency</th>
+              <th>Level</th>
+              <th>Observation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Wk 3</td>
+              <td>David Okafor</td>
+              <td>Communication</td>
+              <td>5</td>
+              <td>Presented findings on urbanisation to a mixed audience of Year 10 and Year 8 students. Adjusted language and examples for the younger group without simplifying the argument.</td>
+            </tr>
+            <tr>
+              <td>Wk 2</td>
+              <td>Chloe Ng</td>
+              <td>Agency in Learning</td>
+              <td>3</td>
+              <td>Set her own research question for the inquiry project with minimal guidance. Chose a topic outside the suggested list. Still needed prompting to plan the steps.</td>
+            </tr>
+            <tr>
+              <td>Wk 1</td>
+              <td>Ben Torres</td>
+              <td>Acting Ethically</td>
+              <td>3</td>
+              <td>In the class discussion on resource distribution, Ben considered the perspectives of communities he doesn't belong to before forming his position. Referenced fairness but didn't weigh competing values deeply.</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <div class="addresses-box">
-      <strong>What this addresses:</strong> The Primary Exhibition already happens in every school. This form generates MM evidence from that existing event without creating additional assessment events. Multiple assessor perspectives (teacher, student, peer, parent/community) use the same descriptors and the same form structure, producing consistent evidence from different viewpoints. <em>This sketch covers the primary programme only; equivalent anchor events (Personal Project, Community Project, extended essay) would need their own form versions.</em>
-    </div>
-  </div>
+    <!-- Term accumulation view -->
+    <h3 style="margin-top:32px; margin-bottom:16px; font-size:1.05rem;">What accumulates over a term (student view)</h3>
 
-  <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-       SKETCH 4 — MM-Integrated Unit Planner
-       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-  <div class="sketch-block">
-    <h2 class="sketch-title">Curriculum Development — MM-Integrated Unit Planner</h2>
-    <div class="sketch-caveat">Worked example shown for Diploma Economics. Planner columns and content are illustrative.</div>
-
-    <div class="planner-header-bar">
-      <div class="ph-item"><strong>Subject:</strong> Economics (Diploma)</div>
-      <div class="ph-item"><strong>Unit:</strong> Market Failure</div>
-      <div class="ph-item"><strong>Duration:</strong> 6 weeks</div>
-      <div class="ph-item"><strong>Teacher:</strong> M. Chen</div>
-    </div>
-
-    <div class="mm-legend">
-      <span class="swatch"></span> Shaded columns = new MM additions to existing planner structure
-    </div>
-
-    <div class="planner-table-wrap">
-      <table class="planner-table">
-        <thead>
-          <tr>
-            <th>Inquiry Question</th>
-            <th>Content / Topic</th>
-            <th>ATL Skills</th>
-            <th>Assessment Task</th>
-            <th>Command Terms</th>
-            <th class="mm-col">MM Competency Descriptors Evidenced</th>
-            <th class="mm-col">Evidence Form</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Why do markets fail to allocate resources efficiently?</td>
-            <td>Externalities — positive and negative</td>
-            <td>Critical thinking, Research</td>
-            <td>Written analysis of a local externality using real data</td>
-            <td>Examine, Evaluate</td>
-            <td class="mm-col">Agency in Learning (Level 4–5); Acting Ethically (Level 3–4)</td>
-            <td class="mm-col">Written (submitted task)</td>
-          </tr>
-          <tr>
-            <td>Who should bear the cost of market failure?</td>
-            <td>Government intervention — taxes, subsidies, regulation</td>
-            <td>Communication, Social</td>
-            <td>Group policy debate with position paper</td>
-            <td>Discuss, Compare</td>
-            <td class="mm-col">Communication (Level 4–5); Collaboration (Level 4–5)</td>
-            <td class="mm-col">Oral (observed) + Written (position paper)</td>
-          </tr>
-          <tr>
-            <td>How do we measure what markets cannot price?</td>
-            <td>Common pool resources and sustainability</td>
-            <td>Transfer, Self-management</td>
-            <td>Individual research report on a common pool resource problem in a different national context</td>
-            <td>Analyse, To what extent</td>
-            <td class="mm-col">Agency in Learning (Level 5); Active Citizenship (Level 4)</td>
-            <td class="mm-col">Written (submitted task)</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="form-mockup">
+      <div class="form-header-bar">Term Evidence Summary — Anika Patel</div>
+      <div style="padding:18px 22px;">
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th>Competency</th>
+              <th>Observations</th>
+              <th>Levels recorded</th>
+              <th>Coverage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Acting Ethically</td>
+              <td>1</td>
+              <td>3</td>
+              <td style="color:#f59e0b;">Thin</td>
+            </tr>
+            <tr>
+              <td>Active Citizenship</td>
+              <td>2</td>
+              <td>3, 4</td>
+              <td style="color:#059669;">Developing</td>
+            </tr>
+            <tr>
+              <td>Agency in Learning</td>
+              <td>3</td>
+              <td>3, 4, 4</td>
+              <td style="color:#059669;">Developing</td>
+            </tr>
+            <tr>
+              <td>Character</td>
+              <td>0</td>
+              <td>—</td>
+              <td style="color:#dc2626;">No evidence yet</td>
+            </tr>
+            <tr>
+              <td>Collaboration</td>
+              <td>2</td>
+              <td>4, 4</td>
+              <td style="color:#059669;">Developing</td>
+            </tr>
+            <tr>
+              <td>Communication</td>
+              <td>2</td>
+              <td>4, 5</td>
+              <td style="color:#059669;">Developing</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="margin-top:14px; font-size:.86rem; color:#52525b;">10 observations across 6 competencies over 10 weeks. Gaps in Character and Acting Ethically flagged for attention next term.</p>
+      </div>
     </div>
 
+    <!-- Moderation view -->
+    <h3 style="margin-top:32px; margin-bottom:16px; font-size:1.05rem;">Fortnightly moderation (staff conversation)</h3>
     <div class="flow-diagram">
       <div class="flow-step">
         <div class="flow-step-num">1</div>
-        <div class="flow-step-title">Unit planner</div>
-        <div class="flow-step-body">Identifies where MM evidence will be captured during the unit</div>
+        <div class="flow-step-title">Select crumbs</div>
+        <div class="flow-step-body">Each teacher brings 2–3 crumbs from the past fortnight. Focus on ones they found hard to level.</div>
       </div>
       <div class="flow-arrow">→</div>
       <div class="flow-step">
         <div class="flow-step-num">2</div>
-        <div class="flow-step-title">Classroom activity</div>
-        <div class="flow-step-body">Teachers run the assessment task; student work and observations generate the evidence</div>
+        <div class="flow-step-title">Calibrate</div>
+        <div class="flow-step-body">Read the observation aloud. Others say what level they'd give. Discuss differences. 5 minutes per crumb.</div>
       </div>
       <div class="flow-arrow">→</div>
       <div class="flow-step">
         <div class="flow-step-num">3</div>
-        <div class="flow-step-title">MM Platform</div>
-        <div class="flow-step-body">Evidence uploaded to the platform for judgement against descriptors and internal moderation</div>
+        <div class="flow-step-title">Adjust</div>
+        <div class="flow-step-body">Teacher updates the level in the log if the group consensus differs. No formal paperwork.</div>
       </div>
     </div>
 
     <div class="addresses-box">
-      <strong>What this addresses:</strong> The MM evidence columns are added to planning that teachers already do. There is no separate evidence-gathering step. This approach shows curriculum reviewers how to embed MM into subject specifications so that competency evidence arises naturally from existing assessment tasks.
+      <strong>What this addresses:</strong> The current MM approach requires comprehensive evidence across all competencies for each student, creating a substantial time burden. Competency Crumbs inverts the model: one observation, one student, one competency, once a week. Evidence accumulates gradually over a term. Moderation is short and conversational rather than formal. The open question is whether this sparse, distributed evidence is still valid evidence, or whether it crosses the line from formative into anecdotal.
     </div>
   </div>
 
