@@ -1,5 +1,5 @@
 /* ===================================================
-   Melbourne Metrics — Prototype Sketches
+   MM — Prototype Sketches
    View router, assessor tabs, dashboard charts.
    =================================================== */
 
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
       cohort:     '#64748b'
     };
 
-    /* Activity volume (Ruby telemetry) */
+    /* Activity volume (MM platform telemetry) */
     new Chart(document.getElementById('chartActivity'), {
       type: 'line',
       data: {
