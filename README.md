@@ -5,7 +5,7 @@ Prototype sketches for the MM competency assessment framework.
 ## Running the site locally
 
 ```bash
-cd C:/Users/trgal/IB-Adhoc-Tasks/docs && python -m http.server 8000
+cd C:/Users/trgal/projects/IB-Adhoc-Tasks/docs && python -m http.server 8000
 ```
 
 Open `http://localhost:8000` in your browser. Press `Ctrl+C` in the terminal to stop.
