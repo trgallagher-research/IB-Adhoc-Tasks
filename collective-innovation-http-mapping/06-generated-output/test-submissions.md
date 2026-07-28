@@ -28,7 +28,7 @@ appear.
 | Opportunity Description | `Pilot a searchable "resource hub" for schools that consolidates guidance, professional learning materials, worked examples and implementation resources into one place, so that colleagues don't spend time hunting across separate platforms; the pilot would cover discovery, tagging, permissions, multilingual labels, feedback capture, usage analytics, content ownership, review cycles and a lightweight governance model for retiring outdated material.` |
 | Sponsor | `Alex Rivera — Director, Test Department` |
 | Anticipated launch date | `01/12/2026` (pick 1 December 2026 in the date picker) |
-| Anticipated timeline for implementation | `Build in October 2026.` then a **line break**, then `Test in November — "internal only".` then a line break, then `Pilot in December 2026.` |
+| Anticipated timeline for implementation | see **the multi-line answer** below — do not paste from this table |
 | External Partner Involved? | `Yes` |
 | Organization Name | `Learning Futures Lab (test)` |
 | Contact Person | `Jordan Bailey` |
@@ -65,6 +65,33 @@ appear.
 | Additional factors? | `Yes` |
 | Explain additional factors | `Accessibility, multilingual quality, retention/retirement of content, and access permissions.` |
 | Supporting files | leave empty |
+
+### The multi-line answer (Anticipated timeline for implementation)
+
+Type or paste these three lines into that one answer box, pressing **Enter**
+between them so the box genuinely contains line breaks. Do not type the word
+"line break" — the point is to test real newline characters.
+
+```
+Build in October 2026.
+Test in November — "internal only".
+Pilot in December 2026.
+```
+
+### Ratings — do not skip these
+
+All six rating questions must be answered for submission A, or Number columns
+carrying real values go untested. Use these values (all different, so a
+mis-mapping would be obvious):
+
+| Rating question | Answer |
+|---|---|
+| Strategic importance | `5` |
+| Localized service offerings | `2` |
+| Financial Impact | `4` |
+| Operational Impact — support | `3` |
+| Operational Impact — changes | `1` |
+| Reputational Impact | `2` |
 
 **What A proves:** the description is over 255 characters, so `Title` must come
 back truncated with `...` while `OpportunityDescription` keeps the full text.
