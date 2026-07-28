@@ -37,7 +37,16 @@ serialization, date shape, Title truncation, and the character escaping.
      details` → **⋯ → Peek code** → the `form_id` value (88 characters, ends
      `PWcu`). It is deliberately redacted in `04-existing-flow/sanitized/`, so
      the live flow is the source of truth for it; do not commit it.
-   - *Response Id*: click **fx** → `outputs('Compose_response_id')`.
+   - *Response Id*: click into the field, choose the **Expression** tab (*fx*)
+     in the popup — **not** the Dynamic content tab — and enter
+     `outputs('Compose_response_id')`.
+   - **Gotcha:** clicking into either field opens the dynamic-content panel,
+     and a stray click there drops a token (typically `Body`) into the field.
+     A Form Id containing text *plus* a token is rejected with a misleading
+     "'Form Id' is required". Delete any such pill with its **×** so Form Id
+     holds plain text only. Confirm via the action's **Code view** tab:
+     `form_id` must be a plain string, `response_id` must be
+     `@outputs('Compose_response_id')`.
    - Confirm the action is named exactly **`Get response details`** (rename if
      the designer appended a number — the expressions depend on it).
 4. **+ New step** → **Compose** → rename to exactly
