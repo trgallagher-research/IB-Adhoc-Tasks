@@ -1,0 +1,19 @@
+{
+  "_notice": "FIXTURE OUTPUT — NOT FOR DEPLOYMENT. Internal names are ZZFIXTURE_ dummies. Demonstrates the generator against the dummy schema.",
+  "generated": "2026-07-28",
+  "compose_input": {
+    "Title": "@if(empty(outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab']), concat('Form response ', triggerOutputs()?['body/resourceData/responseId']), if(greater(length(outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab']), 255), concat(substring(outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab'], 0, 252), '...'), outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab']))",
+    "ZZFIXTURE_SubmitterEmail": "@outputs('Get_response_details')?['body/responder']",
+    "ZZFIXTURE_SubmittedOn": "@concat(formatDateTime(outputs('Get_response_details')?['body/submitDate'], 'yyyy-MM-ddTHH:mm:ss'), 'Z')",
+    "ZZFIXTURE_FormResponseId": "@int(triggerOutputs()?['body/resourceData/responseId'])",
+    "ZZFIXTURE_OpportunityDescription": "@if(empty(outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab']), null, outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab'])",
+    "ZZFIXTURE_AnticipatedLaunchDate": "@if(empty(outputs('Get_response_details')?['body/r8718cecca56b4ed692e9042452d04195']), null, outputs('Get_response_details')?['body/r8718cecca56b4ed692e9042452d04195'])",
+    "ZZFIXTURE_ImplementationTimeline": "@if(empty(outputs('Get_response_details')?['body/rf8348c8485dd40b08c00e76f66a3d428']), null, outputs('Get_response_details')?['body/rf8348c8485dd40b08c00e76f66a3d428'])",
+    "ZZFIXTURE_StrategicGoals": "@if(empty(outputs('Get_response_details')?['body/r1da539bd1a494208849da87ee257c128']), null, join(json(outputs('Get_response_details')?['body/r1da539bd1a494208849da87ee257c128']), '; '))",
+    "ZZFIXTURE_StrategicAlignment": "@if(empty(outputs('Get_response_details')?['body/rf9f8fa67e4fb4dfead61d31cba86aa7a']), null, outputs('Get_response_details')?['body/rf9f8fa67e4fb4dfead61d31cba86aa7a'])",
+    "ZZFIXTURE_OperationalImpactComments": "@if(empty(outputs('Get_response_details')?['body/r650d9f2a4d1f43e8938032a9cd60c658']), null, outputs('Get_response_details')?['body/r650d9f2a4d1f43e8938032a9cd60c658'])",
+    "ZZFIXTURE_ReputationalImpactComments": "@if(empty(outputs('Get_response_details')?['body/r577a0e5e42554b6f8d82f7c24b8f183b']), null, outputs('Get_response_details')?['body/r577a0e5e42554b6f8d82f7c24b8f183b'])",
+    "ZZFIXTURE_InternalStakeholders": "@if(empty(outputs('Get_response_details')?['body/rc12c559d019d4f9f9f8ed773c21c686f']), null, outputs('Get_response_details')?['body/rc12c559d019d4f9f9f8ed773c21c686f'])",
+    "ZZFIXTURE_ConsultationOutcomes": "@if(empty(outputs('Get_response_details')?['body/r5d267e063680468b8f77617ee0269b60']), null, outputs('Get_response_details')?['body/r5d267e063680468b8f77617ee0269b60'])"
+  }
+}

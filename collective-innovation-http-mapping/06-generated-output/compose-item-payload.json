@@ -1,0 +1,9 @@
+{
+  "_status": {
+    "generated": "2026-07-28",
+    "generated_by": "scripts/generate_artifacts.py",
+    "executable_mappings": 0,
+    "notice": "Only mappings with BOTH sides Existing/Confirmed are emitted. SharePoint schema evidence is currently ABSENT (03-sharepoint-schema/), so this payload is intentionally EMPTY. Populate the schema evidence, update the spec, and regenerate. Do not hand-add properties here."
+  },
+  "compose_input": {}
+}

@@ -1,0 +1,25 @@
+{
+  "_fixture": true,
+  "_notice": "DUMMY FIXTURE SCHEMA — invented for pipeline testing only. Every internal name is prefixed ZZFIXTURE_ so that accidental use against a real list fails immediately and is greppable. This file is NOT evidence of the live Knowledge Submissions schema.",
+  "list": {
+    "title": "Knowledge Submissions",
+    "list_item_entity_type_full_name": "SP.Data.ZZFIXTURE_KnowledgeSubmissionsListItem"
+  },
+  "fields": [
+    {"InternalName": "Title", "Title": "Title", "TypeAsString": "Text", "Required": true, "ReadOnlyField": false, "Choices": null, "_fixture_note": "Title is the one internal name that is standard on every list, but its live required/max-length settings are still unverified."},
+    {"InternalName": "ZZFIXTURE_OpportunityDescription", "Title": "Opportunity Description", "TypeAsString": "Note", "Required": false, "ReadOnlyField": false, "Choices": null},
+    {"InternalName": "ZZFIXTURE_AnticipatedLaunchDate", "Title": "Anticipated launch date", "TypeAsString": "DateTime", "Required": false, "ReadOnlyField": false, "Choices": null},
+    {"InternalName": "ZZFIXTURE_ImplementationTimeline", "Title": "Anticipated timeline for implementation", "TypeAsString": "Note", "Required": false, "ReadOnlyField": false, "Choices": null},
+    {"InternalName": "ZZFIXTURE_StrategicGoals", "Title": "Strategic Goals", "TypeAsString": "Note", "Required": false, "ReadOnlyField": false, "Choices": null},
+    {"InternalName": "ZZFIXTURE_StrategicAlignment", "Title": "Strategic Alignment Rationale", "TypeAsString": "Note", "Required": false, "ReadOnlyField": false, "Choices": null},
+    {"InternalName": "ZZFIXTURE_OperationalImpactComments", "Title": "Comments & explanation of agreement score (Operational Impact)", "TypeAsString": "Note", "Required": false, "ReadOnlyField": false, "Choices": null},
+    {"InternalName": "ZZFIXTURE_ReputationalImpactComments", "Title": "Comments & explanation of agreement score (Reputational Impact)", "TypeAsString": "Note", "Required": false, "ReadOnlyField": false, "Choices": null},
+    {"InternalName": "ZZFIXTURE_InternalStakeholders", "Title": "Internal Stakeholders Consulted", "TypeAsString": "Note", "Required": false, "ReadOnlyField": false, "Choices": null},
+    {"InternalName": "ZZFIXTURE_ConsultationOutcomes", "Title": "Internal Consultation Context & Outcomes", "TypeAsString": "Note", "Required": false, "ReadOnlyField": false, "Choices": null},
+    {"InternalName": "ZZFIXTURE_OperationalSupportScore", "Title": "Operational Impact: support volume", "TypeAsString": "Number", "Required": false, "ReadOnlyField": false, "Choices": null, "_fixture_note": "Included to test Number null-handling; the real mapping for this question is only Probable and would NOT be executable."},
+    {"InternalName": "ZZFIXTURE_SubmitterEmail", "Title": "Submitter Email", "TypeAsString": "Text", "Required": false, "ReadOnlyField": false, "Choices": null},
+    {"InternalName": "ZZFIXTURE_SubmittedOn", "Title": "Submitted On", "TypeAsString": "DateTime", "Required": false, "ReadOnlyField": false, "Choices": null},
+    {"InternalName": "ZZFIXTURE_FormResponseId", "Title": "Form Response Id", "TypeAsString": "Number", "Required": false, "ReadOnlyField": false, "Choices": null},
+    {"InternalName": "ZZFIXTURE_ReviewStatus", "Title": "Review Status", "TypeAsString": "Choice", "Required": false, "ReadOnlyField": false, "Choices": ["Not reviewed", "In review", "Accepted", "Declined"]}
+  ]
+}

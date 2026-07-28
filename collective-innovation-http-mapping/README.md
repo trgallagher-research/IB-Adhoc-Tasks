@@ -1,7 +1,32 @@
 # Collective Innovation — HTTP Mapping
 
 Working folder for mapping Microsoft Forms responses to their destination
-SharePoint list and generating the HTTP request mapping used by the flow.
+SharePoint list (`Knowledge Submissions`) and generating the Compose + 
+`Send an HTTP request to SharePoint` implementation used by the flow.
+
+## Status (2026-07-28)
+
+| Area | State |
+|------|-------|
+| Forms Excel evidence | ✅ ingested — 47 cols (6 metadata + 41 questions), 6 dummy responses; inventory in `01-forms-excel/sanitized/` |
+| Get response details evidence | ✅ response 6 ingested (sanitized, body-only) — 48 opaque keys; inventory in `02-get-response-details/sanitized/` |
+| Forms-key mappings | 9 **Confirmed**, 2 Probable, 30 Unresolved (of 41 questions) — see `05-mapping-spec/` |
+| SharePoint schema evidence | ❌ absent — **all SharePoint-side facts Unresolved**; see `03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md` |
+| Existing flow evidence | ❌ absent — see `04-existing-flow/COLLECTION-INSTRUCTIONS.md` |
+| Executable payload | intentionally **empty** (0 mappings meet the Existing/Confirmed-both-sides bar); pipeline proven end-to-end on dummy fixtures |
+| Blockers | consolidated in `EVIDENCE-REQUEST.md` (EV‑1…EV‑5) |
+| Git history exposure | assessed in `GIT-EXPOSURE-NOTE.md`; working tree remediated, history decision pending |
+
+**Regenerate everything after new evidence:** `./scripts/run_checks.sh`
+(rebuilds inventories → mapping spec → reports → payload → validation report,
+then runs the quality gate). Mapping upgrades are made only in
+`scripts/build_mapping_spec.py`, with evidence strings — never by editing
+generated files.
+
+Key documents: `05-mapping-spec/mapping-spec.md` (+ `unresolved-mappings.md`,
+`coverage-report.md`), `06-generated-output/approach-assessment.md`,
+`implementation-instructions.md`, `permission-matrix.md`, `test-matrix.md`,
+`cutover-rollback.md`, `validation-report.md`.
 
 ## Folder structure
 

@@ -1,0 +1,259 @@
+{
+  "_provenance": {
+    "source": "02-get-response-details/sanitized/get-response-details-response-6.body.json",
+    "generated_by": "scripts/build_inventories.py",
+    "generated": "2026-07-28",
+    "content_policy": "All values are dummy test content from Form response ID 6. Keys are structural identifiers retained deliberately.",
+    "totals": {
+      "opaque_r_keys": 48,
+      "non_blank": 18,
+      "blank": 30,
+      "non_key_properties": [
+        "responder",
+        "submitDate"
+      ]
+    }
+  },
+  "keys": [
+    {
+      "response_key": "r90a4a472716942dfa4b9d5de21931774",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r074e7a91d52747519a8fe0e9af68e7dd",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r516051da52cf4166a478cd83a6e15291",
+      "observed_value_response_6": "No",
+      "value_shape": "yes-no"
+    },
+    {
+      "response_key": "r3e390836da294861a927ce63c8d0f2c6",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r90c6dc19b575459fa68b7a65b23a9a06",
+      "observed_value_response_6": "1",
+      "value_shape": "numeric-string"
+    },
+    {
+      "response_key": "rf7cbe61f26ab41cfa28f0b2a009e9d7c",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "rfb959d52f2494d1b92e07856edeee015",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r5caae6a11afb406a8e77e0b242fb4cab",
+      "observed_value_response_6": "Pilot a searchable online resource hub for schools.",
+      "value_shape": "free-text"
+    },
+    {
+      "response_key": "rbb5f5979ba74480fba871dbaaeb381e9",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r5f267e3e119041469c62a472d832324f",
+      "observed_value_response_6": "No",
+      "value_shape": "yes-no"
+    },
+    {
+      "response_key": "r8140da6e45c84dbcab391c05346d9b16",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "rc12c559d019d4f9f9f8ed773c21c686f",
+      "observed_value_response_6": "Professional Learning team.",
+      "value_shape": "free-text"
+    },
+    {
+      "response_key": "r7ba397b729054a109e0b046c38744e73",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r0b456ff26ee24c11a9503908ffea1b53",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "rf76887b82f1f4414a41f5e65ecef7cbd",
+      "observed_value_response_6": "No",
+      "value_shape": "yes-no"
+    },
+    {
+      "response_key": "rd668321450304780986d33d7e6f474b9",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r1903e1b8394140d19377b15fc81edd65",
+      "observed_value_response_6": "3",
+      "value_shape": "numeric-string"
+    },
+    {
+      "response_key": "r6957ab38b1994a988463479662e02998",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r577a0e5e42554b6f8d82f7c24b8f183b",
+      "observed_value_response_6": "The reputational risk is currently uncertain.",
+      "value_shape": "free-text"
+    },
+    {
+      "response_key": "rb8a1472f55ed4f58b6932b6284ba874e",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "rb797d6da9e514447b235f1c6897d06e4",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r1c4bea10de144dcdb6cbc8830f7c3e31",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r650d9f2a4d1f43e8938032a9cd60c658",
+      "observed_value_response_6": "Limited support is expected and no operational changes are planned.",
+      "value_shape": "free-text"
+    },
+    {
+      "response_key": "r1b7b5f6d2bb2486db74f1f1ebb0cb067",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r208f7c57b79d432da596a8fc1dc1e5e6",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r5d267e063680468b8f77617ee0269b60",
+      "observed_value_response_6": "The team supported testing a small pilot.",
+      "value_shape": "free-text"
+    },
+    {
+      "response_key": "r011318f6666745c891df6ed52af394b0",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r809645c3237a4bb4969b8082026cb3cc",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "re8d27932c227466996dbc77f67f71faa",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r758fbc5c9ddf44d9a1f7ef377c0dafba",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r587705b554a5436aa6663834b1582469",
+      "observed_value_response_6": "No",
+      "value_shape": "yes-no"
+    },
+    {
+      "response_key": "rf8348c8485dd40b08c00e76f66a3d428",
+      "observed_value_response_6": "Build in October, test in November, and pilot in December 2026.",
+      "value_shape": "free-text"
+    },
+    {
+      "response_key": "r75f4515f78d946ac8a4274c151307c3e",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r8718cecca56b4ed692e9042452d04195",
+      "observed_value_response_6": "2026-12-01",
+      "value_shape": "iso-date"
+    },
+    {
+      "response_key": "rf81976cae03249ef86d0d299bf126aac",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "rf703806487ab4148994d2fd2edb79941",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r072e0a054db54072b75c27d3d8e90140",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "rba40cea72cef44df9c70637d7473d033",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r1da539bd1a494208849da87ee257c128",
+      "observed_value_response_6": "[\"Driver A1\"]",
+      "value_shape": "json-array-string (multi-choice serialization)"
+    },
+    {
+      "response_key": "re95a3bb4ed594260b8745180ba8d56a7",
+      "observed_value_response_6": "1",
+      "value_shape": "numeric-string"
+    },
+    {
+      "response_key": "ra89a8e77654b43a6af62ff1247df9f8f",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "rf0bccf6e481343d1823057965c3271ea",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r8d49a8bdd5e94aee82f332fcab962a51",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "r9ec31f96e7b34fb791c734433bb022a3",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    },
+    {
+      "response_key": "rf9f8fa67e4fb4dfead61d31cba86aa7a",
+      "observed_value_response_6": "Driver A1",
+      "value_shape": "free-text"
+    },
+    {
+      "response_key": "rbc83faed4a274e0fb254a5c4c21edd73",
+      "observed_value_response_6": "No",
+      "value_shape": "yes-no"
+    },
+    {
+      "response_key": "rca68d3a0ad2b45c397fd0523414426b5",
+      "observed_value_response_6": "2",
+      "value_shape": "numeric-string"
+    },
+    {
+      "response_key": "r685fa8b221f64f9188951dfb6fb629ec",
+      "observed_value_response_6": "",
+      "value_shape": "blank"
+    }
+  ]
+}

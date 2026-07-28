@@ -1,0 +1,43 @@
+{
+  "_notice": "FIXTURE simulation of the Compose payload semantics against dummy bodies.",
+  "checks": [
+    "valid JSON round-trip",
+    "no empty strings emitted",
+    "null (not '' / 0 / 'null') for blank Number, DateTime and text",
+    "int type for Number fields",
+    "JSON-sensitive characters survive round-trip",
+    "required Title never null"
+  ],
+  "results": {
+    "response-6": {
+      "Title": "Pilot a searchable online resource hub for schools.",
+      "ZZFIXTURE_SubmitterEmail": "redacted.responder@example.invalid",
+      "ZZFIXTURE_SubmittedOn": "2026-07-24T15:23:34Z",
+      "ZZFIXTURE_FormResponseId": 6,
+      "ZZFIXTURE_OpportunityDescription": "Pilot a searchable online resource hub for schools.",
+      "ZZFIXTURE_AnticipatedLaunchDate": "2026-12-01",
+      "ZZFIXTURE_ImplementationTimeline": "Build in October, test in November, and pilot in December 2026.",
+      "ZZFIXTURE_StrategicGoals": "Driver A1",
+      "ZZFIXTURE_StrategicAlignment": "Driver A1",
+      "ZZFIXTURE_OperationalImpactComments": "Limited support is expected and no operational changes are planned.",
+      "ZZFIXTURE_ReputationalImpactComments": "The reputational risk is currently uncertain.",
+      "ZZFIXTURE_InternalStakeholders": "Professional Learning team.",
+      "ZZFIXTURE_ConsultationOutcomes": "The team supported testing a small pilot."
+    },
+    "edge-case": {
+      "Title": "He said \"let's try\" — line1\nline2 \\ ünïcödé 🚀 <script>",
+      "ZZFIXTURE_SubmitterEmail": "edge.case@example.invalid",
+      "ZZFIXTURE_SubmittedOn": "2026-12-31T23:59:59Z",
+      "ZZFIXTURE_FormResponseId": 999,
+      "ZZFIXTURE_OpportunityDescription": "He said \"let's try\" — line1\nline2 \\ ünïcödé 🚀 <script>",
+      "ZZFIXTURE_AnticipatedLaunchDate": null,
+      "ZZFIXTURE_ImplementationTimeline": null,
+      "ZZFIXTURE_StrategicGoals": null,
+      "ZZFIXTURE_StrategicAlignment": null,
+      "ZZFIXTURE_OperationalImpactComments": null,
+      "ZZFIXTURE_ReputationalImpactComments": null,
+      "ZZFIXTURE_InternalStakeholders": null,
+      "ZZFIXTURE_ConsultationOutcomes": null
+    }
+  }
+}
