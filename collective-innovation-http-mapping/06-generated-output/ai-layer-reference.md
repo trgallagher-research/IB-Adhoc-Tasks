@@ -21,6 +21,44 @@ Run a prompt  (AI Builder)           custom prompt, recordId
              └── 7 arrays            → one Select action each → join with \n
 ```
 
+## What the AI actually receives
+
+**The entire submission, as one document** — not selected columns, and not
+anything from SharePoint.
+
+`compose-labelled-submission.txt` contains 43 references to
+`Get response details`: all **41 questions** plus `responder` and `submitDate`,
+with the response ID coming from the trigger. Structure:
+
+```
+INNOVATION INTAKE SUBMISSION
+FORM METADATA          Form response ID, respondent email, submission date/time
+SECTION 1              Opportunity overview        (Q1–Q4)
+SECTION 2              Partner information         (Q5–Q8)
+SECTION 3              Strategy alignment          (Q9–Q10)
+SECTION 4              Market impact & compliance  (Q11–Q20)
+RATING SCALE           how to interpret 1–5, and to flag rating/comment conflicts
+SECTION 5              Opportunity impact          (Q21–Q25)
+SECTION 6              Organizational impact       (Q26–Q34)
+SECTION 7              IBEN, PL, additional        (Q35–Q41)
+```
+
+Consequences:
+
+- **Source is Forms, not SharePoint.** The AI runs *before* the item exists.
+  Raw answers and AI output are then written together in one create — the AI
+  can never read back what was stored, and never overwrites a raw column.
+- **No per-field mapping.** Every AI output draws on the whole document;
+  `AISummary` is not fed by particular questions.
+- **Blanks are visible to the model.** Unanswered questions still appear as
+  numbered headings with nothing under them, which is why the model reports
+  what is missing and raises it as an open question. On the governance-gate
+  path (response 8) it correctly identified the skipped sections as gaps.
+- **The AI sees slightly more than the raw columns capture.** Q16 (Readiness
+  Notice) and Q41 (supporting files) have no SharePoint destination but are in
+  the text — as is the respondent's email address. Worth knowing if prompt
+  inputs ever come under data-minimisation review.
+
 ## Where the prompt itself lives
 
 **Not in the flow.** The flow passes only the input text; the prompt's
