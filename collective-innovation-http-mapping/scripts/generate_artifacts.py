@@ -228,9 +228,23 @@ def run_production(spec):
         json.dumps(artefact, indent=2, ensure_ascii=False) + "\n")
 
     write_paste_actions(payload, template)
+    write_text_template(prop_meta)
+    write_smoke_template(prop_meta)
+    write_response_fixtures()
+    n_paste_sandbox = write_paste_objects(prop_meta, payload)
+    print(f"paste objects: {len(payload)} production / {n_paste_sandbox} sandbox")
+    n_sandbox, skipped = write_sandbox_template(prop_meta)
+    print(f"sandbox template: {n_sandbox} properties "
+          f"({len(skipped)} AI/Select-dependent omitted)")
 
     type_of = {p["internal_name"]: p["sp_type"] for p in prop_meta}
     results = run_simulation(prop_meta, q07_key(spec), type_of, template)
+    # cross-check: assembling the simulated values as JSON text (what the text
+    # template produces) must parse back to the identical object
+    for sim in results.values():
+        text = "{\n" + ",\n".join(f"\"{k}\": {json.dumps(v, ensure_ascii=False)}"
+                                  for k, v in sim.items()) + "\n}"
+        assert json.loads(text) == sim
     (outdir / "simulation-results.json").write_text(json.dumps({
         "_notice": "Semantic simulation of the non-flow-layer payload properties against dummy bodies "
                    "(sanitized response 6; synthetic edge-case). Flow-layer (AI/constants) properties "
@@ -241,6 +255,201 @@ def run_production(spec):
     print(f"production mode: {len(prop_meta)} properties ({n_raw} raw + {n_meta} metadata + "
           f"{n_flow} flow-layer); simulations passed")
     return prop_meta
+
+
+def STR(expr):
+    """Expression emitting a QUOTED, JSON-escaped string literal for expr.
+
+    Explicit character escaping — deterministic and independent of how the
+    platform formats string()/json() output. Order is load-bearing: backslash
+    first (so escapes added later are not re-escaped), then the double quote,
+    then CR/LF/TAB via decodeUriComponent so no literal control characters
+    appear inside the expression text.
+
+    Power Automate string literals use single quotes and treat backslash as an
+    ordinary character, so '\\' below is one literal backslash and '\\\\' is two.
+    """
+    e = expr
+    e = f"replace({e}, '\\', '\\\\')"                                  # \  -> \\
+    e = f"replace({e}, '\"', '\\\"')"                                  # "  -> \"
+    e = f"replace({e}, decodeUriComponent('%0D'), '\\r')"              # CR -> \r
+    e = f"replace({e}, decodeUriComponent('%0A'), '\\n')"              # LF -> \n
+    e = f"replace({e}, decodeUriComponent('%09'), '\\t')"              # TAB-> \t
+    return f"concat('\"', {e}, '\"')"
+
+
+def template_fragment(p):
+    """Value fragment (text with @{...} interpolations) for one property in the
+    input-box-safe JSON text template. Must be semantically identical to the
+    object payload's bare-@ expression for the same property."""
+    kind, key = p["kind"], p.get("forms_key")
+    v = grd(key) if key else None
+    if kind in ("text", "multiline", "date", "yesno_choice"):
+        return f"@{{if(empty({v}), 'null', {STR(v)})}}"
+    if kind == "rating":
+        return f"@{{if(empty({v}), 'null', int({v}))}}"
+    if kind == "multichoice_as_text":
+        j = f"join(json({v}), '; ')"
+        return f"@{{if(empty({v}), 'null', {STR(j)})}}"
+    if kind == "responder":
+        responder = "outputs('" + GRD_ACTION + "')?['body/responder']"
+        return "@{" + STR(responder) + "}"
+    if kind == "submitdate":
+        return ('"@{concat(formatDateTime(outputs(\'' + GRD_ACTION +
+                "')?['body/submitDate'], 'yyyy-MM-ddTHH:mm:ss'), 'Z')}\"")
+    if kind == "responseid_string":
+        return f'"@{{{RESPONSE_ID_EXPR}}}"'
+    if kind == "original_submission":
+        return "@{" + STR("outputs('Compose_labelled_submission')") + "}"
+    if kind == "title_from_description":
+        fallback = f"concat('Form response ', string({RESPONSE_ID_EXPR}))"
+        title = (f"if(empty({v}), {fallback}, "
+                 f"if(greater(length({v}), 255), concat(substring({v}, 0, 252), '...'), {v}))")
+        return f"@{{{STR(title)}}}"
+    if kind == "verbatim":
+        if p["expression"] is None:
+            return json.dumps(p["constant"])
+        e = p["expression"]
+        if p["internal_name"] == "HumanReviewRequired":   # boolean -> raw true/false, null-safe
+            return f"@{{coalesce({e}, 'null')}}"
+        if p["internal_name"] == "ProcessedDate":         # fixed ISO format, no escapables
+            return f'"@{{{e}}}"'
+        return f"@{{if(empty({e}), 'null', {STR(e)})}}"   # AI text / joins, null-safe
+    raise ValueError(kind)
+
+
+AI_DEPENDENT = ("outputs('Run_a_prompt')", "body('Select_")
+
+
+def pa_string_literal(text):
+    """Wrap text as a Power Automate single-quoted string literal (a literal
+    single quote is escaped by doubling it)."""
+    return "'" + text.replace("'", "''") + "'"
+
+
+def write_response_fixtures():
+    """Compose expressions that stand in for the Get response details action.
+
+    The connector flattens its output to keys like 'body/r<hash>', and
+    ?['body/x'] is a LITERAL key lookup, so an object built by json() with the
+    same flat keys is indistinguishable to every downstream expression. Naming
+    the Compose 'Get response details' therefore makes the whole harness run
+    with no Forms connector at all — which also sidesteps the dropdown
+    validation on group-owned forms.
+
+    Two fixtures: the sanitized response 6, and an edge-case body that carries
+    the JSON-sensitive characters test T4 calls for. Both are dummy data.
+    """
+    body6 = json.loads((ROOT / "02-get-response-details/sanitized/"
+                        "get-response-details-response-6.body.json").read_text())["body"]
+    flat6 = {f"body/{k}": v for k, v in body6.items()}
+
+    edge = {k: "" for k in body6}
+    edge["responder"] = "edge.case@example.invalid"
+    edge["submitDate"] = "12/31/2026 11:59:59 PM"
+    q07 = "r5caae6a11afb406a8e77e0b242fb4cab"          # Opportunity Description
+    q16 = "rf9f8fa67e4fb4dfead61d31cba86aa7a"          # Strategic Alignment Rationale
+    q15 = "r1da539bd1a494208849da87ee257c128"          # Strategic Goals (multi-choice)
+    q37 = "r1903e1b8394140d19377b15fc81edd65"          # Reputational rating
+    edge[q07] = 'He said "let\'s try" — a backslash \\ and ünïcödé 🚀 <script>'
+    edge[q16] = "Line one\nLine two\ttabbed\r\nLine three"
+    edge[q15] = '["Driver A1","Driver B2"]'
+    edge[q37] = "4"
+    flat_edge = {f"body/{k}": v for k, v in edge.items()}
+
+    outdir = ROOT / "06-generated-output"
+    for name, flat in (("RESPONSE6", flat6), ("EDGECASE", flat_edge)):
+        expr = "json(" + pa_string_literal(json.dumps(flat, ensure_ascii=False)) + ")"
+        (outdir / f"compose-fake-response.{name}.txt").write_text(expr + "\n")
+
+
+def write_paste_objects(prop_meta, payload):
+    """Bare payload objects for pasting straight into a Compose Inputs field.
+
+    VERIFIED 2026-07-28 in the live designer: pasting a JSON object into
+    Compose Inputs is parsed AS AN OBJECT, and each value is evaluated — so a
+    value of "@if(...)" returns its native type (null / number / string) and
+    the platform handles all string escaping. This is the preferred transfer
+    format; the .template.txt text encoding is retained only as a fallback.
+
+    Emits the production object (61 properties) and a sandbox variant with the
+    trigger response-ID swapped for a Compose and AI/Select-sourced properties
+    removed.
+    """
+    outdir = ROOT / "06-generated-output"
+    (outdir / "compose-item-payload.PASTE.json").write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n")
+
+    sandbox = {}
+    for p in prop_meta:
+        value = payload[p["internal_name"]]
+        if isinstance(value, str) and any(m in value for m in AI_DEPENDENT):
+            continue
+        if isinstance(value, str):
+            value = value.replace(RESPONSE_ID_EXPR, "outputs('Compose_response_id')")
+        sandbox[p["internal_name"]] = value
+    (outdir / "compose-item-payload.SANDBOX.json").write_text(
+        json.dumps(sandbox, indent=2, ensure_ascii=False) + "\n")
+    return len(sandbox)
+
+
+def write_sandbox_template(prop_meta):
+    """Payload variant for the standalone test harness (manual-trigger flow).
+
+    Two substitutions make it runnable outside the real flow:
+      - the trigger response-ID expression becomes outputs('Compose_response_id'),
+        a small Compose the tester edits to replay any response;
+      - properties sourced from the AI/Select actions are omitted (those actions
+        do not exist in the harness). They are verbatim-preserved from the
+        working flow anyway, so live test T2 is their check.
+    Everything Forms-derived — i.e. everything this project actually built — is
+    included, so the harness exercises the whole risk surface.
+    """
+    kept, skipped = [], []
+    for p in prop_meta:
+        frag = template_fragment(p)
+        if any(marker in frag for marker in AI_DEPENDENT):
+            skipped.append(p["internal_name"])
+            continue
+        kept.append((p["internal_name"],
+                     frag.replace(RESPONSE_ID_EXPR, "outputs('Compose_response_id')")))
+    lines = ["{"]
+    for i, (name, frag) in enumerate(kept):
+        comma = "," if i < len(kept) - 1 else ""
+        lines.append(f'"{name}": {frag}{comma}')
+    lines.append("}")
+    (ROOT / "06-generated-output/compose-item-payload.SANDBOX.txt").write_text(
+        "\n".join(lines) + "\n")
+    return len(kept), skipped
+
+
+def write_smoke_template(prop_meta):
+    """Three-property cut of the text template: one escaped string, one Number
+    (null-capable) and one plain interpolation. Lets the mechanism be proven in
+    the designer in two minutes before the full 61-property paste."""
+    wanted = ["Title", "OpportunityDescription", "ReputationalImpactScore"]
+    chosen = [p for name in wanted for p in prop_meta if p["internal_name"] == name]
+    lines = ["{"]
+    for i, p in enumerate(chosen):
+        comma = "," if i < len(chosen) - 1 else ""
+        lines.append(f'"{p["internal_name"]}": {template_fragment(p)}{comma}')
+    lines.append("}")
+    (ROOT / "06-generated-output/compose-item-payload.SMOKETEST.txt").write_text(
+        "\n".join(lines) + "\n")
+
+
+def write_text_template(prop_meta):
+    """Input-box-safe variant of the payload: a JSON *text* template whose
+    Compose output is a JSON string (HTTP body accepts it directly). Exists
+    because the clipboard-paste of the object-form action is tenant-dependent;
+    this file is pasted into the ordinary Compose Inputs field."""
+    lines = ["{"]
+    for i, p in enumerate(prop_meta):
+        comma = "," if i < len(prop_meta) - 1 else ""
+        lines.append(f'"{p["internal_name"]}": {template_fragment(p)}{comma}')
+    lines.append("}")
+    (ROOT / "06-generated-output/compose-item-payload.template.txt").write_text(
+        "\n".join(lines) + "\n")
 
 
 def write_paste_actions(payload, template):

@@ -135,6 +135,10 @@ SECRET_PATTERNS = [
     (re.compile(r"(?i)bearer\s+[A-Za-z0-9._~+/=-]{20,}"), "bearer token"),
     (re.compile(r"(?i)(fedauth|rtfa)="), "SharePoint auth cookie"),
     (re.compile(r"(?i)[a-z0-9-]+\.sharepoint\.com"), "tenant SharePoint hostname (redact to <site-url>)"),
+    # Microsoft Forms form_id: long opaque token containing _ or -. The
+    # ContentTypeId constant is long too but is pure hex, so it does not match.
+    (re.compile(r"\b(?=[A-Za-z0-9_-]{70,}\b)[A-Za-z0-9]*[_-][A-Za-z0-9_-]{60,}\b"),
+     "possible Microsoft Forms form_id (must stay redacted; live flow is its source of truth)"),
 ]
 SCAN_EXT = {".md", ".json", ".py", ".sh", ".txt", ".jsonc"}
 
