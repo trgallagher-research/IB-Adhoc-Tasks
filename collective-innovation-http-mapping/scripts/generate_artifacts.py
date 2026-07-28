@@ -231,6 +231,8 @@ def run_production(spec):
     write_text_template(prop_meta)
     write_smoke_template(prop_meta)
     write_response_fixtures()
+    n_paste_sandbox = write_paste_objects(prop_meta, payload)
+    print(f"paste objects: {len(payload)} production / {n_paste_sandbox} sandbox")
     n_sandbox, skipped = write_sandbox_template(prop_meta)
     print(f"sandbox template: {n_sandbox} properties "
           f"({len(skipped)} AI/Select-dependent omitted)")
@@ -359,6 +361,36 @@ def write_response_fixtures():
     for name, flat in (("RESPONSE6", flat6), ("EDGECASE", flat_edge)):
         expr = "json(" + pa_string_literal(json.dumps(flat, ensure_ascii=False)) + ")"
         (outdir / f"compose-fake-response.{name}.txt").write_text(expr + "\n")
+
+
+def write_paste_objects(prop_meta, payload):
+    """Bare payload objects for pasting straight into a Compose Inputs field.
+
+    VERIFIED 2026-07-28 in the live designer: pasting a JSON object into
+    Compose Inputs is parsed AS AN OBJECT, and each value is evaluated — so a
+    value of "@if(...)" returns its native type (null / number / string) and
+    the platform handles all string escaping. This is the preferred transfer
+    format; the .template.txt text encoding is retained only as a fallback.
+
+    Emits the production object (61 properties) and a sandbox variant with the
+    trigger response-ID swapped for a Compose and AI/Select-sourced properties
+    removed.
+    """
+    outdir = ROOT / "06-generated-output"
+    (outdir / "compose-item-payload.PASTE.json").write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n")
+
+    sandbox = {}
+    for p in prop_meta:
+        value = payload[p["internal_name"]]
+        if isinstance(value, str) and any(m in value for m in AI_DEPENDENT):
+            continue
+        if isinstance(value, str):
+            value = value.replace(RESPONSE_ID_EXPR, "outputs('Compose_response_id')")
+        sandbox[p["internal_name"]] = value
+    (outdir / "compose-item-payload.SANDBOX.json").write_text(
+        json.dumps(sandbox, indent=2, ensure_ascii=False) + "\n")
+    return len(sandbox)
 
 
 def write_sandbox_template(prop_meta):
