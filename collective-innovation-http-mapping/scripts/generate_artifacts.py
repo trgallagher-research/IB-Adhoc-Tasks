@@ -230,6 +230,7 @@ def run_production(spec):
     write_paste_actions(payload, template)
     write_text_template(prop_meta)
     write_smoke_template(prop_meta)
+    write_response_fixtures()
     n_sandbox, skipped = write_sandbox_template(prop_meta)
     print(f"sandbox template: {n_sandbox} properties "
           f"({len(skipped)} AI/Select-dependent omitted)")
@@ -316,6 +317,48 @@ def template_fragment(p):
 
 
 AI_DEPENDENT = ("outputs('Run_a_prompt')", "body('Select_")
+
+
+def pa_string_literal(text):
+    """Wrap text as a Power Automate single-quoted string literal (a literal
+    single quote is escaped by doubling it)."""
+    return "'" + text.replace("'", "''") + "'"
+
+
+def write_response_fixtures():
+    """Compose expressions that stand in for the Get response details action.
+
+    The connector flattens its output to keys like 'body/r<hash>', and
+    ?['body/x'] is a LITERAL key lookup, so an object built by json() with the
+    same flat keys is indistinguishable to every downstream expression. Naming
+    the Compose 'Get response details' therefore makes the whole harness run
+    with no Forms connector at all — which also sidesteps the dropdown
+    validation on group-owned forms.
+
+    Two fixtures: the sanitized response 6, and an edge-case body that carries
+    the JSON-sensitive characters test T4 calls for. Both are dummy data.
+    """
+    body6 = json.loads((ROOT / "02-get-response-details/sanitized/"
+                        "get-response-details-response-6.body.json").read_text())["body"]
+    flat6 = {f"body/{k}": v for k, v in body6.items()}
+
+    edge = {k: "" for k in body6}
+    edge["responder"] = "edge.case@example.invalid"
+    edge["submitDate"] = "12/31/2026 11:59:59 PM"
+    q07 = "r5caae6a11afb406a8e77e0b242fb4cab"          # Opportunity Description
+    q16 = "rf9f8fa67e4fb4dfead61d31cba86aa7a"          # Strategic Alignment Rationale
+    q15 = "r1da539bd1a494208849da87ee257c128"          # Strategic Goals (multi-choice)
+    q37 = "r1903e1b8394140d19377b15fc81edd65"          # Reputational rating
+    edge[q07] = 'He said "let\'s try" — a backslash \\ and ünïcödé 🚀 <script>'
+    edge[q16] = "Line one\nLine two\ttabbed\r\nLine three"
+    edge[q15] = '["Driver A1","Driver B2"]'
+    edge[q37] = "4"
+    flat_edge = {f"body/{k}": v for k, v in edge.items()}
+
+    outdir = ROOT / "06-generated-output"
+    for name, flat in (("RESPONSE6", flat6), ("EDGECASE", flat_edge)):
+        expr = "json(" + pa_string_literal(json.dumps(flat, ensure_ascii=False)) + ")"
+        (outdir / f"compose-fake-response.{name}.txt").write_text(expr + "\n")
 
 
 def write_sandbox_template(prop_meta):

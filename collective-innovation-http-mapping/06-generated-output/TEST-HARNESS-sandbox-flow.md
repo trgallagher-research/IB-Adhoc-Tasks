@@ -22,7 +22,49 @@ This means the harness exercises the entire risk surface this project created:
 key resolution, blank→null typing, choice pass-through, multi-choice
 serialization, date shape, Title truncation, and the character escaping.
 
-## Build (once, ~10 minutes)
+## Two ways to build it
+
+**Route 1 — connector-free (recommended).** A Compose stands in for `Get
+response details`, so the harness needs no Forms connection at all. This
+sidesteps the Form Id dropdown entirely, which matters because the dropdown
+lists only personally-owned forms and rejects a pasted ID for a group-owned
+one. It also lets the escaping test (T4) run immediately, with no form
+submission. See **Build A** below.
+
+**Route 2 — live Forms call.** Uses the real connector against a real
+response. Only worth doing once Route 1 is green, and only if you want to
+confirm the live body matches the fixture. See **Build B**.
+
+## Build A — connector-free (~5 minutes)
+
+1. Power Automate → **Create** → **Instant cloud flow** →
+   `ZZ Sandbox — payload test` → trigger **Manually trigger a flow** → Create.
+2. **+ New step** → **Compose** → rename to exactly **`Compose response id`**.
+   Inputs: `7` (any number; it only feeds the Title fallback and FormResponseID).
+3. **+ New step** → **Compose** → rename to exactly **`Get response details`**.
+   *(Yes — a Compose with the connector's name. Expressions reference actions by
+   name, so this transparently substitutes for it.)*
+   Inputs: click **fx** (Expression) and paste the whole of
+   `compose-fake-response.RESPONSE6.txt` — a single `json('…')` expression.
+4. **+ New step** → **Compose** → rename to **`Compose labelled submission`** →
+   Inputs: paste `compose-labelled-submission.txt`.
+5. **+ New step** → **Compose** → rename to **`Compose item payload`** →
+   Inputs: paste `compose-item-payload.SANDBOX.txt`.
+6. **Save** → **Test** → *Manually* → **Run flow**.
+
+Why this is faithful: the Forms connector flattens its output to keys like
+`body/r<hash>`, and `?['body/x']` is a *literal* key lookup — so an object
+built by `json()` with those same flat keys is indistinguishable to every
+downstream expression. The fixture is the sanitized response 6, dummy data
+already in this repo.
+
+**Then run the escaping test (T4) immediately:** change the `Get response
+details` Compose input to `compose-fake-response.EDGECASE.txt` and run again.
+That body carries `"` `'` `\`, a newline, a tab, a CR, accented characters and
+an emoji, plus a two-value multi-choice and a rating. If the payload output
+still parses as JSON, the escaping chain is proven.
+
+## Build B — live Forms call (~10 minutes)
 
 1. Power Automate → **Create** → **Instant cloud flow** → name it
    `ZZ Sandbox — payload test` → trigger **Manually trigger a flow** → Create.
@@ -77,7 +119,7 @@ Open the run and check each Compose output in turn:
 validator (or just re-paste it into a scratch Compose). If it parses, the body
 is well-formed and the escaping held.
 
-## Escaping test (this is test T4 — do it here, it is cheap)
+## Escaping test (T4) — see Build A; also runnable against a live response
 
 Submit one dummy form response whose free-text answers contain
 `He said "let's try" — line one`, a line break, a backslash `\`, and an accented
