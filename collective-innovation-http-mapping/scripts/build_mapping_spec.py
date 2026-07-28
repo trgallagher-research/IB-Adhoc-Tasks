@@ -113,10 +113,14 @@ SP_ASSIGNMENTS = {
     46: "AdditionalFactorsDescription",
 }
 NO_DESTINATION = {
-    22: "Display-only notice element: its key is now identified from the flow (always blank in every "
-        "observed response; included in the AI prompt text) but the live schema has no corresponding "
-        "field. Determination: no per-column destination; its (blank) line remains inside the "
-        "OriginalSubmission labelled text, as in the existing flow.",
+    22: "Notice implemented as a text question. Live form structure (captured 2026-07-28) shows Q16 as "
+        "'Single line text' whose DESCRIPTION carries the warning 'This opportunity requires compliance "
+        "boundary adaptation and does not currently have chief-level support...'. It is shown only on the "
+        "governance-gate path (Q13 Yes/I-don't-know AND Q14 No) and the form ends immediately after it. "
+        "The answer box is an artefact of using a text question to display a notice; any content is "
+        "incidental (response 8 captured 'none'). Determination: no per-column destination — the value is "
+        "not meaningful data. It remains inside the OriginalSubmission labelled text. Recommend the form "
+        "owner convert it to a section description so it stops collecting input.",
     47: "File-upload answer: key identified from the flow. No supporting-files column exists (only the "
         "standard Attachments facility). Phase 1: excluded from per-column payload; the raw answer "
         "string remains inside the OriginalSubmission labelled text, as in the existing flow.",

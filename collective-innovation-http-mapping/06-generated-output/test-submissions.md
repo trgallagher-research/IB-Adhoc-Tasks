@@ -16,6 +16,20 @@ Submit **A first** — it exercises the most. Note each submission's response ID
 (visible in the flow run, and as `FormResponseID` on the created item) so you
 can find and delete the items afterwards.
 
+## ⚠ The governance gate — read before answering Section 4
+
+The form branches on **Q13 (compliance boundary adaptation)** and **Q14 (chief
+support secured)**. Answering Q13 `Yes`/`I don't know` **and** Q14 `No` shows
+the Implementation Readiness Notice (Q16) and then **ends the form** — Q15 and
+the whole of Sections 5, 6 and 7 are never displayed, ratings included.
+
+Evidence: response 8 took that path, and Q15 came through blank despite being
+marked *Required*.
+
+Consequence for testing: to exercise the ratings and impact fields, Section 4
+must be answered so the form continues — either Q13 `No`, or Q13 `Yes` with
+Q14 `Yes`. **Submission D below deliberately takes the gated path instead.**
+
 ---
 
 ## Submission A — full, with awkward characters
@@ -37,9 +51,9 @@ appear.
 | Strategic Alignment Rationale | `Supports discovery of existing material; reduces duplication; improves consistency of what schools see. Path example: C:\temp\notes — testing a backslash.` |
 | Does this suggested idea directly impact a local market? | `Yes` |
 | Local market(s) | `Netherlands, Spain, México — multilingual schools` |
-| Is a compliance boundary adaptation required? | `I don't know` |
-| If yes, is chief support secured? | `No` |
-| Specify chief support details | `Not yet raised; would need a decision before any pilot begins.` |
+| Is a compliance boundary adaptation required? | `Yes` |
+| If yes, is chief support secured? | `Yes` ⚠ **must be Yes** — see the governance gate note below |
+| Specify chief support details | `Chief support confirmed for a limited discovery and pilot phase.` |
 | Strategic importance (rating) | `5` |
 | Comments (Strategic importance) | `Could support acquisition conversations by making the offer easier to see.` |
 | Localized service offerings (rating) | `2` |
@@ -138,6 +152,38 @@ not `N/A`. Also `Title` should read `Minimal test B`.
 (`PartnerOrganisation`, `LocalMarketDetails`, `ChiefSupportDetails`,
 `IBENImpactDescription`, and so on) must be **empty**, never `N/A` or `false`.
 The parent Yes/No columns must still read `No`.
+
+---
+
+---
+
+## Submission D — the governance gate (already covered by response 8)
+
+This is the path response 8 took accidentally. Keep it as a named test, because
+it is a legitimate production path and it proves the payload copes when most of
+the form never appears.
+
+| Question | Answer |
+|---|---|
+| Opportunity Description | `Governance gate test D` |
+| Anticipated launch date | any |
+| Anticipated timeline | `Test D` |
+| External Partner Involved? | `No` |
+| Strategic Goals | tick one |
+| Strategic Alignment Rationale | `Test D` |
+| Does this idea directly impact a local market? | `Yes` |
+| Local market(s) | `Test market` |
+| Is a compliance boundary adaptation required? | `I don't know (see compliance boundaries appendix)` |
+| If yes, is chief support secured? | `No` |
+| Implementation Readiness Notice | leave **blank** |
+
+The form should end straight after the notice.
+
+**What D proves:** every downstream column — all six ratings, all impact and
+consultation fields, the whole of Sections 5–7 — arrives empty rather than `0`,
+`false` or `N/A`, even though many of those questions are marked *Required* in
+the form. Response 8 already demonstrated this; re-run only if the payload
+changes.
 
 ---
 

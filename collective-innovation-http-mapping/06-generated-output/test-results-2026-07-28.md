@@ -105,6 +105,40 @@ has not yet been compared with the column's choices — `ExternalPartnerInvolved
 `ProfessionalLearningImpact`, `AdditionalFactors` all matched on this
 submission, but only the values actually submitted were exercised.
 
+### FINDING 1 — resolved to a form-side fix
+
+Live form structure (captured 2026-07-28) confirms Q13 is a **single choice**
+whose third option is literally `I don't know (see compliance boundaries
+appendix)`. The value could not have been typed. The mismatch is real and
+lives between the Form's option text and the column's choice list.
+
+**Recommendation: edit the SharePoint choice to match the Form option verbatim.**
+No mapping change; the pass-through stays correct.
+
+## FINDING 3 — the form has a governance gate that truncates the submission
+
+Live form structure shows Q13/Q14 drive an early exit: answering Q13
+`Yes`/`I don't know` **and** Q14 `No` displays the Implementation Readiness
+Notice (Q16) and then **ends the form**. Q15 and the whole of Sections 5, 6 and
+7 are never displayed.
+
+Response 8 took this path. Proof it is branching rather than an unanswered
+form: **Q15 is marked *Required* in the form yet arrived blank**, as did every
+rating, all impact fields and all of Section 7.
+
+Three consequences:
+
+1. **Not a defect — a validation.** Many questions marked *Required* can
+   legitimately arrive blank in production. The payload handled it correctly:
+   every skipped column is empty rather than `0`, `false` or `N/A`. This is a
+   stronger test of the null design than the one intended.
+2. **The earlier test data was wrong**, not the tester. `test-submissions.md`
+   set submission A on the gated path, so it could never have exercised
+   ratings. A now answers Q13 `Yes` / Q14 `Yes` to keep the form open, and the
+   gated path is preserved as **submission D**.
+3. **The gate is a real production path**, so it stays in the matrix rather
+   than being treated as an edge case.
+
 ## FINDING 2 — Implementation Readiness Notice is an input after all
 
 The labelled submission for response 8 shows:
@@ -115,15 +149,22 @@ Every one of the six reference responses had this blank, which was the basis
 for the determination "display-only element, no SharePoint destination
 required". That determination is **now falsified**: the question accepts input.
 
-Consequence: its answer currently reaches SharePoint **only** inside
-`OriginalSubmission`, with no dedicated column. Decision needed:
+### Resolved — the determination was right, the reasoning was wrong
 
-1. Accept — the value is preserved in the labelled text, and the question is
-   arguably procedural rather than reportable; or
-2. Add a `ReadinessNotice` multiline column and map key
-   `r8d49a8bdd5e94aee82f332fcab962a51` (already evidenced from the flow).
+Live form structure shows Q16 is a `Single line text` question whose
+**description** carries the warning text ("This opportunity requires compliance
+boundary adaptation and does not currently have chief-level support. Please
+secure appropriate sponsorship before proceeding..."). The form author used a
+text question as a way to display a conditional notice; the answer box is an
+unintended side effect, and it appears only on the governance-gate path.
 
-Until decided, no data is lost, but the field is not queryable.
+So it *is* an input — but its content is incidental, not data (response 8
+captured `none`). **Determination stands: no per-column destination**, now on
+correct grounds rather than on "blank in all reference responses". The value
+remains inside `OriginalSubmission`.
+
+Optional form-side improvement for the owner: convert Q16 to a section
+description so it stops collecting input at all.
 
 ## NOT YET EXERCISED (re-test needed)
 
