@@ -9,11 +9,15 @@ evidenced structural identifiers where they exist; placeholders in
 
 ```
 When a new response is submitted            (existing trigger)
-→ Get response details                      (existing)
-→ labelled-submission construction          (existing — preserve verbatim)
-→ AI Builder / Run a prompt                 (existing — preserve verbatim)
-→ Select actions                            (existing — preserve verbatim)
-→ [NEW] Compose: item payload
+→ Get response details                      (existing; action name VERIFIED: Get_response_details)
+→ [NEW] Compose_labelled_submission         (the existing labelled text, moved out of the AI action
+                                             verbatim — content: compose-labelled-submission.txt)
+→ Run a prompt                              (existing — change ONLY its SubmissionText input to
+                                             @{outputs('Compose_labelled_submission')})
+→ Select actions ×8                         (existing — preserve verbatim)
+→ [NEW] Compose: item payload               (compose-item-payload.json — fully replaces Create item:
+                                             39 raw columns + audit fields + all 17 flow-layer
+                                             properties the old Create item set)
 → [NEW] Scope: TRY
     → [NEW] Send an HTTP request to SharePoint: duplicate check (GET)
     → [NEW] Condition: no existing item
@@ -21,6 +25,7 @@ When a new response is submitted            (existing trigger)
         no  → terminate (Succeeded) — duplicate delivery, skip
 → [NEW] Scope: CATCH  (Configure run after: TRY has failed / timed out)
     → notification + audit (below)
+→ [REMOVED] Create item                     (replaced by the HTTP POST)
 ```
 
 Set **trigger concurrency to 1** (trigger settings → Concurrency Control → On,
@@ -69,10 +74,10 @@ Blank handling contract (already encoded in the generated expressions):
 - Headers: `Accept: application/json;odata=nometadata`
 - Condition: `@empty(body('Duplicate_check')?['value'])` → *yes* = safe to create.
 
-Still gated on EV‑2: the trigger expression above is the documented pattern but
-unverified against this flow, so the duplicate check and the `FormResponseID`
-payload property stay out of executable output until the flow export confirms
-it. If the list may exceed 5,000 items, index `FormResponseID` (permission P7).
+The trigger expression is now **verified** (used identically in the existing
+flow's Get response details, AI prompt, and Create item — EV‑2), so the
+duplicate check and the `FormResponseID` payload property are fully evidenced.
+If the list may exceed 5,000 items, index `FormResponseID` (permission P7).
 
 ## 3. Create item (POST)
 
@@ -95,29 +100,30 @@ required. Success returns **201** with the created item (capture
 
 ## 4. Title
 
-Live schema: `Title` is **not required** on this list (and its linked-title
-view column displays as "Opportunity"), but the payload populates it anyway for
-usable views. The generated expression never sends null: Opportunity
-Description truncated to 255 characters with an ellipsis, falling back to
-`Form submission <submitDate>` when blank. (The fallback deliberately avoids
-the unverified trigger response-ID path; switch it to the response ID after
-EV‑2 confirms the expression.)
+Live schema: `Title` is **not required** on this list (linked-title view
+column displays as "Opportunity"). The existing flow maps Title to the raw
+Opportunity Description — a latent runtime failure for descriptions over the
+255-character Text limit. The generated expression is a **documented
+deviation**: truncated at 255 with an ellipsis, falling back to
+`Form response <id>` (verified trigger path) when blank; never null.
 
 ## 5. OriginalSubmission
 
-Destination confirmed: `OriginalSubmission` (multiline text, plain). The
-source expression is preserved, not rebuilt: once the flow export is in
-`04-existing-flow/`, the existing labelled-submission output expression is
-copied verbatim into that property with confidence `Existing`. Until then it
-is deliberately absent from the payload.
+The existing flow builds the labelled submission text inline in the AI action
+and **never stores it** — the column sits empty. The replacement closes that
+audit gap without changing the text: the identical template (preserved
+verbatim in `compose-labelled-submission.txt`, extracted from the flow
+capture) moves into `Compose_labelled_submission`, which feeds both the AI
+prompt and the `OriginalSubmission` payload property.
 
 ## 6. Processing status / error handling
 
-- Confirmed columns: `ProcessingStatus` (Choice: Received / Processing /
-  Processed / Failed; column default **Processed**), `ProcessedDate`
-  (DateTime), `ProcessingError` (multiline). The Phase 1 payload omits them so
-  the column defaults apply; whether the existing flow sets them explicitly
-  awaits the flow export.
+- The existing flow **explicitly sets** `ProcessingStatus` = `Processed`,
+  `ProcessedDate` = `utcNow()`, `PromptVersion` and `SourceForm` constants —
+  all preserved verbatim in the payload's flow-layer properties (including the
+  `PromptVersion` trailing-newline quirk; trim it only as a reviewed change).
+  `ProcessingError` is not set by the existing flow and is written only by the
+  new catch path.
 - CATCH scope (runs after TRY fails or times out):
   1. `Compose_error_detail`: `@{result('TRY')}` — captures which action failed
      and the raw error body.
@@ -126,9 +132,9 @@ is deliberately absent from the payload.
   3. Do **not** attempt a second create from the catch path — failed runs are
      replayed from the run history (**Resubmit**) after the cause is fixed;
      the duplicate check makes resubmission idempotent.
-- `ReviewStatus` stays at its column default — **`Not reviewed`, confirmed by
-  the live schema**; reviewer and projected-impact fields are never in the
-  payload.
+- `ReviewStatus` is set explicitly to `Not reviewed` — exactly as the existing
+  flow does (and matching the column default); other reviewer and
+  projected-impact fields are never in the payload.
 
 ## 7. Distinguishing permission errors from payload errors
 

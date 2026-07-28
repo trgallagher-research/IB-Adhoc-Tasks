@@ -16,14 +16,21 @@ GENERATED = SPEC["_meta"]["generated"]
 
 Q = SPEC["question_mappings"]
 META = SPEC["forms_metadata_mappings"]
+FLOW = SPEC.get("flow_layer_mappings", [])
 BACKEND = SPEC["backend_fields_not_form_questions"]
+
+KNOWN_KEYS = {k["response_key"] for k in KEYS_INV["keys"]}
+ASSIGNED = {e["forms_response_key"] for e in Q if e["forms_response_key"]}
+SURPLUS = sorted(KNOWN_KEYS - ASSIGNED)
 
 
 def sp_cell(e):
     sp = e["sharepoint"]
+    if sp.get("no_destination"):
+        return "— (no destination, Confirmed)"
     if sp["internal_name"]:
         return f"`{sp['internal_name']}` ({sp['type']}, {sp['confidence']})"
-    return f"Unresolved — no schema evidence"
+    return "Unresolved"
 
 
 def mapping_spec_md():
@@ -50,43 +57,48 @@ def mapping_spec_md():
         md.append(f"- `{k}`: {v}")
     md += [
         "",
-        "The SharePoint side is **Confirmed for every mapping** from the live schema "
-        "export of 2026-07-28 (unique label correspondence, types, required flags and "
-        "choice sets). Executability now turns on the Forms side and on expression-source "
-        "verification.",
+        f"**Cross-validation:** {SPEC['_meta']['cross_validation']}",
         "",
         "## Forms metadata mappings",
         "",
-        "| ID | Source expression | Forms conf. | SharePoint | Normalization |",
-        "|----|-------------------|-------------|------------|---------------|",
+        "| ID | Source | Conf. | SharePoint | Executable |",
+        "|----|--------|-------|------------|------------|",
     ]
     for e in META:
-        md.append(f"| {e['map_id']} | `{e['source']}` | {e['forms_key_confidence']} | "
-                  f"{sp_cell(e)} | {e['normalization'][:140]} |")
+        md.append(f"| {e['map_id']} | {e['source'][:80]} | {e['forms_key_confidence']} | "
+                  f"{sp_cell(e)} | {'yes' if e['executable'] else 'no'} |")
     md += [
         "",
-        "## Question mappings (Excel columns 7–47)",
+        "## Question mappings (Excel columns 7–47) — all keys `Existing` from the flow's labelled construction",
         "",
-        "| ID | Question label | Answer shape | Forms response key | Forms conf. | SharePoint | Executable |",
-        "|----|----------------|--------------|--------------------|-------------|------------|------------|",
+        "| ID | Question label | Answer shape | Forms response key | Conf. | SharePoint | Executable |",
+        "|----|----------------|--------------|--------------------|-------|------------|------------|",
     ]
     for e in Q:
-        key = f"`{e['forms_response_key']}`" if e["forms_response_key"] else (
-            f"candidates: {len(e['forms_key_candidates'])}" if e["forms_key_candidates"] else "—")
         md.append(f"| {e['map_id']} | {e['form_question_label'][:70]} | {e['forms_answer_shape']} | "
-                  f"{key} | {e['forms_key_confidence']} | {sp_cell(e)} | "
+                  f"`{e['forms_response_key']}` | {e['forms_key_confidence']} | {sp_cell(e)} | "
                   f"{'yes' if e['executable'] else 'no'} |")
-    md += ["", "## Evidence detail (Confirmed and Probable rows)", ""]
+    md += [
+        "",
+        "## Flow-layer mappings — preserved verbatim from the existing Create item",
+        "",
+        "| Property | Source |",
+        "|----------|--------|",
+    ]
+    for m in FLOW:
+        src = f"constant `{json.dumps(m['constant'])}`" if m["expression"] is None \
+            else f"`{m['expression'][:80]}`"
+        md.append(f"| `{m['internal_name']}` | {src} |")
+    md += ["", "## Evidence detail", ""]
     for e in META + Q:
-        if e["forms_key_confidence"] in ("Confirmed", "Probable", "Existing"):
-            label = e.get("form_question_label") or e.get("description")
-            md += [f"### {e['map_id']} — {label}", "",
-                   f"- Confidence: **{e['forms_key_confidence']}**",
-                   f"- Evidence: {e['forms_key_evidence']}",
-                   f"- Normalization: {e['normalization']}"]
-            for n in e["notes"]:
-                md.append(f"- Note: {n}")
-            md.append("")
+        label = e.get("form_question_label") or e.get("description")
+        md += [f"### {e['map_id']} — {label}", "",
+               f"- Confidence: **{e['forms_key_confidence']}**",
+               f"- Evidence: {e['forms_key_evidence']}",
+               f"- Normalization: {e['normalization']}"]
+        for n in e["notes"]:
+            md.append(f"- Note: {n}")
+        md.append("")
     md += ["## Backend fields — not Form questions (internal names evidenced by live schema)", "",
            "| Fields | Layer | Behaviour at item creation |",
            "|--------|-------|----------------------------|"]
@@ -98,79 +110,58 @@ def mapping_spec_md():
 
 
 def unresolved_md():
-    unresolved = [e for e in Q if e["forms_key_confidence"] == "Unresolved"]
-    probable = [e for e in Q if e["forms_key_confidence"] == "Probable"]
+    unresolved = [e for e in META + Q if e["forms_key_confidence"] in ("Probable", "Unresolved")]
     md = [
         "# Unresolved mappings report",
         "",
-        f"Generated {GENERATED} by `scripts/build_reports.py`. Every row here is excluded "
-        "from executable output. Resolution paths are in `EVIDENCE-REQUEST.md`.",
+        f"Generated {GENERATED} by `scripts/build_reports.py`.",
         "",
-        "## A. SharePoint side — RESOLVED (live schema export 2026-07-28)",
+        f"## Open unresolved/probable mappings: {len(unresolved)}",
         "",
-        "Every SharePoint internal name, type, required flag and choice set is now "
-        "Confirmed from `03-sharepoint-schema/sanitized/knowledge-submissions-schema.json`. "
-        "Remaining unresolved items are Forms-side keys and flow-layer expressions only.",
-        "",
-        "## B. Probable Forms keys (human resolution required; not executable)",
-        "",
-        "| ID | Question | Candidate key | Why capped at Probable |",
-        "|----|----------|---------------|------------------------|",
     ]
-    for e in probable:
-        md.append(f"| {e['map_id']} | {e['form_question_label'][:60]} | "
-                  f"`{e['forms_response_key']}` | 1–5 rating values are ruled "
-                  "non-distinctive; multiset-unique match only. |")
+    if not unresolved:
+        md += [
+            "**None.** The existing flow's labelled-submission construction (EV‑2, captured "
+            "2026‑07‑28) pairs every question label with its response key, and the live schema "
+            "(EV‑1) resolves every destination. All prior Probables and candidate sets resolved "
+            "consistently with the dummy-test evidence — zero contradictions.",
+            "",
+        ]
+    else:
+        for e in unresolved:
+            md.append(f"- {e['map_id']} ({e['forms_key_confidence']}): "
+                      f"{e.get('form_question_label') or e.get('description')}")
+        md.append("")
+    md += [
+        "## Permanently unexplained keys (documented, harmless)",
+        "",
+        f"The body carries {len(SURPLUS)} keys beyond the 41 questions — blank in every observed "
+        "response and referenced nowhere in the flow. Most plausibly deleted questions or section "
+        "elements. They are mapped to nothing and require no action:",
+        "",
+    ]
+    for k in SURPLUS:
+        md.append(f"- `{k}`")
     md += [
         "",
-        "## C. Unresolved Forms keys with known candidate sets",
+        "## Residual items outside the mapping itself",
         "",
-        "Ambiguity within response 6 (values 'No' and '1' are non-distinctive):",
-        "",
-        "| ID | Question | Candidate keys |",
-        "|----|----------|----------------|",
-    ]
-    for e in unresolved:
-        if e["forms_key_candidates"]:
-            keys = ", ".join(f"`{k}`" for k in e["forms_key_candidates"])
-            md.append(f"| {e['map_id']} | {e['form_question_label'][:60]} | {keys} |")
-    md += [
-        "",
-        "## D. Unresolved Forms keys with no candidate evidence",
-        "",
-        "Blank in response 6; blank properties cannot be attributed to questions. "
-        "Most will resolve from a capture of reference response 2 (richly distinctive "
-        "dummy content).",
-        "",
-        "| ID | Question |",
-        "|----|----------|",
-    ]
-    for e in unresolved:
-        if not e["forms_key_candidates"]:
-            md.append(f"| {e['map_id']} | {e['form_question_label'][:80]} |")
-    md += [
-        "",
-        "## E. Flow-layer items awaiting the flow export",
-        "",
-        "- `OriginalSubmission` source expression (labelled-submission construction) — must be "
-        "preserved, not reconstructed.",
-        "- AI Builder / Select action mappings for Innovation Type, Horizon, Categorization, Ownership.",
-        "- The working default written to `ReviewStatus` (assumed 'Not reviewed'; unproven).",
-        "- The exact trigger expression for the Form response ID.",
+        "- Five of the eight Select actions were not Peek-code captured (names and join expressions "
+        "are evidenced via Create item; the AI layer is preserved as-is, so this is non-blocking).",
+        "- Live behaviour items are covered by the test matrix, not by mapping evidence.",
         "",
     ]
     return "\n".join(md)
 
 
 def coverage_md():
-    conf = [e for e in Q if e["forms_key_confidence"] == "Confirmed"]
-    prob = [e for e in Q if e["forms_key_confidence"] == "Probable"]
-    unres = [e for e in Q if e["forms_key_confidence"] == "Unresolved"]
-    cand_pool = sorted({k for e in Q if e["forms_key_candidates"] for k in e["forms_key_candidates"]})
-    assigned = {e["forms_response_key"] for e in Q if e["forms_response_key"]}
+    n_exec_q = sum(1 for e in Q if e["executable"])
+    n_exec_m = sum(1 for e in META if e["executable"])
+    by_conf = {}
+    for e in Q:
+        by_conf[e["forms_key_confidence"]] = by_conf.get(e["forms_key_confidence"], 0) + 1
+    conf_str = " + ".join(f"{v} {k}" for k, v in sorted(by_conf.items()))
     totals = KEYS_INV["_provenance"]["totals"]
-    blank = totals["blank"]
-    unaccounted = totals["opaque_r_keys"] - len(assigned) - len(cand_pool) - blank
 
     md = [
         "# Coverage report",
@@ -183,62 +174,52 @@ def coverage_md():
         "| Population | Count | Breakdown |",
         "|------------|-------|-----------|",
         f"| Excel columns | 47 | 6 Forms metadata + 41 questions |",
-        f"| Question mappings | {len(Q)} | {len(conf)} Confirmed + {len(prob)} Probable + {len(unres)} Unresolved (Forms side) |",
-        f"| Opaque `r…` keys | {totals['opaque_r_keys']} | {len(assigned)} assigned (Confirmed+Probable) + "
-        f"{len(cand_pool)} in candidate pools + {blank} blank/unattributable + {unaccounted} otherwise unaccounted |",
-        f"| Executable mappings | {sum(1 for e in Q if e['executable']) + sum(1 for e in META if e['executable'])} | "
-        f"{sum(1 for e in Q if e['executable'])} question + "
-        f"{sum(1 for e in META if e['executable'])} metadata/Title (both sides Confirmed) |",
+        f"| Question mappings | {len(Q)} | {conf_str} (Forms side) |",
+        f"| Opaque `r…` keys | {totals['opaque_r_keys']} | {len(ASSIGNED)} assigned by the flow's labelled "
+        f"construction + {len(SURPLUS)} permanently-blank surplus keys |",
+        f"| Executable payload properties | {n_exec_q + n_exec_m + len(FLOW)} | {n_exec_q} question + "
+        f"{n_exec_m} metadata/audit + {len(FLOW)} preserved flow-layer |",
         "",
-        "Key-count arithmetic: 48 keys − 41 questions = **at least 7 surplus keys** even if "
-        "every question maps 1:1; with 30 blank keys against 23 unanswered questions in "
-        "response 6, the surplus is consistent but the specific surplus keys cannot be "
-        "identified from current evidence.",
+        "Key-count arithmetic closes exactly: 41 + "
+        f"{len(SURPLUS)} = {totals['opaque_r_keys']}.",
         "",
-        "## 1. Form fields without a SharePoint destination",
+        "## 1. Form fields without a per-column SharePoint destination",
         "",
-        "- **Implementation Readiness Notice (Q22)** — determined to need NO destination: blank in "
-        "all six reference responses including the fully completed one, so it is a display-only "
-        "element. (Verify once against the live form.)",
-        "- **Add any supporting files (Q47)** — no ordinary-field destination; Phase 1 treats file "
-        "references separately (see implementation instructions).",
-        "- **Excel metadata 'Start time' and 'Last modified time'** — no Get-response-details "
-        "equivalent; no destination proposed.",
-        "- **Excel metadata 'Name'** — no Get-response-details equivalent (only `responder` email); "
-        "destination undecided.",
-        "- All other question fields have an *intended* destination that is Unresolved pending schema "
-        "evidence — they are not 'no destination' cases.",
+        "- **Implementation Readiness Notice (Q22)** — display-only element (key identified from the "
+        "flow; blank in every observed response; no schema field). No destination required.",
+        "- **Add any supporting files (Q47)** — no supporting-files column; Phase 1 excludes file "
+        "references from per-column storage. Raw answer string still lands inside `OriginalSubmission`.",
+        "- **Excel metadata 'Start time', 'Last modified time', 'Name'** — no Get-response-details "
+        "equivalent and no schema destination; not mapped (as in the existing flow).",
         "",
         "## 2. SharePoint fields without Form sources (from the live schema)",
         "",
-        "Flow-constructed / control fields: `Title` (from Q07 + fallback), `FormResponseID` "
-        "(response ID; pending trigger verification), `SubmittedDate`, `Respondent`, "
-        "`SourceForm` (column default), `OriginalSubmission` (existing flow expression, pending "
-        "flow export). AI-layer, governance and processing fields are listed in the backend "
-        "table of the mapping spec — none is sourced from raw Forms answers.",
+        "All evidenced and handled: flow-constructed audit fields (`Title`, `FormResponseID`, "
+        "`SubmittedDate`, `Respondent`, `SourceForm`, `OriginalSubmission`, `ProcessedDate`, "
+        "`ProcessingStatus`, `PromptVersion`), AI-layer fields, and governance fields — see the "
+        "flow-layer and backend tables in the mapping spec. `ProcessingError` is written only by "
+        "the new catch path.",
         "",
         "## 3. Unexplained Forms keys",
         "",
-        f"- {blank} keys are blank in response 6 and unattributable.",
-        f"- Of the {totals['non_blank']} non-blank keys: {len(assigned)} assigned, {len(cand_pool)} sit in "
-        "candidate pools (five 'No' values, two '1' values).",
-        "- At least 7 keys are surplus to the 41 questions (possible section/notice elements, deleted or "
-        "hidden questions). Their identity is unknowable from current evidence.",
+        f"{len(SURPLUS)} surplus keys, blank in every observed response and referenced nowhere in "
+        "the flow (listed in the unresolved-mappings report). No action required.",
         "",
         "## 4. Existing AI and processing mappings",
         "",
-        "Innovation Type, Horizon, Categorization, Ownership, OriginalSubmission and the labelled-submission "
-        "construction remain with the existing flow actions. **Pending `04-existing-flow/` export**; they are "
-        "preserved, not rebuilt, and are out of scope for the raw-answer payload.",
+        "Captured verbatim from Create item and preserved in the payload's flow-layer properties: "
+        "AISummary, Topics, KeyFindings, Examples, OpenQuestions, DifferentPerspectives, "
+        "ClaimsToVerify, RelatedKnowledge, HumanReviewRequired/Reason, FullAIOutput, ReviewStatus, "
+        "ProcessingStatus, ProcessedDate, PromptVersion, SourceForm, ContentTypeId.",
         "",
         "## 5. Intentionally blank reviewer fields",
         "",
-        "Human-review/governance fields (including ReviewStatus default 'Not reviewed' pending flow proof) are "
-        "intentionally not populated by the create payload.",
+        "ReviewStatus is explicitly 'Not reviewed' (as in the existing flow, matching the column "
+        "default); other governance fields are untouched by the payload.",
         "",
         "## 6. Intentionally blank projected-impact fields",
         "",
-        "Projected-impact measures (Word model, governance layer) are intentionally blank at item creation.",
+        "No projected-impact columns exist in the live schema's visible field set; nothing is sent.",
         "",
         "## 7. Excluded SharePoint system fields (from the live schema)",
         "",

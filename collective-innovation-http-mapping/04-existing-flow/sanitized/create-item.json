@@ -1,0 +1,56 @@
+{
+  "_provenance": {
+    "action": "SharePoint Create item — the action being replaced. Its parameters are the working flow-layer mappings, preserved with confidence 'Existing'.",
+    "captured": "2026-07-28 via Peek code",
+    "sanitization": "dataset (site URL) redacted to <site-url>; table GUID retained (matches the list GUID already in 03-sharepoint-schema).",
+    "observations": [
+      "Raw per-question columns (OpportunityDescription, Sponsor, ...) are NOT set — confirming the gap this project closes.",
+      "OriginalSubmission is NOT set — the labelled text currently feeds only the AI prompt.",
+      "ProcessingError is NOT set.",
+      "Title is the raw Opportunity Description with no truncation — latent failure for descriptions > 255 chars (Text limit); the replacement payload truncates.",
+      "SubmittedDate posts the raw 'M/d/yyyy h:mm:ss AM/PM' UTC string; the replacement payload normalizes to ISO 8601 UTC (same instant).",
+      "PromptVersion constant carries a trailing newline (quirk, preserved verbatim).",
+      "ReviewStatus and ProcessingStatus are set EXPLICITLY ('Not reviewed' / 'Processed'), matching the column defaults."
+    ]
+  },
+  "definition": {
+    "type": "OpenApiConnection",
+    "inputs": {
+      "parameters": {
+        "dataset": "<site-url>",
+        "table": "7b0bfaac-0638-4475-a92e-44aa7030af1c",
+        "item/Title": "@outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab']",
+        "item/FormResponseID": "@triggerOutputs()?['body/resourceData/responseId']",
+        "item/SubmittedDate": "@outputs('Get_response_details')?['body/submitDate']",
+        "item/Respondent": "@outputs('Get_response_details')?['body/responder']",
+        "item/SourceForm": "Innovation Intake Form (Knowledge-Bank)",
+        "item/AISummary": "@outputs('Run_a_prompt')?['body/responsev2/predictionOutput/structuredOutput/summary']",
+        "item/Topics": "@join(body('Select_Topics'), decodeUriComponent('%0A'))",
+        "item/KeyFindings": "@join(body('Select_Key_Findings'), decodeUriComponent('%0A'))",
+        "item/Examples": "@join(body('Select_Examples'), decodeUriComponent('%0A'))",
+        "item/OpenQuestions": "@join(body('Select_Open_Questions'), decodeUriComponent('%0A'))",
+        "item/DifferentPerspectives": "@join(body('Select_Different_Perspectives'), decodeUriComponent('%0A'))",
+        "item/ClaimsToVerify": "@join(body('Select_Claims_To_Verify'), decodeUriComponent('%0A'))",
+        "item/RelatedKnowledge": "@join(body('Select_Related_Knowledge'), decodeUriComponent('%0A'))",
+        "item/HumanReviewRequired": "@outputs('Run_a_prompt')?['body/responsev2/predictionOutput/structuredOutput/humanReviewRequired']",
+        "item/HumanReviewReason": "@outputs('Run_a_prompt')?['body/responsev2/predictionOutput/structuredOutput/humanReviewReason']",
+        "item/ReviewStatus/Value": "Not reviewed",
+        "item/FullAIOutput": "@outputs('Run_a_prompt')?['body/responsev2/predictionOutput/text']",
+        "item/ProcessingStatus/Value": "Processed",
+        "item/ProcessedDate": "@utcNow()",
+        "item/PromptVersion": "Knowledge Submission Analyser v1\n",
+        "item/{ContentType}/Id": "0x01002470676DA4BBF5468468EDBF918DE47C0082A052FA62248A4A84337267D7DD930B"
+      },
+      "host": {
+        "apiId": "/providers/Microsoft.PowerApps/apis/shared_sharepointonline",
+        "connection": "shared_sharepointonline",
+        "operationId": "PostItem"
+      }
+    },
+    "runAfter": {
+      "Select_Related_Knowledge": [
+        "Succeeded"
+      ]
+    }
+  }
+}

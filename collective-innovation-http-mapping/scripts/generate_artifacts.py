@@ -2,18 +2,18 @@
 """Generate the Power Automate implementation artefacts from the mapping spec.
 
 Modes:
-  default      -> 06-generated-output/: compose-item-payload.json, a dummy-body
-                  simulation (simulation-results.json) and validation-report.md.
-                  Only mappings marked executable in the spec (both sides
-                  Existing/Confirmed, all sources evidenced) are emitted —
-                  Probable/Unresolved rows are structurally excluded.
-  --fixtures   -> scripts/fixtures/output/: the same pipeline against the DUMMY
-                  ZZFIXTURE_ schema, kept as a regression harness.
+  default      -> 06-generated-output/: compose-item-payload.json (full payload:
+                  raw questions + metadata + preserved flow-layer properties),
+                  compose-labelled-submission.txt (the OriginalSubmission /
+                  AI-prompt text, extracted verbatim from the flow evidence),
+                  simulation-results.json, validation-report.md.
+  --fixtures   -> scripts/fixtures/output/: regression harness on the DUMMY
+                  ZZFIXTURE_ schema.
 
-Compose expressions use the single-token form ("@if(...)", one leading @, no
-braces) so a property keeps its native JSON type (null / number / string).
-GRD_ACTION must match the live flow's Get response details action name —
-verify it against the flow export (04-existing-flow/) before deployment.
+Compose expressions use the single-token form ("@if(...)") so properties keep
+native JSON types. Action names referenced: Get_response_details (VERIFIED),
+Run_a_prompt / Select_* (from flow captures), Compose_labelled_submission (new
+action introduced by the implementation instructions).
 """
 import argparse
 import json
@@ -24,7 +24,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 GENERATED = "2026-07-28"
 
-GRD_ACTION = "Get_response_details"   # VERIFY against the live flow's action name
+GRD_ACTION = "Get_response_details"   # verified against flow captures
+RESPONSE_ID_EXPR = "triggerOutputs()?['body/resourceData/responseId']"  # verified
 
 
 def grd(key):
@@ -32,7 +33,6 @@ def grd(key):
 
 
 def build_expression(kind, key=None):
-    """Power Automate expression (without leading @) for one property."""
     v = grd(key) if key else None
     if kind in ("text", "multiline", "date", "yesno_choice"):
         return f"if(empty({v}), null, {v})"
@@ -45,8 +45,12 @@ def build_expression(kind, key=None):
     if kind == "submitdate":
         return (f"concat(formatDateTime(outputs('{GRD_ACTION}')?['body/submitDate'], "
                 "'yyyy-MM-ddTHH:mm:ss'), 'Z')")
+    if kind == "responseid_string":
+        return f"string({RESPONSE_ID_EXPR})"
+    if kind == "original_submission":
+        return "outputs('Compose_labelled_submission')"
     if kind == "title_from_description":
-        fallback = f"concat('Form submission ', outputs('{GRD_ACTION}')?['body/submitDate'])"
+        fallback = f"concat('Form response ', string({RESPONSE_ID_EXPR}))"
         return (f"if(empty({v}), {fallback}, "
                 f"if(greater(length({v}), 255), concat(substring({v}, 0, 252), '...'), {v}))")
     raise ValueError(kind)
@@ -60,12 +64,19 @@ SHAPE_TO_KIND = {
     "multi-choice": "multichoice_as_text",
 }
 METADATA_KIND = {"M-TITLE": "title_from_description", "M-RESPONDER": "responder",
-                 "M-SUBMITDATE": "submitdate"}
+                 "M-SUBMITDATE": "submitdate", "M-RESPONSEID": "responseid_string",
+                 "M-ORIGINALSUBMISSION": "original_submission"}
 
 
 def q07_key(spec):
     return next(e["forms_response_key"] for e in spec["question_mappings"]
                 if e["map_id"] == "Q07")
+
+
+def extract_labelled_template():
+    """Pull the labelled-submission text verbatim from the flow evidence."""
+    action = json.loads((ROOT / "04-existing-flow/sanitized/run-a-prompt.json").read_text())
+    return action["definition"]["inputs"]["parameters"]["item/requestv2/SubmissionText"]
 
 
 def production_properties(spec):
@@ -80,7 +91,7 @@ def production_properties(spec):
             "sp_type": e["sharepoint"]["type"],
             "expression": build_expression(kind, k7 if kind == "title_from_description" else None),
             "kind": kind, "map_id": e["map_id"], "label": e["description"],
-            "forms_key": None if kind != "title_from_description" else k7,
+            "forms_key": k7 if kind == "title_from_description" else None,
             "forms_confidence": e["forms_key_confidence"],
             "sp_confidence": e["sharepoint"]["confidence"],
         })
@@ -97,12 +108,37 @@ def production_properties(spec):
             "forms_confidence": e["forms_key_confidence"],
             "sp_confidence": e["sharepoint"]["confidence"],
         })
+    for m in spec.get("flow_layer_mappings", []):
+        props.append({
+            "internal_name": m["internal_name"],
+            "sp_type": "(flow layer)",
+            "expression": m["expression"],           # None => constant
+            "constant": m.get("constant"),
+            "kind": "verbatim", "map_id": f"F-{m['internal_name']}",
+            "label": "preserved Create item parameter",
+            "forms_key": None,
+            "forms_confidence": m["confidence"], "sp_confidence": "Confirmed",
+        })
     return props
+
+
+def payload_value(p):
+    if p["kind"] == "verbatim":
+        return p["constant"] if p["expression"] is None else "@" + p["expression"]
+    return "@" + p["expression"]
 
 
 # ---------------- simulation (mirrors expression semantics) ----------------
 
-def simulate(kind, body, key):
+def render_template(template, body, rid):
+    """Render the labelled-submission template against a dummy body."""
+    def sub(m):
+        return body.get(m.group(1), "")
+    text = re.sub(r"@\{outputs\('Get_response_details'\)\?\['body/([A-Za-z0-9]+)'\]\}", sub, template)
+    return text.replace("@{triggerOutputs()?['body/resourceData/responseId']}", str(rid))
+
+
+def simulate(kind, body, key, rid, template):
     def val(k):
         return body.get(k, "")
     if kind in ("multiline", "text", "date", "yesno_choice"):
@@ -119,26 +155,32 @@ def simulate(kind, body, key):
     if kind == "submitdate":
         dt = datetime.strptime(body["submitDate"], "%m/%d/%Y %I:%M:%S %p")
         return dt.strftime("%Y-%m-%dT%H:%M:%S") + "Z"
+    if kind == "responseid_string":
+        return str(rid)
+    if kind == "original_submission":
+        return render_template(template, body, rid)
     if kind == "title_from_description":
         v = val(key)
         if v == "":
-            return f"Form submission {body['submitDate']}"
+            return f"Form response {rid}"
         return v if len(v) <= 255 else v[:252] + "..."
     raise ValueError(kind)
 
 
-def run_simulation(prop_meta, k7, type_of):
-    """Run both dummy bodies through the semantic mirror; assert type contract."""
+def run_simulation(prop_meta, k7, type_of, template):
     body6 = json.loads((ROOT / "02-get-response-details/sanitized/"
                         "get-response-details-response-6.body.json").read_text())["body"]
     edge = {"responder": "edge.case@example.invalid",
             "submitDate": "12/31/2026 11:59:59 PM",
             k7: 'He said "let\'s try" — line1\nline2 \\ ünïcödé 🚀 <script>'}
     results = {}
-    for name, body in (("response-6", body6), ("edge-case-all-blank-except-Q07", edge)):
+    for name, body, rid in (("response-6", body6, 6),
+                            ("edge-case-all-blank-except-Q07", edge, 999)):
         sim = {}
         for p in prop_meta:
-            sim[p["internal_name"]] = simulate(p["kind"], body, p["forms_key"] or k7)
+            if p["kind"] == "verbatim":
+                continue  # AI/flow-layer values are proven by the working flow, not simulable
+            sim[p["internal_name"]] = simulate(p["kind"], body, p["forms_key"] or k7, rid, template)
         text = json.dumps(sim, ensure_ascii=False)
         assert json.loads(text) == sim
         for iname, v in sim.items():
@@ -159,19 +201,26 @@ def run_simulation(prop_meta, k7, type_of):
 
 def run_production(spec):
     outdir = ROOT / "06-generated-output"
+    template = extract_labelled_template()
+    (outdir / "compose-labelled-submission.txt").write_text(template + "\n")
+
     prop_meta = production_properties(spec)
-    payload = {p["internal_name"]: "@" + p["expression"] for p in prop_meta}
+    payload = {p["internal_name"]: payload_value(p) for p in prop_meta}
+    n_raw = sum(1 for p in prop_meta if p["map_id"].startswith("Q"))
+    n_meta = sum(1 for p in prop_meta if p["map_id"].startswith("M-"))
+    n_flow = sum(1 for p in prop_meta if p["map_id"].startswith("F-"))
     artefact = {
         "_status": {
             "generated": GENERATED,
             "generated_by": "scripts/generate_artifacts.py",
             "executable_mappings": len(prop_meta),
-            "notice": ("Only mappings with BOTH sides Existing/Confirmed and fully evidenced "
-                       "expression sources are emitted. Still pending evidence (excluded here): "
-                       "FormResponseID (trigger response-ID path unverified), OriginalSubmission "
-                       "(flow expression), all Probable/Unresolved Forms keys. Before deployment, "
-                       "verify the Get response details action name matches 'Get_response_details' "
-                       "(underscores for spaces) or rename the references."),
+            "composition": f"{n_raw} raw question properties + {n_meta} metadata/audit + "
+                           f"{n_flow} preserved flow-layer properties",
+            "notice": ("This payload fully REPLACES the existing Create item: it carries every "
+                       "property that action set (preserved verbatim, incl. constants and the "
+                       "ContentTypeId) plus the new raw per-question columns and OriginalSubmission. "
+                       "It requires the Compose_labelled_submission action defined in the "
+                       "implementation instructions (text in compose-labelled-submission.txt)."),
         },
         "compose_input": payload,
     }
@@ -179,17 +228,16 @@ def run_production(spec):
         json.dumps(artefact, indent=2, ensure_ascii=False) + "\n")
 
     type_of = {p["internal_name"]: p["sp_type"] for p in prop_meta}
-    results = run_simulation(prop_meta, q07_key(spec), type_of)
+    results = run_simulation(prop_meta, q07_key(spec), type_of, template)
     (outdir / "simulation-results.json").write_text(json.dumps({
-        "_notice": "Semantic simulation of the production Compose payload against dummy bodies "
-                   "(sanitized response 6; synthetic edge-case with JSON-sensitive characters and "
-                   "all-blank answers). All values dummy.",
-        "checks": ["valid JSON round-trip / escaping", "blank -> JSON null (never '', 0, false, 'N/A', 'null')",
-                   "int for Number, ISO-shaped string for DateTime, non-empty string for Text/Note/Choice",
-                   "Title never null or empty"],
+        "_notice": "Semantic simulation of the non-flow-layer payload properties against dummy bodies "
+                   "(sanitized response 6; synthetic edge-case). Flow-layer (AI/constants) properties "
+                   "are preserved verbatim from the working flow and are exercised by the live test "
+                   "matrix instead. All values dummy.",
         "results": results}, indent=2, ensure_ascii=False) + "\n")
     write_validation_report(prop_meta, spec)
-    print(f"production mode: {len(prop_meta)} executable properties emitted; simulations passed")
+    print(f"production mode: {len(prop_meta)} properties ({n_raw} raw + {n_meta} metadata + "
+          f"{n_flow} flow-layer); simulations passed")
     return prop_meta
 
 
@@ -200,7 +248,7 @@ def write_validation_report(prop_meta, spec):
             label = e.get("form_question_label") or e.get("description")
             excluded.append((e["map_id"], label, e["forms_key_confidence"],
                              e["sharepoint"]["confidence"],
-                             "no destination" if e["sharepoint"].get("no_destination") else ""))
+                             "no destination (by determination)" if e["sharepoint"].get("no_destination") else ""))
     md = [
         "# Validation report — executable payload properties",
         "",
@@ -210,57 +258,68 @@ def write_validation_report(prop_meta, spec):
         "",
         f"## Executable properties: {len(prop_meta)}",
         "",
-        "| Property (internal name) | SP type | Source | Forms conf. | SP conf. | Normalization kind |",
-        "|--------------------------|---------|--------|-------------|----------|--------------------|",
+        "| Property (internal name) | SP type | Source | Confidence | Kind |",
+        "|--------------------------|---------|--------|------------|------|",
     ]
     for p in prop_meta:
-        src = f"`{p['forms_key']}`" if p.get("forms_key") and p["kind"] != "title_from_description" \
-            else p["label"]
+        if p["kind"] == "verbatim":
+            src = f"constant `{json.dumps(p['constant'])}`" if p["expression"] is None \
+                else f"`{p['expression'][:70]}`"
+        elif p.get("forms_key"):
+            src = f"`{p['forms_key']}`"
+        else:
+            src = p["label"]
         md.append(f"| `{p['internal_name']}` | {p['sp_type']} | {src} | "
-                  f"{p['forms_confidence']} | {p['sp_confidence']} | {p['kind']} |")
-    md += [
-        "",
-        "## Excluded from executable output (by rule)",
-        "",
-        "| ID | Mapping | Forms conf. | SP conf. | Note |",
-        "|----|---------|-------------|----------|------|",
-    ]
+                  f"{p['forms_confidence']} | {p['kind']} |")
+    md += ["", "## Excluded from per-column payload", "",
+           "| ID | Mapping | Forms conf. | SP conf. | Note |",
+           "|----|---------|-------------|----------|------|"]
     for mid, label, fc, sc, note in excluded:
         md.append(f"| {mid} | {str(label)[:60]} | {fc} | {sc} | {note} |")
     md += [
         "",
-        "## Dummy-body simulation (production payload)",
+        "Both excluded questions' raw answers still reach SharePoint inside `OriginalSubmission` "
+        "(preserved labelled text), as in the existing flow's AI prompt.",
         "",
-        "The payload semantics are mirrored in Python and run against the sanitized response-6 "
-        "body and a synthetic edge-case body (quotes, apostrophes, backslash, line breaks, "
-        "Unicode, emoji; every other answer blank). Asserted:",
+        "## Dummy-body simulation",
         "",
-        "- valid JSON round-trip — all JSON-sensitive characters survive;",
-        "- blank answers become JSON `null` — never `''`, `0`, `false`, `'N/A'` or the string `'null'`;",
-        "- Number columns receive integers; DateTime columns ISO-shaped strings; Text/Note/Choice "
-        "columns non-empty strings;",
-        "- `Title` is never null or empty (truncation at 255 with ellipsis; submitDate-based fallback).",
+        "Raw/metadata properties (including the rendered `OriginalSubmission` template) are "
+        "simulated against the sanitized response-6 body and a synthetic edge-case body "
+        "(quotes, apostrophes, backslash, line breaks, Unicode, emoji; every other answer "
+        "blank). Asserted: JSON round-trip escaping; blank -> `null` (never `''`, `0`, `false`, "
+        "`'N/A'`, `'null'`); int for Number; ISO shape for DateTime; non-empty strings for "
+        "Text/Note/Choice; `Title` never null (truncation at 255; response-ID fallback). "
+        "Flow-layer (AI/constant) properties are preserved verbatim from the working flow and "
+        "are exercised by the live test matrix instead. Results: `simulation-results.json`.",
         "",
-        "Results: `06-generated-output/simulation-results.json`.",
+        "## Deliberate deviations from the existing Create item (documented)",
         "",
-        "## Still requiring live verification in Power Automate",
+        "- `Title`: truncated at 255 with ellipsis + blank fallback (existing raw mapping fails "
+        "for >255-char descriptions).",
+        "- `SubmittedDate`: ISO 8601 UTC instead of the raw US-format string (same instant; REST "
+        "is stricter than the connector).",
+        "- `OriginalSubmission`: newly populated with the preserved labelled text (existing flow "
+        "left it empty).",
+        "- Everything else flow-layer: verbatim, including the `PromptVersion` trailing newline.",
         "",
-        "- the actual `Get response details` action name referenced by `outputs('Get_response_details')`;",
-        "- the trigger path `triggerOutputs()?['body/resourceData/responseId']` (blocks FormResponseID "
-        "and the duplicate check — flow-export evidence EV-2);",
-        "- date-only acceptance by `AnticipatedLaunchDate` (schema says Format=DateOnly; T1/T3 confirm);",
-        "- end-to-end create via the copied flow (test matrix T0–T15).",
+        "## Still requiring manual testing in Power Automate",
+        "",
+        "- End-to-end create via the copied flow: test matrix T0–T15 (incl. DLP probe T0, "
+        "duplicate check T7/T13, choice/boolean/date acceptance).",
+        "- AI-layer values arriving through the HTTP payload identically to the connector path "
+        "(compare one item created by each).",
         "",
     ]
     (ROOT / "06-generated-output/validation-report.md").write_text("\n".join(md))
 
 
-# ---------------- fixture mode (regression harness, unchanged behaviour) ----------------
+# ---------------- fixture mode (regression harness) ----------------
 
 FIXTURE_META = [
     ("M-TITLE", "Title", "Text", "title_from_description"),
     ("M-RESPONDER", "ZZFIXTURE_SubmitterEmail", "Text", "responder"),
     ("M-SUBMITDATE", "ZZFIXTURE_SubmittedOn", "DateTime", "submitdate"),
+    ("M-RESPONSEID", "ZZFIXTURE_FormResponseId", "Text", "responseid_string"),
 ]
 FIXTURE_OVERLAY = {
     "Q07": ("ZZFIXTURE_OpportunityDescription", "Note"),
@@ -278,6 +337,7 @@ FIXTURE_OVERLAY = {
 def run_fixtures(spec):
     outdir = ROOT / "scripts/fixtures/output"
     outdir.mkdir(parents=True, exist_ok=True)
+    template = extract_labelled_template()
     k7 = q07_key(spec)
     prop_meta = []
     for map_id, name, sp_type, kind in FIXTURE_META:
@@ -296,7 +356,7 @@ def run_fixtures(spec):
         "_notice": "FIXTURE OUTPUT — NOT FOR DEPLOYMENT. Internal names are ZZFIXTURE_ dummies.",
         "generated": GENERATED, "compose_input": payload}, indent=2, ensure_ascii=False) + "\n")
     type_of = {p["internal_name"]: p["sp_type"] for p in prop_meta}
-    results = run_simulation(prop_meta, k7, type_of)
+    results = run_simulation(prop_meta, k7, type_of, template)
     (outdir / "simulation-results.FIXTURE.json").write_text(json.dumps({
         "_notice": "FIXTURE simulation against dummy bodies.",
         "results": results}, indent=2, ensure_ascii=False) + "\n")

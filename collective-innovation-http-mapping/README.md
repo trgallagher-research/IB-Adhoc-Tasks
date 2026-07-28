@@ -10,11 +10,11 @@ SharePoint list (`Knowledge Submissions`) and generating the Compose +
 |------|-------|
 | Forms Excel evidence | ✅ ingested — 47 cols (6 metadata + 41 questions), 6 dummy responses; inventory in `01-forms-excel/sanitized/` |
 | Get response details evidence | ✅ response 6 ingested (sanitized, body-only) — 48 opaque keys; inventory in `02-get-response-details/sanitized/` |
-| Forms-key mappings | 9 **Confirmed**, 2 Probable, 30 Unresolved (of 41 questions) — see `05-mapping-spec/` |
-| SharePoint schema evidence | ✅ live export ingested 2026‑07‑28 — **SharePoint side Confirmed for every mapping** (`03-sharepoint-schema/sanitized/knowledge-submissions-schema.json`) |
-| Existing flow evidence | ❌ absent — see `04-existing-flow/COLLECTION-INSTRUCTIONS.md` (blocks `Existing` mappings, OriginalSubmission, trigger response-ID path) |
-| Executable payload | **12 properties** (Title + Respondent + SubmittedDate + 9 Confirmed question mappings); dummy-body simulations pass |
-| Blockers | consolidated in `EVIDENCE-REQUEST.md` — EV‑1 ✅ done; EV‑2 (flow), EV‑3 (response 2), EV‑4 (disambiguation submissions), EV‑5.1 (notice check) remain |
+| Forms-key mappings | **All 41 `Existing`** from the flow's labelled-submission construction; zero contradictions with dummy-test evidence; 7 surplus keys documented |
+| SharePoint schema evidence | ✅ live export ingested 2026‑07‑28 — SharePoint side Confirmed for every mapping |
+| Existing flow evidence | ✅ Peek-code captures ingested 2026‑07‑28 (`04-existing-flow/sanitized/`) — trigger path and action names verified; flow-layer mappings preserved verbatim |
+| Executable payload | **61 properties** (39 raw questions + 5 metadata/audit incl. OriginalSubmission + 17 preserved flow-layer); dummy-body simulations pass incl. rendered labelled template |
+| Blockers | **None for the mapping.** EV‑1 ✅, EV‑2 ✅, EV‑3/EV‑4 superseded; optional: EV‑5.1 (one look at the notice element in the Forms editor). Remaining work is live testing (test matrix) and cutover |
 | Git history exposure | assessed in `GIT-EXPOSURE-NOTE.md`; working tree remediated, history decision pending |
 
 **Regenerate everything after new evidence:** `./scripts/run_checks.sh`

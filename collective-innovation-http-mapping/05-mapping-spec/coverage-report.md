@@ -7,41 +7,37 @@ Generated 2026-07-28 by `scripts/build_reports.py` from `mapping-spec.json` and 
 | Population | Count | Breakdown |
 |------------|-------|-----------|
 | Excel columns | 47 | 6 Forms metadata + 41 questions |
-| Question mappings | 41 | 9 Confirmed + 2 Probable + 30 Unresolved (Forms side) |
-| Opaque `r…` keys | 48 | 11 assigned (Confirmed+Probable) + 7 in candidate pools + 30 blank/unattributable + 0 otherwise unaccounted |
-| Executable mappings | 12 | 9 question + 3 metadata/Title (both sides Confirmed) |
+| Question mappings | 41 | 41 Existing (Forms side) |
+| Opaque `r…` keys | 48 | 41 assigned by the flow's labelled construction + 7 permanently-blank surplus keys |
+| Executable payload properties | 61 | 39 question + 5 metadata/audit + 17 preserved flow-layer |
 
-Key-count arithmetic: 48 keys − 41 questions = **at least 7 surplus keys** even if every question maps 1:1; with 30 blank keys against 23 unanswered questions in response 6, the surplus is consistent but the specific surplus keys cannot be identified from current evidence.
+Key-count arithmetic closes exactly: 41 + 7 = 48.
 
-## 1. Form fields without a SharePoint destination
+## 1. Form fields without a per-column SharePoint destination
 
-- **Implementation Readiness Notice (Q22)** — determined to need NO destination: blank in all six reference responses including the fully completed one, so it is a display-only element. (Verify once against the live form.)
-- **Add any supporting files (Q47)** — no ordinary-field destination; Phase 1 treats file references separately (see implementation instructions).
-- **Excel metadata 'Start time' and 'Last modified time'** — no Get-response-details equivalent; no destination proposed.
-- **Excel metadata 'Name'** — no Get-response-details equivalent (only `responder` email); destination undecided.
-- All other question fields have an *intended* destination that is Unresolved pending schema evidence — they are not 'no destination' cases.
+- **Implementation Readiness Notice (Q22)** — display-only element (key identified from the flow; blank in every observed response; no schema field). No destination required.
+- **Add any supporting files (Q47)** — no supporting-files column; Phase 1 excludes file references from per-column storage. Raw answer string still lands inside `OriginalSubmission`.
+- **Excel metadata 'Start time', 'Last modified time', 'Name'** — no Get-response-details equivalent and no schema destination; not mapped (as in the existing flow).
 
 ## 2. SharePoint fields without Form sources (from the live schema)
 
-Flow-constructed / control fields: `Title` (from Q07 + fallback), `FormResponseID` (response ID; pending trigger verification), `SubmittedDate`, `Respondent`, `SourceForm` (column default), `OriginalSubmission` (existing flow expression, pending flow export). AI-layer, governance and processing fields are listed in the backend table of the mapping spec — none is sourced from raw Forms answers.
+All evidenced and handled: flow-constructed audit fields (`Title`, `FormResponseID`, `SubmittedDate`, `Respondent`, `SourceForm`, `OriginalSubmission`, `ProcessedDate`, `ProcessingStatus`, `PromptVersion`), AI-layer fields, and governance fields — see the flow-layer and backend tables in the mapping spec. `ProcessingError` is written only by the new catch path.
 
 ## 3. Unexplained Forms keys
 
-- 30 keys are blank in response 6 and unattributable.
-- Of the 18 non-blank keys: 11 assigned, 7 sit in candidate pools (five 'No' values, two '1' values).
-- At least 7 keys are surplus to the 41 questions (possible section/notice elements, deleted or hidden questions). Their identity is unknowable from current evidence.
+7 surplus keys, blank in every observed response and referenced nowhere in the flow (listed in the unresolved-mappings report). No action required.
 
 ## 4. Existing AI and processing mappings
 
-Innovation Type, Horizon, Categorization, Ownership, OriginalSubmission and the labelled-submission construction remain with the existing flow actions. **Pending `04-existing-flow/` export**; they are preserved, not rebuilt, and are out of scope for the raw-answer payload.
+Captured verbatim from Create item and preserved in the payload's flow-layer properties: AISummary, Topics, KeyFindings, Examples, OpenQuestions, DifferentPerspectives, ClaimsToVerify, RelatedKnowledge, HumanReviewRequired/Reason, FullAIOutput, ReviewStatus, ProcessingStatus, ProcessedDate, PromptVersion, SourceForm, ContentTypeId.
 
 ## 5. Intentionally blank reviewer fields
 
-Human-review/governance fields (including ReviewStatus default 'Not reviewed' pending flow proof) are intentionally not populated by the create payload.
+ReviewStatus is explicitly 'Not reviewed' (as in the existing flow, matching the column default); other governance fields are untouched by the payload.
 
 ## 6. Intentionally blank projected-impact fields
 
-Projected-impact measures (Word model, governance layer) are intentionally blank at item creation.
+No projected-impact columns exist in the live schema's visible field set; nothing is sent.
 
 ## 7. Excluded SharePoint system fields (from the live schema)
 

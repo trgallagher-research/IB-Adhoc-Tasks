@@ -20,70 +20,25 @@ default `Not reviewed` confirmed; `ProcessingStatus` default `Processed`;
 `StrategicGoals`/`ImpactedProgrammes` are multiline text; Title not required;
 no supporting-files column. The executable payload now carries 12 properties.
 
-## EV‑2 — Existing flow export or per-action Peek code
+## EV‑2 — Existing flow Peek-code captures — ✅ COMPLETE (2026‑07‑28)
 
-- **How:** `04-existing-flow/COLLECTION-INSTRUCTIONS.md`. If export is blocked,
-  `create-item.json` (Peek code of the current Create item) alone is the single
-  most valuable file.
-- **Unblocks:** `Existing`-state preservation of all working mappings; the
-  `OriginalSubmission` source expression; the real `ReviewStatus` default; the
-  AI-layer field routing; the live `Get response details` action name; the
-  trigger's exact response-ID expression (currently `Probable`).
+Captured: trigger, Get response details, Run a prompt (containing the
+labelled-submission construction that pairs ALL 41 question labels with their
+keys), 3 of 8 Select actions, and Create item. Filed sanitized in
+`04-existing-flow/sanitized/`. Result: **every question key is now `Existing`**,
+the trigger response-ID path and the `Get_response_details` action name are
+verified, all flow-layer mappings are preserved verbatim, and the payload is
+complete at 61 properties. The five uncaptured Selects are non-blocking (names
+and join expressions evidenced via Create item; the AI layer is preserved
+as-is) — capture them only if you ever rebuild that layer.
 
-## EV‑3 — `Get response details` body for reference response 2
+## EV‑3 and EV‑4 — ✅ SUPERSEDED by EV‑2
 
-- **How:** open the flow run that processed response 2 (submitted 2026‑07‑24
-  11:25) → `Get response details` → Outputs → copy the body. Redact `responder`
-  and headers as in the response‑6 sanitized file; save as
-  `02-get-response-details/sanitized/get-response-details-response-2.body.json`.
-- **Unblocks:** most of the 21 text-question keys currently Unresolved with no
-  candidates (Sponsor, partner fields, local market, chief support, comments,
-  impact/evidence fields, IBEN/PL/additional explanations, Impacted
-  Programme(s) via its distinctive `MYP;DP` array) — response 2's answers are
-  distinctive dummy sentences.
-
-## EV‑4 — Three designed disambiguation submissions (A, B, C)
-
-Resolves what response 2 cannot: Yes/No keys and 1–5 rating keys, which are
-never distinctive individually. Submit three dummy responses to the live form,
-then capture each `Get response details` body as in EV‑3.
-
-**Text fields:** in submission A, answer every text question with a unique
-marker sentence containing the question's column number, e.g.
-`Marker A col 12 — dummy text.` (any distinctive per-question text works).
-This confirms every text key in one capture, independent of EV‑3.
-
-**Ratings** (needs the local-market branch open in A and B so all six rating
-questions appear — answer the market question Yes):
-
-| Rating question (Excel col) | A | B |
-|---|---|---|
-| Strategic importance (23) | 1 | 1 |
-| Localized service offerings (25) | 2 | 1 |
-| Financial Impact (32) | 3 | 2 |
-| Operational Impact: support volume (34) | 4 | 3 |
-| Operational Impact: operations changes (35) | 5 | 4 |
-| Reputational Impact (37) | 1 | 5 |
-
-Every question's (A,B) value pair is unique, so the six keys resolve exactly.
-
-**Yes/No questions** (7 incl. conditionals; the (A,B,C) triple per question is
-unique):
-
-| Yes/No question (Excel col) | A | B | C |
-|---|---|---|---|
-| External Partner Involved? (11) | Yes | No | Yes |
-| Local market impact? (17) | Yes | Yes | Yes |
-| Compliance boundary adaptation? (19) | Yes | Yes | No |
-| Chief support secured? (20) | Yes | No | *(hidden)* |
-| IBEN impact? (41) | Yes | No | No |
-| Professional Learning impact? (43) | No | Yes | Yes |
-| Additional factors? (45) | No | No | Yes |
-
-- **Unblocks:** the five-way 'No' candidate set, the two-way '1' rating pair,
-  the two `Probable` ratings → `Confirmed`, and the conditional-question keys.
-- Delete the dummy SharePoint items the production flow creates for A/B/C (or
-  note their IDs) so the list stays clean.
+The response‑2 capture and the three disambiguation submissions existed only to
+resolve Forms keys. EV‑2's labelled-submission construction resolved all 41
+keys directly (and consistently with every piece of dummy-test evidence), so
+neither is needed. A full dummy submission still happens anyway as test T2 in
+the test matrix, which doubles as an end-to-end cross-check of every mapping.
 
 ## EV‑5 — Small confirmations
 

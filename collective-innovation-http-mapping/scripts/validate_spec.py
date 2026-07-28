@@ -105,6 +105,14 @@ def check_production_payload(spec):
     payload_text = json.dumps(art["compose_input"])
     if "ZZFIXTURE" in payload_text:
         fail("fixture internal names leaked into production payload")
+    schema_path = ROOT / "03-sharepoint-schema/sanitized/knowledge-submissions-schema.json"
+    if schema_path.exists():
+        schema_names = {f["InternalName"]
+                        for f in json.loads(schema_path.read_text())["fields"]}
+        schema_names.add("ContentTypeId")  # REST-settable system property (preserved from Create item)
+        for name in art["compose_input"]:
+            if name not in schema_names:
+                fail(f"payload property '{name}' not present in live schema")
     bad_conf = {"Probable", "Unresolved"}
     for e in spec["question_mappings"]:
         if e["forms_key_confidence"] in bad_conf and e["forms_response_key"]:

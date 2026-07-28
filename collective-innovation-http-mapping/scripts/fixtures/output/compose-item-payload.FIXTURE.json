@@ -2,9 +2,10 @@
   "_notice": "FIXTURE OUTPUT — NOT FOR DEPLOYMENT. Internal names are ZZFIXTURE_ dummies.",
   "generated": "2026-07-28",
   "compose_input": {
-    "Title": "@if(empty(outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab']), concat('Form submission ', outputs('Get_response_details')?['body/submitDate']), if(greater(length(outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab']), 255), concat(substring(outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab'], 0, 252), '...'), outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab']))",
+    "Title": "@if(empty(outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab']), concat('Form response ', string(triggerOutputs()?['body/resourceData/responseId'])), if(greater(length(outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab']), 255), concat(substring(outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab'], 0, 252), '...'), outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab']))",
     "ZZFIXTURE_SubmitterEmail": "@outputs('Get_response_details')?['body/responder']",
     "ZZFIXTURE_SubmittedOn": "@concat(formatDateTime(outputs('Get_response_details')?['body/submitDate'], 'yyyy-MM-ddTHH:mm:ss'), 'Z')",
+    "ZZFIXTURE_FormResponseId": "@string(triggerOutputs()?['body/resourceData/responseId'])",
     "ZZFIXTURE_OpportunityDescription": "@if(empty(outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab']), null, outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab'])",
     "ZZFIXTURE_AnticipatedLaunchDate": "@if(empty(outputs('Get_response_details')?['body/r8718cecca56b4ed692e9042452d04195']), null, outputs('Get_response_details')?['body/r8718cecca56b4ed692e9042452d04195'])",
     "ZZFIXTURE_ImplementationTimeline": "@if(empty(outputs('Get_response_details')?['body/rf8348c8485dd40b08c00e76f66a3d428']), null, outputs('Get_response_details')?['body/rf8348c8485dd40b08c00e76f66a3d428'])",

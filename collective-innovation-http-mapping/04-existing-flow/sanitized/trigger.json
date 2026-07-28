@@ -1,0 +1,21 @@
+{
+  "_provenance": {
+    "action": "When a new response is submitted (trigger)",
+    "captured": "2026-07-28 via Peek code",
+    "sanitization": "form_id redacted (encodes tenant/user/form identifiers); keep the raw value only in 04-existing-flow/raw/ locally."
+  },
+  "definition": {
+    "type": "OpenApiConnectionWebhook",
+    "inputs": {
+      "parameters": {
+        "form_id": "<form-id — redacted>"
+      },
+      "host": {
+        "apiId": "/providers/Microsoft.PowerApps/apis/shared_microsoftforms",
+        "connection": "shared_microsoftforms",
+        "operationId": "CreateFormWebhook"
+      }
+    },
+    "splitOn": "@triggerOutputs()?['body/value']"
+  }
+}
