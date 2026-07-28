@@ -1,0 +1,22 @@
+{
+  "_provenance": {
+    "action": "Get response details — action name in expressions: Get_response_details (VERIFIED: other actions reference outputs('Get_response_details'))",
+    "captured": "2026-07-28 via Peek code",
+    "sanitization": "form_id redacted; keep the raw value only in 04-existing-flow/raw/ locally."
+  },
+  "definition": {
+    "type": "OpenApiConnection",
+    "inputs": {
+      "parameters": {
+        "form_id": "<form-id — redacted>",
+        "response_id": "@triggerOutputs()?['body/resourceData/responseId']"
+      },
+      "host": {
+        "apiId": "/providers/Microsoft.PowerApps/apis/shared_microsoftforms",
+        "connection": "shared_microsoftforms",
+        "operationId": "GetFormResponseById"
+      }
+    },
+    "runAfter": {}
+  }
+}

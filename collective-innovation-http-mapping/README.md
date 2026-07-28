@@ -1,7 +1,32 @@
 # Collective Innovation — HTTP Mapping
 
 Working folder for mapping Microsoft Forms responses to their destination
-SharePoint list and generating the HTTP request mapping used by the flow.
+SharePoint list (`Knowledge Submissions`) and generating the Compose + 
+`Send an HTTP request to SharePoint` implementation used by the flow.
+
+## Status (2026-07-28)
+
+| Area | State |
+|------|-------|
+| Forms Excel evidence | ✅ ingested — 47 cols (6 metadata + 41 questions), 6 dummy responses; inventory in `01-forms-excel/sanitized/` |
+| Get response details evidence | ✅ response 6 ingested (sanitized, body-only) — 48 opaque keys; inventory in `02-get-response-details/sanitized/` |
+| Forms-key mappings | **All 41 `Existing`** from the flow's labelled-submission construction; zero contradictions with dummy-test evidence; 7 surplus keys documented |
+| SharePoint schema evidence | ✅ live export ingested 2026‑07‑28 — SharePoint side Confirmed for every mapping |
+| Existing flow evidence | ✅ Peek-code captures ingested 2026‑07‑28 (`04-existing-flow/sanitized/`) — trigger path and action names verified; flow-layer mappings preserved verbatim |
+| Executable payload | **61 properties** (39 raw questions + 5 metadata/audit incl. OriginalSubmission + 17 preserved flow-layer); dummy-body simulations pass incl. rendered labelled template |
+| Blockers | **None for the mapping.** EV‑1 ✅, EV‑2 ✅, EV‑3/EV‑4 superseded; optional: EV‑5.1 (one look at the notice element in the Forms editor). Remaining work is live testing (test matrix) and cutover |
+| Git history exposure | assessed in `GIT-EXPOSURE-NOTE.md`; working tree remediated, history decision pending |
+
+**Regenerate everything after new evidence:** `./scripts/run_checks.sh`
+(rebuilds inventories → mapping spec → reports → payload → validation report,
+then runs the quality gate). Mapping upgrades are made only in
+`scripts/build_mapping_spec.py`, with evidence strings — never by editing
+generated files.
+
+Key documents: `05-mapping-spec/mapping-spec.md` (+ `unresolved-mappings.md`,
+`coverage-report.md`), `06-generated-output/approach-assessment.md`,
+`implementation-instructions.md`, `permission-matrix.md`, `test-matrix.md`,
+`cutover-rollback.md`, `validation-report.md`.
 
 ## Folder structure
 

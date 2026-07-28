@@ -1,0 +1,36 @@
+{
+  "_provenance": {
+    "captured": "2026-07-28 via Peek code — Select_Topics, Select_Key_Findings, Select_Examples captured directly; the remaining five Selects were not captured but their action names and join expressions are evidenced by the Create item parameters (Select_Open_Questions, Select_Different_Perspectives, Select_Claims_To_Verify, Select_Related_Knowledge) and they follow the identical pattern. Non-blocking: the AI layer is preserved as-is, not rebuilt.",
+    "flow_order": ["Run_a_prompt", "Select_Topics", "Select_Key_Findings", "Select_Examples",
+                   "Select_Open_Questions", "Select_Different_Perspectives", "Select_Claims_To_Verify",
+                   "Select_Related_Knowledge", "Create_item"]
+  },
+  "captured": {
+    "Select_Topics": {
+      "type": "Select",
+      "inputs": {
+        "from": "@outputs('Run_a_prompt')?['body/responsev2/predictionOutput/structuredOutput/topics']",
+        "select": "@item()?['topic']"
+      },
+      "runAfter": {"Run_a_prompt": ["Succeeded"]}
+    },
+    "Select_Key_Findings": {
+      "type": "Select",
+      "inputs": {
+        "from": "@outputs('Run_a_prompt')?['body/responsev2/predictionOutput/structuredOutput/keyFindings']",
+        "select": "@item()?['finding']"
+      },
+      "runAfter": {"Select_Topics": ["Succeeded"]}
+    },
+    "Select_Examples": {
+      "type": "Select",
+      "inputs": {
+        "from": "@outputs('Run_a_prompt')?['body/responsev2/predictionOutput/structuredOutput/examples']",
+        "select": "@item()?['example']"
+      },
+      "runAfter": {"Select_Key_Findings": ["Succeeded"]}
+    }
+  },
+  "not_captured_pattern_inferred": ["Select_Open_Questions", "Select_Different_Perspectives",
+                                    "Select_Claims_To_Verify", "Select_Related_Knowledge"]
+}

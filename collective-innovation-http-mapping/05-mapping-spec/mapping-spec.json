@@ -1,0 +1,1267 @@
+{
+  "_meta": {
+    "title": "Forms -> SharePoint 'Knowledge Submissions' mapping specification",
+    "generated_by": "scripts/build_mapping_spec.py",
+    "generated": "2026-07-28",
+    "confidence_states": {
+      "Existing": "Preserved from a working flow mapping (04-existing-flow evidence).",
+      "Confirmed": "Supported by authoritative structural, distinctive dummy-test, or unique label-match evidence.",
+      "Probable": "Strongly suggested but unproved; requires human resolution; NEVER executable.",
+      "Unresolved": "Missing, ambiguous, obsolete, or contradictory."
+    },
+    "executability_rule": "executable == true requires forms side AND SharePoint side each Existing/Confirmed, with every expression source evidenced. Enforced by scripts/validate_spec.py and scripts/generate_artifacts.py.",
+    "evidence_sources": {
+      "forms_excel": "01-forms-excel/sanitized/Innovation-Intake-Form-responses-reference.xlsx (6 dummy responses)",
+      "get_response_details": "02-get-response-details/sanitized/get-response-details-response-6.body.json (dummy response 6)",
+      "sharepoint_schema": "03-sharepoint-schema/sanitized/knowledge-submissions-schema.json (live export 2026-07-28)",
+      "existing_flow": "04-existing-flow/sanitized/ (Peek-code captures 2026-07-28: trigger, Get response details, Run a prompt incl. labelled-submission construction, 3 of 8 Select actions, Create item)"
+    },
+    "cross_validation": "The flow's label->key pairings agree with ALL prior dummy-test evidence: 9 Confirmed matches, both Probables resolved as predicted, the five-way 'No' set and two-way '1' pair resolve bijectively. 41 flow keys + 7 permanently-blank surplus keys = 48 observed keys exactly.",
+    "layer_model": [
+      "1 raw Forms answers (from Get response details only)",
+      "2 AI-generated analysis (never overwrites raw fields)",
+      "3 human review and governance (defaults/AI at creation)",
+      "4 processing and audit metadata (set by the flow)"
+    ]
+  },
+  "forms_metadata_mappings": [
+    {
+      "map_id": "M-TITLE",
+      "source": "Opportunity Description key (Q07), truncated, with response-ID fallback",
+      "description": "Title (linked-title displays as 'Opportunity').",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing flow maps Title = raw Q07 key (create-item.json). DELIBERATE DEVIATION in the replacement: truncate to 255 chars with ellipsis (the existing raw mapping fails at runtime for descriptions over the Text-255 limit) and fall back to 'Form response <id>' when blank. VERIFIED in the flow captures: used as Get response details' response_id parameter, in the labelled-submission text, and in Create item's FormResponseID parameter (04-existing-flow/sanitized/).",
+      "sharepoint": {
+        "display_name": "Title",
+        "internal_name": "Title",
+        "type": "Text",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'Title' (Text) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "normalization": "Truncate at 255 with '...'; blank -> 'Form response <id>'. Never null, never ''.",
+      "executable": true,
+      "notes": []
+    },
+    {
+      "map_id": "M-RESPONDER",
+      "source": "body('Get_response_details')?['responder']",
+      "description": "Submitter email (Forms metadata).",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing flow maps Respondent = responder verbatim (create-item.json); also a structural body property corroborated by the response-6 capture.",
+      "sharepoint": {
+        "display_name": "Respondent",
+        "internal_name": "Respondent",
+        "type": "Text",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'Respondent' (Text) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "normalization": "Plain string into the Text column (verbatim, as in the existing flow).",
+      "executable": true,
+      "notes": []
+    },
+    {
+      "map_id": "M-SUBMITDATE",
+      "source": "body('Get_response_details')?['submitDate']",
+      "description": "Submission timestamp (Forms metadata).",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing flow posts the raw 'M/d/yyyy h:mm:ss AM/PM' UTC string to SubmittedDate (create-item.json). DELIBERATE DEVIATION in the replacement: normalize to ISO 8601 UTC (same instant, explicit format) because the REST endpoint is stricter than the connector about date parsing.",
+      "sharepoint": {
+        "display_name": "SubmittedDate",
+        "internal_name": "SubmittedDate",
+        "type": "DateTime",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'SubmittedDate' (DateTime) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "normalization": "concat(formatDateTime(value, 'yyyy-MM-ddTHH:mm:ss'), 'Z') — source is UTC. Never ''.",
+      "executable": true,
+      "notes": []
+    },
+    {
+      "map_id": "M-RESPONSEID",
+      "source": "triggerOutputs()?['body/resourceData/responseId']",
+      "description": "Form response ID — duplicate-prevention key and audit reference.",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "VERIFIED in the flow captures: used as Get response details' response_id parameter, in the labelled-submission text, and in Create item's FormResponseID parameter (04-existing-flow/sanitized/).",
+      "sharepoint": {
+        "display_name": "FormResponseID",
+        "internal_name": "FormResponseID",
+        "type": "Text",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'FormResponseID' (Text) — display name corresponds uniquely to this source; no competing candidate field. Text column — send as string; quote it in the duplicate-check $filter."
+      },
+      "normalization": "string(response ID) into the Text column. Duplicate-check filter: FormResponseID eq '<id>'.",
+      "executable": true,
+      "notes": []
+    },
+    {
+      "map_id": "M-ORIGINALSUBMISSION",
+      "source": "outputs('Compose_labelled_submission') — the existing labelled-submission text, preserved verbatim",
+      "description": "Full labelled raw submission (audit layer).",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "The labelled-submission construction is captured verbatim in 04-existing-flow/sanitized/run-a-prompt.json (SubmissionText). The existing flow builds it inline in the AI action and does NOT store it; the replacement moves it into a Compose_labelled_submission action referenced by BOTH the AI prompt and this property, closing the audit gap without changing the text.",
+      "sharepoint": {
+        "display_name": "OriginalSubmission",
+        "internal_name": "OriginalSubmission",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'OriginalSubmission' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "normalization": "Verbatim template output (generated to 06-generated-output/compose-labelled-submission.txt).",
+      "executable": true,
+      "notes": []
+    }
+  ],
+  "question_mappings": [
+    {
+      "map_id": "Q07",
+      "form_question_label": "Opportunity Description",
+      "excel_column": 7,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "r5caae6a11afb406a8e77e0b242fb4cab",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Opportunity Description'). Independently CORROBORATED by response-6 dummy-test correlation (distinctive dummy value).",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "OpportunityDescription",
+        "internal_name": "OpportunityDescription",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'OpportunityDescription' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q08",
+      "form_question_label": "Sponsor",
+      "excel_column": 8,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "r8140da6e45c84dbcab391c05346d9b16",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Sponsor').",
+      "normalization": "Trim; blank answer -> JSON null. Pass the value as a JSON object member (never string-concatenated JSON) so quotes, apostrophes, line breaks and Unicode are escaped by the platform.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "Sponsor",
+        "internal_name": "Sponsor",
+        "type": "Text",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'Sponsor' (Text) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q09",
+      "form_question_label": "Anticipated launch date",
+      "excel_column": 9,
+      "forms_answer_shape": "date",
+      "forms_response_key": "r8718cecca56b4ed692e9042452d04195",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Anticipated launch date'). Independently CORROBORATED by response-6 dummy-test correlation (distinctive dummy value).",
+      "normalization": "DateTime (DateOnly) destination: send the key's 'yyyy-MM-dd' string as-is. Blank -> JSON null. NEVER send ''.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "AnticipatedLaunchDate",
+        "internal_name": "AnticipatedLaunchDate",
+        "type": "DateTime (DateOnly)",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'AnticipatedLaunchDate' (DateTime, DateOnly) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q10",
+      "form_question_label": "Anticipated timeline for implementation",
+      "excel_column": 10,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "rf8348c8485dd40b08c00e76f66a3d428",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Anticipated timeline for implementation'). Independently CORROBORATED by response-6 dummy-test correlation (distinctive dummy value).",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "ImplementationTimeline",
+        "internal_name": "ImplementationTimeline",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ImplementationTimeline' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q11",
+      "form_question_label": "External Partner Involved?",
+      "excel_column": 11,
+      "forms_answer_shape": "Yes/No",
+      "forms_response_key": "r587705b554a5436aa6663834b1582469",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('External Partner Involved?'). Consistent with the prior five-way 'No' candidate set from response-6 dummy-test correlation (bijective resolution).",
+      "normalization": "Choice destination (choices verified in live schema): pass the answer string through verbatim ('Yes'/'No', and for ComplianceBoundaryAdaptation also \"I don't know\"). Blank -> JSON null; never invent 'N/A' or false.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "ExternalPartnerInvolved",
+        "internal_name": "ExternalPartnerInvolved",
+        "type": "Choice",
+        "required": false,
+        "allowed_choices": [
+          "Yes",
+          "No"
+        ],
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ExternalPartnerInvolved' (Choice) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q12",
+      "form_question_label": "Organization Name",
+      "excel_column": 12,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "rf7cbe61f26ab41cfa28f0b2a009e9d7c",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Organization Name').",
+      "normalization": "Trim; blank answer -> JSON null. Pass the value as a JSON object member (never string-concatenated JSON) so quotes, apostrophes, line breaks and Unicode are escaped by the platform.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "PartnerOrganisation",
+        "internal_name": "PartnerOrganisation",
+        "type": "Text",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'PartnerOrganisation' (Text) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q13",
+      "form_question_label": "Contact Person",
+      "excel_column": 13,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "r072e0a054db54072b75c27d3d8e90140",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Contact Person').",
+      "normalization": "Trim; blank answer -> JSON null. Pass the value as a JSON object member (never string-concatenated JSON) so quotes, apostrophes, line breaks and Unicode are escaped by the platform.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "PartnerContactPerson",
+        "internal_name": "PartnerContactPerson",
+        "type": "Text",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'PartnerContactPerson' (Text) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q14",
+      "form_question_label": "Role",
+      "excel_column": 14,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "r685fa8b221f64f9188951dfb6fb629ec",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Role').",
+      "normalization": "Trim; blank answer -> JSON null. Pass the value as a JSON object member (never string-concatenated JSON) so quotes, apostrophes, line breaks and Unicode are escaped by the platform.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "PartnerContactRole",
+        "internal_name": "PartnerContactRole",
+        "type": "Text",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'PartnerContactRole' (Text) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q15",
+      "form_question_label": "Strategic Goals",
+      "excel_column": 15,
+      "forms_answer_shape": "multi-choice",
+      "forms_response_key": "r1da539bd1a494208849da87ee257c128",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Strategic Goals'). Independently CORROBORATED by response-6 dummy-test correlation (distinctive dummy value).",
+      "normalization": "Value arrives as a JSON-array *string* (e.g. '[\"A\",\"B\"]'). Destination is CONFIRMED multiline text (Note): join(json(value), '; '). Blank -> JSON null.",
+      "notes": [
+        "Destination CONFIRMED as multiline text (Note), not MultiChoice — '; '-joined text serialization applies."
+      ],
+      "sharepoint": {
+        "display_name": "StrategicGoals",
+        "internal_name": "StrategicGoals",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'StrategicGoals' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q16",
+      "form_question_label": "Strategic Alignment Rationale",
+      "excel_column": 16,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "rf9f8fa67e4fb4dfead61d31cba86aa7a",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Strategic Alignment Rationale'). Independently CORROBORATED by response-6 dummy-test correlation (distinctive dummy value).",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "StrategicAlignmentRationale",
+        "internal_name": "StrategicAlignmentRationale",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'StrategicAlignmentRationale' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q17",
+      "form_question_label": "Does this suggested idea directly impact a local market?",
+      "excel_column": 17,
+      "forms_answer_shape": "Yes/No",
+      "forms_response_key": "r516051da52cf4166a478cd83a6e15291",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Does this suggested idea directly impact a local market?'). Consistent with the prior five-way 'No' candidate set from response-6 dummy-test correlation (bijective resolution).",
+      "normalization": "Choice destination (choices verified in live schema): pass the answer string through verbatim ('Yes'/'No', and for ComplianceBoundaryAdaptation also \"I don't know\"). Blank -> JSON null; never invent 'N/A' or false.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "LocalMarketImpact",
+        "internal_name": "LocalMarketImpact",
+        "type": "Choice",
+        "required": false,
+        "allowed_choices": [
+          "Yes",
+          "No"
+        ],
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'LocalMarketImpact' (Choice) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q18",
+      "form_question_label": "Local market(s)",
+      "excel_column": 18,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "rf81976cae03249ef86d0d299bf126aac",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Local market(s)').",
+      "normalization": "Trim; blank answer -> JSON null. Pass the value as a JSON object member (never string-concatenated JSON) so quotes, apostrophes, line breaks and Unicode are escaped by the platform.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "LocalMarketDetails",
+        "internal_name": "LocalMarketDetails",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'LocalMarketDetails' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q19",
+      "form_question_label": "Is a compliance boundary adaptation required?",
+      "excel_column": 19,
+      "forms_answer_shape": "Yes/No",
+      "forms_response_key": "r9ec31f96e7b34fb791c734433bb022a3",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Is a compliance boundary adaptation required?').",
+      "normalization": "Choice destination (choices verified in live schema): pass the answer string through verbatim ('Yes'/'No', and for ComplianceBoundaryAdaptation also \"I don't know\"). Blank -> JSON null; never invent 'N/A' or false.",
+      "notes": [
+        "Live choice set includes a third option \"I don't know\" — pass-through, never coerce to Yes/No."
+      ],
+      "sharepoint": {
+        "display_name": "ComplianceBoundaryAdaptation",
+        "internal_name": "ComplianceBoundaryAdaptation",
+        "type": "Choice",
+        "required": false,
+        "allowed_choices": [
+          "Yes",
+          "No",
+          "I don't know"
+        ],
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ComplianceBoundaryAdaptation' (Choice) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q20",
+      "form_question_label": "If yes, is chief support secured?",
+      "excel_column": 20,
+      "forms_answer_shape": "Yes/No",
+      "forms_response_key": "rf0bccf6e481343d1823057965c3271ea",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('If yes, is chief support secured?').",
+      "normalization": "Choice destination (choices verified in live schema): pass the answer string through verbatim ('Yes'/'No', and for ComplianceBoundaryAdaptation also \"I don't know\"). Blank -> JSON null; never invent 'N/A' or false.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "ChiefSupportSecured",
+        "internal_name": "ChiefSupportSecured",
+        "type": "Choice",
+        "required": false,
+        "allowed_choices": [
+          "Yes",
+          "No"
+        ],
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ChiefSupportSecured' (Choice) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q21",
+      "form_question_label": "Specify chief support details",
+      "excel_column": 21,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "r0b456ff26ee24c11a9503908ffea1b53",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Specify chief support details').",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "ChiefSupportDetails",
+        "internal_name": "ChiefSupportDetails",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ChiefSupportDetails' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q22",
+      "form_question_label": "Implementation Readiness Notice",
+      "excel_column": 22,
+      "forms_answer_shape": "display-only notice (no input observed)",
+      "forms_response_key": "r8d49a8bdd5e94aee82f332fcab962a51",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Implementation Readiness Notice').",
+      "normalization": "No destination (confirmed); nothing sent per-column.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": null,
+        "internal_name": null,
+        "type": null,
+        "required": null,
+        "allowed_choices": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): Display-only notice element: its key is now identified from the flow (always blank in every observed response; included in the AI prompt text) but the live schema has no corresponding field. Determination: no per-column destination; its (blank) line remains inside the OriginalSubmission labelled text, as in the existing flow.",
+        "no_destination": true
+      },
+      "executable": false
+    },
+    {
+      "map_id": "Q23",
+      "form_question_label": "Strategic importance: This opportunity is strategically important to the market, including through its potential to support significant programme acquisition and/or reduce significant retention risks.",
+      "excel_column": 23,
+      "forms_answer_shape": "rating 1-5",
+      "forms_response_key": "rfb959d52f2494d1b92e07856edeee015",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Strategic importance: This opportunity is strategically impo').",
+      "normalization": "Number destination: int(value). Blank -> JSON null. NEVER send '' or 0 for unanswered.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "StrategicImportanceScore",
+        "internal_name": "StrategicImportanceScore",
+        "type": "Number",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'StrategicImportanceScore' (Number) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q24",
+      "form_question_label": "Comments & explanation of agreement score (Strategic importance)",
+      "excel_column": 24,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "re8d27932c227466996dbc77f67f71faa",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Comments & explanation of agreement score (Strategic importa').",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "StrategicImportanceExplanation",
+        "internal_name": "StrategicImportanceExplanation",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'StrategicImportanceExplanation' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q25",
+      "form_question_label": "Localized service offerings: This opportunity is directly connected to local ways of working (for example, language, district set PD schedule etc.) and would support the IB in being seen as a genu...",
+      "excel_column": 25,
+      "forms_answer_shape": "rating 1-5",
+      "forms_response_key": "r809645c3237a4bb4969b8082026cb3cc",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Localized service offerings: This opportunity is directly co').",
+      "normalization": "Number destination: int(value). Blank -> JSON null. NEVER send '' or 0 for unanswered.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "LocalizedServiceOfferingScore",
+        "internal_name": "LocalizedServiceOfferingScore",
+        "type": "Number",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'LocalizedServiceOfferingScore' (Number) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q26",
+      "form_question_label": "Comments & explanation of agreement score (Localized service offerings)",
+      "excel_column": 26,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "r3e390836da294861a927ce63c8d0f2c6",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Comments & explanation of agreement score (Localized service').",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "LocalizedServiceOfferingExplanation",
+        "internal_name": "LocalizedServiceOfferingExplanat",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'LocalizedServiceOfferingExplanat' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q27",
+      "form_question_label": "Impact Description",
+      "excel_column": 27,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "rf703806487ab4148994d2fd2edb79941",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Impact Description').",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "ImpactDescription",
+        "internal_name": "ImpactDescription",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ImpactDescription' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q28",
+      "form_question_label": "Data Evidence Supporting the Opportunity",
+      "excel_column": 28,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "r75f4515f78d946ac8a4274c151307c3e",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Data Evidence Supporting the Opportunity').",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "DataEvidence",
+        "internal_name": "DataEvidence",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'DataEvidence' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q29",
+      "form_question_label": "Expected Evidence for Impact",
+      "excel_column": 29,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "rbb5f5979ba74480fba871dbaaeb381e9",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Expected Evidence for Impact').",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "ExpectedEvidence",
+        "internal_name": "ExpectedEvidence",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ExpectedEvidence' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q30",
+      "form_question_label": "Impacted Programme(s)",
+      "excel_column": 30,
+      "forms_answer_shape": "multi-choice",
+      "forms_response_key": "rd668321450304780986d33d7e6f474b9",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Impacted Programme(s)').",
+      "normalization": "Value arrives as a JSON-array *string* (e.g. '[\"A\",\"B\"]'). Destination is CONFIRMED multiline text (Note): join(json(value), '; '). Blank -> JSON null.",
+      "notes": [
+        "Destination CONFIRMED as multiline text (Note), not MultiChoice — '; '-joined text serialization applies."
+      ],
+      "sharepoint": {
+        "display_name": "ImpactedProgrammes",
+        "internal_name": "ImpactedProgrammes",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ImpactedProgrammes' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q31",
+      "form_question_label": "Stakeholder Feedback Summary",
+      "excel_column": 31,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "rba40cea72cef44df9c70637d7473d033",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Stakeholder Feedback Summary').",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "StakeholderFeedbackSummary",
+        "internal_name": "StakeholderFeedbackSummary",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'StakeholderFeedbackSummary' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q32",
+      "form_question_label": "Financial Impact: This opportunity requires additional budget to be piloted or taken to market.",
+      "excel_column": 32,
+      "forms_answer_shape": "rating 1-5",
+      "forms_response_key": "r90c6dc19b575459fa68b7a65b23a9a06",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Financial Impact: This opportunity requires additional budge'). Consistent with the prior two-way '1' candidate pair from response-6 dummy-test correlation.",
+      "normalization": "Number destination: int(value). Blank -> JSON null. NEVER send '' or 0 for unanswered.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "FinancialImpactScore",
+        "internal_name": "FinancialImpactScore",
+        "type": "Number",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'FinancialImpactScore' (Number) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q33",
+      "form_question_label": "Comments & explanation of agreement score (Financial Impact)",
+      "excel_column": 33,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "ra89a8e77654b43a6af62ff1247df9f8f",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Comments & explanation of agreement score (Financial Impact)').",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "FinancialImpactExplanation",
+        "internal_name": "FinancialImpactExplanation",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'FinancialImpactExplanation' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q34",
+      "form_question_label": "Operational Impact: This opportunity requires a substantial volume of support from the IB to ensure it does not compromise our standards and quality.",
+      "excel_column": 34,
+      "forms_answer_shape": "rating 1-5",
+      "forms_response_key": "rca68d3a0ad2b45c397fd0523414426b5",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Operational Impact: This opportunity requires a substantial '). Resolves the prior Probable from response-6 dummy-test correlation (multiset-unique rating) — consistent.",
+      "normalization": "Number destination: int(value). Blank -> JSON null. NEVER send '' or 0 for unanswered.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "OperationalSupportScore",
+        "internal_name": "OperationalSupportScore",
+        "type": "Number",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'OperationalSupportScore' (Number) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q35",
+      "form_question_label": "Operational Impact: This opportunity requires operations (people, process, or system) changes.",
+      "excel_column": 35,
+      "forms_answer_shape": "rating 1-5",
+      "forms_response_key": "re95a3bb4ed594260b8745180ba8d56a7",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Operational Impact: This opportunity requires operations (pe'). Consistent with the prior two-way '1' candidate pair from response-6 dummy-test correlation.",
+      "normalization": "Number destination: int(value). Blank -> JSON null. NEVER send '' or 0 for unanswered.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "OperationalChangesScore",
+        "internal_name": "OperationalChangesScore",
+        "type": "Number",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'OperationalChangesScore' (Number) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q36",
+      "form_question_label": "Comments & explanation of agreement score (Operational Impact)",
+      "excel_column": 36,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "r650d9f2a4d1f43e8938032a9cd60c658",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Comments & explanation of agreement score (Operational Impac'). Independently CORROBORATED by response-6 dummy-test correlation (distinctive dummy value).",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "OperationalImpactExplanation",
+        "internal_name": "OperationalImpactExplanation",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'OperationalImpactExplanation' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q37",
+      "form_question_label": "Reputational Impact: This opportunity creates reputational risk for the organization.",
+      "excel_column": 37,
+      "forms_answer_shape": "rating 1-5",
+      "forms_response_key": "r1903e1b8394140d19377b15fc81edd65",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Reputational Impact: This opportunity creates reputational r'). Resolves the prior Probable from response-6 dummy-test correlation (multiset-unique rating) — consistent.",
+      "normalization": "Number destination: int(value). Blank -> JSON null. NEVER send '' or 0 for unanswered.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "ReputationalImpactScore",
+        "internal_name": "ReputationalImpactScore",
+        "type": "Number",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ReputationalImpactScore' (Number) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q38",
+      "form_question_label": "Comments & explanation of agreement score (Reputational Impact)",
+      "excel_column": 38,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "r577a0e5e42554b6f8d82f7c24b8f183b",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Comments & explanation of agreement score (Reputational Impa'). Independently CORROBORATED by response-6 dummy-test correlation (distinctive dummy value).",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "ReputationalImpactExplanation",
+        "internal_name": "ReputationalImpactExplanation",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ReputationalImpactExplanation' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q39",
+      "form_question_label": "Internal Stakeholders Consulted",
+      "excel_column": 39,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "rc12c559d019d4f9f9f8ed773c21c686f",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Internal Stakeholders Consulted'). Independently CORROBORATED by response-6 dummy-test correlation (distinctive dummy value).",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "InternalStakeholdersConsulted",
+        "internal_name": "InternalStakeholdersConsulted",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'InternalStakeholdersConsulted' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q40",
+      "form_question_label": "Internal Consultation Context & Outcomes",
+      "excel_column": 40,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "r5d267e063680468b8f77617ee0269b60",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Internal Consultation Context & Outcomes'). Independently CORROBORATED by response-6 dummy-test correlation (distinctive dummy value).",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "InternalConsultationOutcomes",
+        "internal_name": "InternalConsultationOutcomes",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'InternalConsultationOutcomes' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q41",
+      "form_question_label": "Is there Network/Expert Community (IBEN) Impact to be considered regarding this opportunity?",
+      "excel_column": 41,
+      "forms_answer_shape": "Yes/No",
+      "forms_response_key": "r5f267e3e119041469c62a472d832324f",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Is there Network/Expert Community (IBEN) Impact to be consid'). Consistent with the prior five-way 'No' candidate set from response-6 dummy-test correlation (bijective resolution).",
+      "normalization": "Choice destination (choices verified in live schema): pass the answer string through verbatim ('Yes'/'No', and for ComplianceBoundaryAdaptation also \"I don't know\"). Blank -> JSON null; never invent 'N/A' or false.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "IBENImpact",
+        "internal_name": "IBENImpact",
+        "type": "Choice",
+        "required": false,
+        "allowed_choices": [
+          "Yes",
+          "No"
+        ],
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'IBENImpact' (Choice) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q42",
+      "form_question_label": "If Yes, please explain the Network/Expert Community (IBEN) Impact.",
+      "excel_column": 42,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "r011318f6666745c891df6ed52af394b0",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('If Yes, please explain the Network/Expert Community (IBEN) I').",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "IBENImpactDescription",
+        "internal_name": "IBENImpactDescription",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'IBENImpactDescription' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q43",
+      "form_question_label": "Is there a Professional Learning Impact to be considered regarding this opportunity?",
+      "excel_column": 43,
+      "forms_answer_shape": "Yes/No",
+      "forms_response_key": "rf76887b82f1f4414a41f5e65ecef7cbd",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Is there a Professional Learning Impact to be considered reg').",
+      "normalization": "Choice destination (choices verified in live schema): pass the answer string through verbatim ('Yes'/'No', and for ComplianceBoundaryAdaptation also \"I don't know\"). Blank -> JSON null; never invent 'N/A' or false.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "ProfessionalLearningImpact",
+        "internal_name": "ProfessionalLearningImpact",
+        "type": "Choice",
+        "required": false,
+        "allowed_choices": [
+          "Yes",
+          "No"
+        ],
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ProfessionalLearningImpact' (Choice) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q44",
+      "form_question_label": "If Yes, please explain the Professional Learning Impact.",
+      "excel_column": 44,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "r074e7a91d52747519a8fe0e9af68e7dd",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('If Yes, please explain the Professional Learning Impact.').",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "ProfessionalLearningImpactDescription",
+        "internal_name": "ProfessionalLearningImpactDescri",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ProfessionalLearningImpactDescri' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q45",
+      "form_question_label": "Are there any additional factors to be considered regarding this opportunity?",
+      "excel_column": 45,
+      "forms_answer_shape": "Yes/No",
+      "forms_response_key": "rbc83faed4a274e0fb254a5c4c21edd73",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Are there any additional factors to be considered regarding ').",
+      "normalization": "Choice destination (choices verified in live schema): pass the answer string through verbatim ('Yes'/'No', and for ComplianceBoundaryAdaptation also \"I don't know\"). Blank -> JSON null; never invent 'N/A' or false.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "AdditionalFactors",
+        "internal_name": "AdditionalFactors",
+        "type": "Choice",
+        "required": false,
+        "allowed_choices": [
+          "Yes",
+          "No"
+        ],
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'AdditionalFactors' (Choice) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q46",
+      "form_question_label": "If Yes, please explain the additional factors.",
+      "excel_column": 46,
+      "forms_answer_shape": "free text",
+      "forms_response_key": "r90a4a472716942dfa4b9d5de21931774",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('If Yes, please explain the additional factors.').",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": "AdditionalFactorsDescription",
+        "internal_name": "AdditionalFactorsDescription",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'AdditionalFactorsDescription' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "executable": true
+    },
+    {
+      "map_id": "Q47",
+      "form_question_label": "Add any supporting files",
+      "excel_column": 47,
+      "forms_answer_shape": "file upload",
+      "forms_response_key": "r7ba397b729054a109e0b046c38744e73",
+      "forms_key_confidence": "Existing",
+      "forms_key_evidence": "Existing-flow evidence 2026-07-28 (04-existing-flow/sanitized/run-a-prompt.json): the labelled-submission construction explicitly pairs this question label with this key ('Add any supporting files').",
+      "normalization": "No per-column destination (confirmed). Phase 1: excluded from the payload; raw string remains inside OriginalSubmission.",
+      "notes": [],
+      "sharepoint": {
+        "display_name": null,
+        "internal_name": null,
+        "type": null,
+        "required": null,
+        "allowed_choices": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): File-upload answer: key identified from the flow. No supporting-files column exists (only the standard Attachments facility). Phase 1: excluded from per-column payload; the raw answer string remains inside the OriginalSubmission labelled text, as in the existing flow.",
+        "no_destination": true
+      },
+      "executable": false
+    }
+  ],
+  "flow_layer_mappings": [
+    {
+      "internal_name": "SourceForm",
+      "expression": null,
+      "constant": "Innovation Intake Form (Knowledge-Bank)",
+      "confidence": "Existing",
+      "evidence": "Existing Create item parameter, preserved verbatim (04-existing-flow/sanitized/create-item.json).",
+      "executable": true
+    },
+    {
+      "internal_name": "AISummary",
+      "expression": "outputs('Run_a_prompt')?['body/responsev2/predictionOutput/structuredOutput/summary']",
+      "confidence": "Existing",
+      "evidence": "Existing Create item parameter, preserved verbatim (04-existing-flow/sanitized/create-item.json).",
+      "executable": true
+    },
+    {
+      "internal_name": "Topics",
+      "expression": "join(body('Select_Topics'), decodeUriComponent('%0A'))",
+      "confidence": "Existing",
+      "evidence": "Existing Create item parameter, preserved verbatim (04-existing-flow/sanitized/create-item.json).",
+      "executable": true
+    },
+    {
+      "internal_name": "KeyFindings",
+      "expression": "join(body('Select_Key_Findings'), decodeUriComponent('%0A'))",
+      "confidence": "Existing",
+      "evidence": "Existing Create item parameter, preserved verbatim (04-existing-flow/sanitized/create-item.json).",
+      "executable": true
+    },
+    {
+      "internal_name": "Examples",
+      "expression": "join(body('Select_Examples'), decodeUriComponent('%0A'))",
+      "confidence": "Existing",
+      "evidence": "Existing Create item parameter, preserved verbatim (04-existing-flow/sanitized/create-item.json).",
+      "executable": true
+    },
+    {
+      "internal_name": "OpenQuestions",
+      "expression": "join(body('Select_Open_Questions'), decodeUriComponent('%0A'))",
+      "confidence": "Existing",
+      "evidence": "Existing Create item parameter, preserved verbatim (04-existing-flow/sanitized/create-item.json).",
+      "executable": true
+    },
+    {
+      "internal_name": "DifferentPerspectives",
+      "expression": "join(body('Select_Different_Perspectives'), decodeUriComponent('%0A'))",
+      "confidence": "Existing",
+      "evidence": "Existing Create item parameter, preserved verbatim (04-existing-flow/sanitized/create-item.json).",
+      "executable": true
+    },
+    {
+      "internal_name": "ClaimsToVerify",
+      "expression": "join(body('Select_Claims_To_Verify'), decodeUriComponent('%0A'))",
+      "confidence": "Existing",
+      "evidence": "Existing Create item parameter, preserved verbatim (04-existing-flow/sanitized/create-item.json).",
+      "executable": true
+    },
+    {
+      "internal_name": "RelatedKnowledge",
+      "expression": "join(body('Select_Related_Knowledge'), decodeUriComponent('%0A'))",
+      "confidence": "Existing",
+      "evidence": "Existing Create item parameter, preserved verbatim (04-existing-flow/sanitized/create-item.json).",
+      "executable": true
+    },
+    {
+      "internal_name": "HumanReviewRequired",
+      "expression": "outputs('Run_a_prompt')?['body/responsev2/predictionOutput/structuredOutput/humanReviewRequired']",
+      "confidence": "Existing",
+      "evidence": "Existing Create item parameter, preserved verbatim (04-existing-flow/sanitized/create-item.json).",
+      "executable": true
+    },
+    {
+      "internal_name": "HumanReviewReason",
+      "expression": "outputs('Run_a_prompt')?['body/responsev2/predictionOutput/structuredOutput/humanReviewReason']",
+      "confidence": "Existing",
+      "evidence": "Existing Create item parameter, preserved verbatim (04-existing-flow/sanitized/create-item.json).",
+      "executable": true
+    },
+    {
+      "internal_name": "ReviewStatus",
+      "expression": null,
+      "constant": "Not reviewed",
+      "confidence": "Existing",
+      "evidence": "Existing Create item parameter, preserved verbatim (04-existing-flow/sanitized/create-item.json).",
+      "executable": true
+    },
+    {
+      "internal_name": "FullAIOutput",
+      "expression": "outputs('Run_a_prompt')?['body/responsev2/predictionOutput/text']",
+      "confidence": "Existing",
+      "evidence": "Existing Create item parameter, preserved verbatim (04-existing-flow/sanitized/create-item.json).",
+      "executable": true
+    },
+    {
+      "internal_name": "ProcessingStatus",
+      "expression": null,
+      "constant": "Processed",
+      "confidence": "Existing",
+      "evidence": "Existing Create item parameter, preserved verbatim (04-existing-flow/sanitized/create-item.json).",
+      "executable": true
+    },
+    {
+      "internal_name": "ProcessedDate",
+      "expression": "utcNow()",
+      "confidence": "Existing",
+      "evidence": "Existing Create item parameter, preserved verbatim (04-existing-flow/sanitized/create-item.json).",
+      "executable": true
+    },
+    {
+      "internal_name": "PromptVersion",
+      "expression": null,
+      "constant": "Knowledge Submission Analyser v1\n",
+      "note": "Trailing newline preserved verbatim from the working flow (quirk; trim only as a reviewed change).",
+      "confidence": "Existing",
+      "evidence": "Existing Create item parameter, preserved verbatim (04-existing-flow/sanitized/create-item.json).",
+      "executable": true
+    },
+    {
+      "internal_name": "ContentTypeId",
+      "expression": null,
+      "constant": "0x01002470676DA4BBF5468468EDBF918DE47C0082A052FA62248A4A84337267D7DD930B",
+      "note": "REST equivalent of the connector's item/{ContentType}/Id parameter.",
+      "confidence": "Existing",
+      "evidence": "Existing Create item parameter, preserved verbatim (04-existing-flow/sanitized/create-item.json).",
+      "executable": true
+    }
+  ],
+  "backend_fields_not_form_questions": [
+    {
+      "internal_names": [
+        "AISummary",
+        "Topics",
+        "KeyFindings",
+        "Examples",
+        "OpenQuestions",
+        "DifferentPerspectives",
+        "ClaimsToVerify",
+        "RelatedKnowledge",
+        "FullAIOutput"
+      ],
+      "layer": "AI-generated analysis",
+      "initial_create_behaviour": "Preserved verbatim from the existing Create item (see flow_layer_mappings); sourced from Run_a_prompt / Select actions, never from raw Forms answers."
+    },
+    {
+      "internal_names": [
+        "HumanReviewRequired",
+        "HumanReviewReason",
+        "ReviewStatus"
+      ],
+      "layer": "Human review and governance",
+      "initial_create_behaviour": "HumanReview* come from the AI output (existing mapping, preserved). ReviewStatus is explicitly set to 'Not reviewed' by the existing flow, matching the column default — preserved."
+    },
+    {
+      "internal_names": [
+        "ProcessingStatus",
+        "ProcessedDate",
+        "ProcessingError",
+        "PromptVersion",
+        "SourceForm"
+      ],
+      "layer": "Processing and audit metadata",
+      "initial_create_behaviour": "ProcessingStatus 'Processed', ProcessedDate utcNow(), PromptVersion and SourceForm constants — all explicitly set by the existing flow, preserved. ProcessingError is NOT set by the existing flow; the new error-handling design writes it only on the catch path."
+    },
+    {
+      "internal_names": [
+        "OriginalSubmission"
+      ],
+      "layer": "Processing and audit metadata",
+      "initial_create_behaviour": "NOT populated by the existing flow (gap). The replacement stores the preserved labelled-submission text here — see M-ORIGINALSUBMISSION."
+    },
+    {
+      "internal_names": [
+        "FormResponseID",
+        "SubmittedDate",
+        "Respondent"
+      ],
+      "layer": "Processing and audit metadata",
+      "initial_create_behaviour": "All three preserved from the existing Create item; all executable."
+    }
+  ],
+  "system_fields_excluded": [
+    "LinkTitle (Computed, displays as 'Opportunity')",
+    "_ColorTag (read-only)",
+    "ComplianceAssetId (read-only)",
+    "ID (Counter)",
+    "ContentType (Computed)",
+    "Modified",
+    "Created",
+    "Author (Created By)",
+    "Editor (Modified By)",
+    "_UIVersionString (Version)",
+    "Attachments",
+    "Edit (Computed)",
+    "LinkTitleNoMenu (Computed)",
+    "DocIcon (Computed)",
+    "ItemChildCount",
+    "FolderChildCount",
+    "_ComplianceFlags",
+    "_ComplianceTag",
+    "_ComplianceTagWrittenTime",
+    "_ComplianceTagUserId",
+    "_IsRecord (Computed)",
+    "AppAuthor",
+    "AppEditor"
+  ]
+}

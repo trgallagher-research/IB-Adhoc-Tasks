@@ -1,0 +1,573 @@
+{
+  "_provenance": {
+    "source": "01-forms-excel/sanitized/Innovation-Intake-Form-responses-reference.xlsx",
+    "generated_by": "scripts/build_inventories.py",
+    "generated": "2026-07-28",
+    "content_policy": "Structural inventory only. Answer values are dummy test data; no real submission content. Personal metadata values (Email/Name columns) are NOT reproduced here.",
+    "totals": {
+      "columns": 47,
+      "forms_metadata_columns": 6,
+      "question_columns": 41,
+      "reference_responses": 6
+    }
+  },
+  "columns": [
+    {
+      "excel_column": 1,
+      "label": "ID",
+      "label_raw": "ID",
+      "kind": "forms_metadata",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "int"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 2,
+      "label": "Start time",
+      "label_raw": "Start time",
+      "kind": "forms_metadata",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "datetime"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 3,
+      "label": "Completion time",
+      "label_raw": "Completion time",
+      "kind": "forms_metadata",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "datetime"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 4,
+      "label": "Email",
+      "label_raw": "Email",
+      "kind": "forms_metadata",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 5,
+      "label": "Name",
+      "label_raw": "Name",
+      "kind": "forms_metadata",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 6,
+      "label": "Last modified time",
+      "label_raw": "Last modified time",
+      "kind": "forms_metadata",
+      "responses_with_value": 0,
+      "observed_python_types": [],
+      "notes": []
+    },
+    {
+      "excel_column": 7,
+      "label": "Opportunity Description",
+      "label_raw": "Opportunity Description",
+      "kind": "question",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 8,
+      "label": "Sponsor",
+      "label_raw": "Sponsor",
+      "kind": "question",
+      "responses_with_value": 2,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 9,
+      "label": "Anticipated launch date",
+      "label_raw": "Anticipated launch date",
+      "kind": "question",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "datetime"
+      ],
+      "notes": [
+        "date question; Excel shows datetime at midnight"
+      ]
+    },
+    {
+      "excel_column": 10,
+      "label": "Anticipated timeline for implementation",
+      "label_raw": "Anticipated timeline for implementation",
+      "kind": "question",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 11,
+      "label": "External Partner Involved?",
+      "label_raw": "External Partner Involved?",
+      "kind": "question",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 12,
+      "label": "Organization Name",
+      "label_raw": "Organization Name",
+      "kind": "question",
+      "responses_with_value": 1,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": [
+        "conditional on 'External Partner Involved?' = Yes (filled only in response 2)"
+      ]
+    },
+    {
+      "excel_column": 13,
+      "label": "Contact Person",
+      "label_raw": "Contact Person",
+      "kind": "question",
+      "responses_with_value": 1,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": [
+        "conditional on 'External Partner Involved?' = Yes (filled only in response 2)"
+      ]
+    },
+    {
+      "excel_column": 14,
+      "label": "Role",
+      "label_raw": "Role",
+      "kind": "question",
+      "responses_with_value": 1,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": [
+        "conditional on 'External Partner Involved?' = Yes (filled only in response 2)"
+      ]
+    },
+    {
+      "excel_column": 15,
+      "label": "Strategic Goals",
+      "label_raw": "Strategic Goals",
+      "kind": "question",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": [
+        "multi-choice; Excel serializes as 'Choice1;Choice2;' with trailing semicolon"
+      ]
+    },
+    {
+      "excel_column": 16,
+      "label": "Strategic Alignment Rationale",
+      "label_raw": "Strategic Alignment Rationale",
+      "kind": "question",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 17,
+      "label": "Does this suggested idea directly impact a local market?",
+      "label_raw": "Does this suggested idea directly impact a local market?",
+      "kind": "question",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 18,
+      "label": "Local market(s)",
+      "label_raw": "Local market(s) ",
+      "kind": "question",
+      "responses_with_value": 2,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": [
+        "conditional on 'Does this suggested idea directly impact a local market?' = Yes"
+      ]
+    },
+    {
+      "excel_column": 19,
+      "label": "Is a compliance boundary adaptation required?",
+      "label_raw": "Is a compliance boundary adaptation required?",
+      "kind": "question",
+      "responses_with_value": 2,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 20,
+      "label": "If yes, is chief support secured?",
+      "label_raw": "If yes, is chief support secured?",
+      "kind": "question",
+      "responses_with_value": 2,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": [
+        "conditional on 'Is a compliance boundary adaptation required?' = Yes"
+      ]
+    },
+    {
+      "excel_column": 21,
+      "label": "Specify chief support details",
+      "label_raw": "Specify chief support details",
+      "kind": "question",
+      "responses_with_value": 2,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": [
+        "conditional on 'Is a compliance boundary adaptation required?' = Yes"
+      ]
+    },
+    {
+      "excel_column": 22,
+      "label": "Implementation Readiness Notice",
+      "label_raw": "Implementation Readiness Notice",
+      "kind": "question",
+      "responses_with_value": 0,
+      "observed_python_types": [],
+      "notes": [
+        "BLANK in all 6 reference responses including fully-completed response 2 — almost certainly a display-only notice element with no input"
+      ]
+    },
+    {
+      "excel_column": 23,
+      "label": "Strategic importance: This opportunity is strategically important to the market, including through its potential to support significant programme acquisition and/or reduce significant retention risks.",
+      "label_raw": "Strategic importance: This opportunity is strategically important to the market, including through its potential to support significant programme acquisition and/or reduce significant retention risks.",
+      "kind": "question",
+      "responses_with_value": 2,
+      "observed_python_types": [
+        "int"
+      ],
+      "notes": [
+        "filled only in responses 1-2 (both local market = Yes); appears conditional on the local-market branch — unproven, verify against live form",
+        "Likert-style rating; observed integer strings within 1-5"
+      ]
+    },
+    {
+      "excel_column": 24,
+      "label": "Comments & explanation of agreement score (Strategic importance)",
+      "label_raw": "Comments & explanation of agreement score (Strategic importance)",
+      "kind": "question",
+      "responses_with_value": 2,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": [
+        "filled only in responses 1-2; see column 23 note"
+      ]
+    },
+    {
+      "excel_column": 25,
+      "label": "Localized service offerings: This opportunity is directly connected to local ways of working (for example, language, district set PD schedule etc.) and would support the IB in being seen as a genu...",
+      "label_raw": "Localized service offerings: This opportunity is directly connected to local ways of working (for example, language, district set PD schedule etc.) and would support the IB in being seen as a genu...",
+      "kind": "question",
+      "responses_with_value": 2,
+      "observed_python_types": [
+        "int"
+      ],
+      "notes": [
+        "filled only in responses 1-2; see column 23 note",
+        "Likert-style rating; observed integer strings within 1-5"
+      ]
+    },
+    {
+      "excel_column": 26,
+      "label": "Comments & explanation of agreement score (Localized service offerings)",
+      "label_raw": "Comments & explanation of agreement score (Localized service offerings)",
+      "kind": "question",
+      "responses_with_value": 2,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": [
+        "filled only in responses 1-2; see column 23 note"
+      ]
+    },
+    {
+      "excel_column": 27,
+      "label": "Impact Description",
+      "label_raw": "Impact Description",
+      "kind": "question",
+      "responses_with_value": 2,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 28,
+      "label": "Data Evidence Supporting the Opportunity",
+      "label_raw": "Data Evidence Supporting the Opportunity",
+      "kind": "question",
+      "responses_with_value": 2,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 29,
+      "label": "Expected Evidence for Impact",
+      "label_raw": "Expected Evidence for Impact",
+      "kind": "question",
+      "responses_with_value": 2,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 30,
+      "label": "Impacted Programme(s)",
+      "label_raw": "Impacted Programme(s)",
+      "kind": "question",
+      "responses_with_value": 2,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": [
+        "multi-choice; Excel serializes as 'Choice1;Choice2;' with trailing semicolon"
+      ]
+    },
+    {
+      "excel_column": 31,
+      "label": "Stakeholder Feedback Summary",
+      "label_raw": "Stakeholder Feedback Summary",
+      "kind": "question",
+      "responses_with_value": 2,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 32,
+      "label": "Financial Impact: This opportunity requires additional budget to be piloted or taken to market.",
+      "label_raw": "Financial Impact: This opportunity requires additional budget to be piloted or taken to market.",
+      "kind": "question",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "int"
+      ],
+      "notes": [
+        "Likert-style rating; observed integer strings within 1-5"
+      ]
+    },
+    {
+      "excel_column": 33,
+      "label": "Comments & explanation of agreement score (Financial Impact)",
+      "label_raw": "Comments & explanation of agreement score (Financial Impact)",
+      "kind": "question",
+      "responses_with_value": 2,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 34,
+      "label": "Operational Impact: This opportunity requires a substantial volume of support from the IB to ensure it does not compromise our standards and quality.",
+      "label_raw": "Operational Impact: This opportunity requires a substantial volume of support from the IB to ensure it does not compromise our standards and quality.",
+      "kind": "question",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "int"
+      ],
+      "notes": [
+        "Likert-style rating; observed integer strings within 1-5"
+      ]
+    },
+    {
+      "excel_column": 35,
+      "label": "Operational Impact: This opportunity requires operations (people, process, or system) changes.",
+      "label_raw": "Operational Impact: This opportunity requires operations (people, process, or system) changes.",
+      "kind": "question",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "int"
+      ],
+      "notes": [
+        "Likert-style rating; observed integer strings within 1-5"
+      ]
+    },
+    {
+      "excel_column": 36,
+      "label": "Comments & explanation of agreement score (Operational Impact)",
+      "label_raw": "Comments & explanation of agreement score (Operational Impact)",
+      "kind": "question",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 37,
+      "label": "Reputational Impact: This opportunity creates reputational risk for the organization.",
+      "label_raw": "Reputational Impact: This opportunity creates reputational risk for the organization.",
+      "kind": "question",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "int"
+      ],
+      "notes": [
+        "Likert-style rating; observed integer strings within 1-5"
+      ]
+    },
+    {
+      "excel_column": 38,
+      "label": "Comments & explanation of agreement score (Reputational Impact)",
+      "label_raw": "Comments & explanation of agreement score (Reputational Impact)",
+      "kind": "question",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 39,
+      "label": "Internal Stakeholders Consulted",
+      "label_raw": "Internal Stakeholders Consulted",
+      "kind": "question",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 40,
+      "label": "Internal Consultation Context & Outcomes",
+      "label_raw": "Internal Consultation Context & Outcomes",
+      "kind": "question",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 41,
+      "label": "Is there Network/Expert Community (IBEN) Impact to be considered regarding this opportunity?",
+      "label_raw": "Is there Network/Expert Community (IBEN) Impact to be considered regarding this opportunity?",
+      "kind": "question",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 42,
+      "label": "If Yes, please explain the Network/Expert Community (IBEN) Impact.",
+      "label_raw": "If Yes, please explain the Network/Expert Community (IBEN) Impact.",
+      "kind": "question",
+      "responses_with_value": 1,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": [
+        "conditional on IBEN impact = Yes"
+      ]
+    },
+    {
+      "excel_column": 43,
+      "label": "Is there a Professional Learning Impact to be considered regarding this opportunity?",
+      "label_raw": "Is there a Professional Learning Impact to be considered regarding this opportunity?",
+      "kind": "question",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 44,
+      "label": "If Yes, please explain the Professional Learning Impact.",
+      "label_raw": "If Yes, please explain the Professional Learning Impact.",
+      "kind": "question",
+      "responses_with_value": 1,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": [
+        "conditional on Professional Learning impact = Yes"
+      ]
+    },
+    {
+      "excel_column": 45,
+      "label": "Are there any additional factors to be considered regarding this opportunity?",
+      "label_raw": "Are there any additional factors to be considered regarding this opportunity?",
+      "kind": "question",
+      "responses_with_value": 6,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": []
+    },
+    {
+      "excel_column": 46,
+      "label": "If Yes, please explain the additional factors.",
+      "label_raw": "If Yes, please explain the additional factors.",
+      "kind": "question",
+      "responses_with_value": 1,
+      "observed_python_types": [
+        "str"
+      ],
+      "notes": [
+        "conditional on additional factors = Yes"
+      ]
+    },
+    {
+      "excel_column": 47,
+      "label": "Add any supporting files",
+      "label_raw": "Add any supporting files ",
+      "kind": "question",
+      "responses_with_value": 0,
+      "observed_python_types": [],
+      "notes": [
+        "file-upload question; blank in all reference responses"
+      ]
+    }
+  ]
+}
