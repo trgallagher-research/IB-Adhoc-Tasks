@@ -1,0 +1,39 @@
+{
+  "_notice": "Semantic simulation of the production Compose payload against dummy bodies (sanitized response 6; synthetic edge-case with JSON-sensitive characters and all-blank answers). All values dummy.",
+  "checks": [
+    "valid JSON round-trip / escaping",
+    "blank -> JSON null (never '', 0, false, 'N/A', 'null')",
+    "int for Number, ISO-shaped string for DateTime, non-empty string for Text/Note/Choice",
+    "Title never null or empty"
+  ],
+  "results": {
+    "response-6": {
+      "Title": "Pilot a searchable online resource hub for schools.",
+      "Respondent": "redacted.responder@example.invalid",
+      "SubmittedDate": "2026-07-24T15:23:34Z",
+      "OpportunityDescription": "Pilot a searchable online resource hub for schools.",
+      "AnticipatedLaunchDate": "2026-12-01",
+      "ImplementationTimeline": "Build in October, test in November, and pilot in December 2026.",
+      "StrategicGoals": "Driver A1",
+      "StrategicAlignmentRationale": "Driver A1",
+      "OperationalImpactExplanation": "Limited support is expected and no operational changes are planned.",
+      "ReputationalImpactExplanation": "The reputational risk is currently uncertain.",
+      "InternalStakeholdersConsulted": "Professional Learning team.",
+      "InternalConsultationOutcomes": "The team supported testing a small pilot."
+    },
+    "edge-case-all-blank-except-Q07": {
+      "Title": "He said \"let's try\" — line1\nline2 \\ ünïcödé 🚀 <script>",
+      "Respondent": "edge.case@example.invalid",
+      "SubmittedDate": "2026-12-31T23:59:59Z",
+      "OpportunityDescription": "He said \"let's try\" — line1\nline2 \\ ünïcödé 🚀 <script>",
+      "AnticipatedLaunchDate": null,
+      "ImplementationTimeline": null,
+      "StrategicGoals": null,
+      "StrategicAlignmentRationale": null,
+      "OperationalImpactExplanation": null,
+      "ReputationalImpactExplanation": null,
+      "InternalStakeholdersConsulted": null,
+      "InternalConsultationOutcomes": null
+    }
+  }
+}

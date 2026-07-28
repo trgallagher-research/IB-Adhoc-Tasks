@@ -9,18 +9,16 @@ Reminder for all captures: place unredacted originals in the relevant
 `raw/` folder (git-ignored), then a redacted copy in `sanitized/` following the
 folder's instructions file. Dummy submissions only; never real submission text.
 
-## EV‑1 — Live SharePoint schema export (highest value)
+## EV‑1 — Live SharePoint schema export — ✅ COMPLETE (2026‑07‑28)
 
-- **How:** `03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md` (browser GET or a
-  one-off HTTP action in a copied flow — the latter also proves permission P1/P2).
-- **Unblocks:** the SharePoint side of *every* mapping (internal names, types,
-  required flags, choice sets, defaults); the excluded-system-fields list; the
-  raw-fields-without-Form-source coverage section; whether a Form-response-ID
-  column and processing/audit columns exist; whether `StrategicGoals` /
-  `ImpactedProgrammes` are multiline text (text serialization) or MultiChoice.
-- **Then:** internal-name assignments are added to `scripts/build_mapping_spec.py`
-  with the schema as evidence, and `./scripts/run_checks.sh` regenerates a
-  non-empty executable payload.
+Captured via browser GET (ATOM XML), transcribed and redacted into
+`03-sharepoint-schema/sanitized/knowledge-submissions-schema.json`. Key results:
+every question has a uniquely corresponding destination field; `FormResponseID`
+exists but is **Text** (quote filter values, send strings); `ReviewStatus`
+default `Not reviewed` confirmed; `ProcessingStatus` default `Processed`;
+`ComplianceBoundaryAdaptation` has a third choice "I don't know";
+`StrategicGoals`/`ImpactedProgrammes` are multiline text; Title not required;
+no supporting-files column. The executable payload now carries 12 properties.
 
 ## EV‑2 — Existing flow export or per-action Peek code
 
@@ -87,15 +85,15 @@ unique):
 - Delete the dummy SharePoint items the production flow creates for A/B/C (or
   note their IDs) so the list stays clean.
 
-## EV‑5 — Small confirmations (no capture needed, one look each)
+## EV‑5 — Small confirmations
 
-1. In the Forms editor: confirm **Implementation Readiness Notice** is a
-   text/section element with no input (current determination: no SharePoint
-   destination; blank in all six reference responses).
-2. Confirm the exact list title is `Knowledge Submissions` (used in every Uri).
-3. Confirm whether a **Form response ID column** exists on the list (comes free
-   with EV‑1); if not, decide who adds it (permission matrix P6).
-4. Site URL for the action configs (kept as `<<site-url>>` in committed files).
+1. **Still open:** in the Forms editor, confirm **Implementation Readiness
+   Notice** is a text/section element with no input (current determination:
+   no SharePoint destination — now also supported by the schema having no
+   corresponding field).
+2. ✅ List title confirmed `Knowledge Submissions` (EV‑1 capture succeeded on it).
+3. ✅ `FormResponseID` column exists (Text, 255). No column creation needed.
+4. Site URL: keep it out of the repo; you have it for the action configs.
 
 ## What happens when evidence lands
 

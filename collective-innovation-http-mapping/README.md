@@ -11,10 +11,10 @@ SharePoint list (`Knowledge Submissions`) and generating the Compose +
 | Forms Excel evidence | ✅ ingested — 47 cols (6 metadata + 41 questions), 6 dummy responses; inventory in `01-forms-excel/sanitized/` |
 | Get response details evidence | ✅ response 6 ingested (sanitized, body-only) — 48 opaque keys; inventory in `02-get-response-details/sanitized/` |
 | Forms-key mappings | 9 **Confirmed**, 2 Probable, 30 Unresolved (of 41 questions) — see `05-mapping-spec/` |
-| SharePoint schema evidence | ❌ absent — **all SharePoint-side facts Unresolved**; see `03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md` |
-| Existing flow evidence | ❌ absent — see `04-existing-flow/COLLECTION-INSTRUCTIONS.md` |
-| Executable payload | intentionally **empty** (0 mappings meet the Existing/Confirmed-both-sides bar); pipeline proven end-to-end on dummy fixtures |
-| Blockers | consolidated in `EVIDENCE-REQUEST.md` (EV‑1…EV‑5) |
+| SharePoint schema evidence | ✅ live export ingested 2026‑07‑28 — **SharePoint side Confirmed for every mapping** (`03-sharepoint-schema/sanitized/knowledge-submissions-schema.json`) |
+| Existing flow evidence | ❌ absent — see `04-existing-flow/COLLECTION-INSTRUCTIONS.md` (blocks `Existing` mappings, OriginalSubmission, trigger response-ID path) |
+| Executable payload | **12 properties** (Title + Respondent + SubmittedDate + 9 Confirmed question mappings); dummy-body simulations pass |
+| Blockers | consolidated in `EVIDENCE-REQUEST.md` — EV‑1 ✅ done; EV‑2 (flow), EV‑3 (response 2), EV‑4 (disambiguation submissions), EV‑5.1 (notice check) remain |
 | Git history exposure | assessed in `GIT-EXPOSURE-NOTE.md`; working tree remediated, history decision pending |
 
 **Regenerate everything after new evidence:** `./scripts/run_checks.sh`

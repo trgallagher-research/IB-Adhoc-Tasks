@@ -24,8 +24,22 @@ def fail(msg):
     failures.append(msg)
 
 
+KIND_TYPE = {  # answer shape -> acceptable live SharePoint type prefix
+    "free text": ("Note", "Text"),
+    "date": ("DateTime",),
+    "rating 1-5": ("Number",),
+    "Yes/No": ("Choice",),
+    "multi-choice": ("Note",),
+}
+
+
 def check_spec():
     spec = json.loads((ROOT / "05-mapping-spec/mapping-spec.json").read_text())
+    schema_path = ROOT / "03-sharepoint-schema/sanitized/knowledge-submissions-schema.json"
+    schema_fields = {}
+    if schema_path.exists():
+        schema_fields = {f["InternalName"]: f
+                        for f in json.loads(schema_path.read_text())["fields"]}
     keys_inv = json.loads((ROOT / "02-get-response-details/sanitized/"
                            "response-keys-inventory.json").read_text())
     forms_inv = json.loads((ROOT / "01-forms-excel/sanitized/"
@@ -62,6 +76,20 @@ def check_spec():
                 fail(f"{e['map_id']}: executable with forms confidence {e['forms_key_confidence']}")
             if sp["confidence"] not in ("Existing", "Confirmed") or not sp["internal_name"]:
                 fail(f"{e['map_id']}: executable without evidenced SharePoint internal name")
+            if schema_fields:
+                f_ = schema_fields.get(sp["internal_name"])
+                if f_ is None:
+                    fail(f"{e['map_id']}: internal name {sp['internal_name']} not in live schema")
+                else:
+                    if f_["ReadOnlyField"]:
+                        fail(f"{e['map_id']}: {sp['internal_name']} is read-only")
+                    ok_types = KIND_TYPE.get(e["forms_answer_shape"])
+                    if ok_types and not f_["TypeAsString"].startswith(ok_types):
+                        fail(f"{e['map_id']}: answer shape {e['forms_answer_shape']} vs live "
+                             f"type {f_['TypeAsString']}")
+                    if e["forms_answer_shape"] == "Yes/No" and f_["Choices"]:
+                        if not {"Yes", "No"} <= set(f_["Choices"]):
+                            fail(f"{e['map_id']}: live choices {f_['Choices']} lack Yes/No")
     dupes = {k for k in assigned if assigned.count(k) > 1}
     if dupes:
         fail(f"duplicate key assignments: {dupes}")
@@ -98,6 +126,7 @@ SECRET_PATTERNS = [
     (re.compile(r"(?i)client_secret\s*[:=]\s*['\"]?[A-Za-z0-9~._-]{10,}"), "client secret"),
     (re.compile(r"(?i)bearer\s+[A-Za-z0-9._~+/=-]{20,}"), "bearer token"),
     (re.compile(r"(?i)(fedauth|rtfa)="), "SharePoint auth cookie"),
+    (re.compile(r"(?i)[a-z0-9-]+\.sharepoint\.com"), "tenant SharePoint hostname (redact to <site-url>)"),
 ]
 SCAN_EXT = {".md", ".json", ".py", ".sh", ".txt", ".jsonc"}
 

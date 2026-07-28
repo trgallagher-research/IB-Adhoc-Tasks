@@ -50,9 +50,10 @@ def mapping_spec_md():
         md.append(f"- `{k}`: {v}")
     md += [
         "",
-        "**The SharePoint side of every row below is Unresolved** because "
-        "`03-sharepoint-schema/` holds no live schema export yet. No mapping is "
-        "executable until that evidence arrives.",
+        "The SharePoint side is **Confirmed for every mapping** from the live schema "
+        "export of 2026-07-28 (unique label correspondence, types, required flags and "
+        "choice sets). Executability now turns on the Forms side and on expression-source "
+        "verification.",
         "",
         "## Forms metadata mappings",
         "",
@@ -86,14 +87,13 @@ def mapping_spec_md():
             for n in e["notes"]:
                 md.append(f"- Note: {n}")
             md.append("")
-    md += ["## Backend fields (Word field model) — not Form questions", "",
-           "| Field (name hint) | Layer | Behaviour at item creation |",
-           "|-------------------|-------|----------------------------|"]
+    md += ["## Backend fields — not Form questions (internal names evidenced by live schema)", "",
+           "| Fields | Layer | Behaviour at item creation |",
+           "|--------|-------|----------------------------|"]
     for b in BACKEND:
-        md.append(f"| {b['name_hint']} | {b['layer']} | {b['initial_create_behaviour']} |")
-    md += ["",
-           "Field names above are hints from the task brief / Word model, **not** evidenced "
-           "SharePoint internal names.", ""]
+        names = ", ".join(f"`{n}`" for n in b["internal_names"])
+        md.append(f"| {names} | {b['layer']} | {b['initial_create_behaviour']} |")
+    md.append("")
     return "\n".join(md)
 
 
@@ -106,13 +106,11 @@ def unresolved_md():
         f"Generated {GENERATED} by `scripts/build_reports.py`. Every row here is excluded "
         "from executable output. Resolution paths are in `EVIDENCE-REQUEST.md`.",
         "",
-        "## A. SharePoint side — unresolved for ALL mappings",
+        "## A. SharePoint side — RESOLVED (live schema export 2026-07-28)",
         "",
-        "No live schema export exists in `03-sharepoint-schema/`, so every SharePoint "
-        "internal name, type, required flag and choice set is Unresolved, including for "
-        "the fields named in the task brief (Title, ReviewStatus, StrategicGoals, "
-        "ImpactedProgrammes, OriginalSubmission, processing/audit fields). Those names "
-        "are hints, not evidence.",
+        "Every SharePoint internal name, type, required flag and choice set is now "
+        "Confirmed from `03-sharepoint-schema/sanitized/knowledge-submissions-schema.json`. "
+        "Remaining unresolved items are Forms-side keys and flow-layer expressions only.",
         "",
         "## B. Probable Forms keys (human resolution required; not executable)",
         "",
@@ -188,7 +186,9 @@ def coverage_md():
         f"| Question mappings | {len(Q)} | {len(conf)} Confirmed + {len(prob)} Probable + {len(unres)} Unresolved (Forms side) |",
         f"| Opaque `r…` keys | {totals['opaque_r_keys']} | {len(assigned)} assigned (Confirmed+Probable) + "
         f"{len(cand_pool)} in candidate pools + {blank} blank/unattributable + {unaccounted} otherwise unaccounted |",
-        f"| Executable mappings | 0 | SharePoint schema evidence absent |",
+        f"| Executable mappings | {sum(1 for e in Q if e['executable']) + sum(1 for e in META if e['executable'])} | "
+        f"{sum(1 for e in Q if e['executable'])} question + "
+        f"{sum(1 for e in META if e['executable'])} metadata/Title (both sides Confirmed) |",
         "",
         "Key-count arithmetic: 48 keys − 41 questions = **at least 7 surplus keys** even if "
         "every question maps 1:1; with 30 blank keys against 23 unanswered questions in "
@@ -209,11 +209,13 @@ def coverage_md():
         "- All other question fields have an *intended* destination that is Unresolved pending schema "
         "evidence — they are not 'no destination' cases.",
         "",
-        "## 2. Intended raw SharePoint fields without Form sources",
+        "## 2. SharePoint fields without Form sources (from the live schema)",
         "",
-        "Cannot be enumerated until the live schema export arrives. Known-by-hint candidates from the "
-        "brief (Title is flow-constructed; FormResponseId is flow-constructed) are covered in the "
-        "implementation design. This section must be regenerated after schema ingest.",
+        "Flow-constructed / control fields: `Title` (from Q07 + fallback), `FormResponseID` "
+        "(response ID; pending trigger verification), `SubmittedDate`, `Respondent`, "
+        "`SourceForm` (column default), `OriginalSubmission` (existing flow expression, pending "
+        "flow export). AI-layer, governance and processing fields are listed in the backend "
+        "table of the mapping spec — none is sourced from raw Forms answers.",
         "",
         "## 3. Unexplained Forms keys",
         "",
@@ -238,13 +240,12 @@ def coverage_md():
         "",
         "Projected-impact measures (Word model, governance layer) are intentionally blank at item creation.",
         "",
-        "## 7. Excluded SharePoint system fields",
-        "",
-        "Standard system/hidden/read-only fields (e.g. content type, version, created/modified stamps, "
-        "author/editor) will be excluded from the payload as a rule. The exact exclusion list is generated "
-        "from the live schema export (`Hidden eq true`, `ReadOnlyField eq true`) — not enumerable until then.",
+        "## 7. Excluded SharePoint system fields (from the live schema)",
         "",
     ]
+    for name in SPEC.get("system_fields_excluded", []):
+        md.append(f"- `{name}`")
+    md.append("")
     return "\n".join(md)
 
 

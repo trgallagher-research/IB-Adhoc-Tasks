@@ -9,7 +9,7 @@ Generated 2026-07-28 by `scripts/build_reports.py` from `mapping-spec.json` and 
 | Excel columns | 47 | 6 Forms metadata + 41 questions |
 | Question mappings | 41 | 9 Confirmed + 2 Probable + 30 Unresolved (Forms side) |
 | Opaque `r…` keys | 48 | 11 assigned (Confirmed+Probable) + 7 in candidate pools + 30 blank/unattributable + 0 otherwise unaccounted |
-| Executable mappings | 0 | SharePoint schema evidence absent |
+| Executable mappings | 12 | 9 question + 3 metadata/Title (both sides Confirmed) |
 
 Key-count arithmetic: 48 keys − 41 questions = **at least 7 surplus keys** even if every question maps 1:1; with 30 blank keys against 23 unanswered questions in response 6, the surplus is consistent but the specific surplus keys cannot be identified from current evidence.
 
@@ -21,9 +21,9 @@ Key-count arithmetic: 48 keys − 41 questions = **at least 7 surplus keys** eve
 - **Excel metadata 'Name'** — no Get-response-details equivalent (only `responder` email); destination undecided.
 - All other question fields have an *intended* destination that is Unresolved pending schema evidence — they are not 'no destination' cases.
 
-## 2. Intended raw SharePoint fields without Form sources
+## 2. SharePoint fields without Form sources (from the live schema)
 
-Cannot be enumerated until the live schema export arrives. Known-by-hint candidates from the brief (Title is flow-constructed; FormResponseId is flow-constructed) are covered in the implementation design. This section must be regenerated after schema ingest.
+Flow-constructed / control fields: `Title` (from Q07 + fallback), `FormResponseID` (response ID; pending trigger verification), `SubmittedDate`, `Respondent`, `SourceForm` (column default), `OriginalSubmission` (existing flow expression, pending flow export). AI-layer, governance and processing fields are listed in the backend table of the mapping spec — none is sourced from raw Forms answers.
 
 ## 3. Unexplained Forms keys
 
@@ -43,6 +43,28 @@ Human-review/governance fields (including ReviewStatus default 'Not reviewed' pe
 
 Projected-impact measures (Word model, governance layer) are intentionally blank at item creation.
 
-## 7. Excluded SharePoint system fields
+## 7. Excluded SharePoint system fields (from the live schema)
 
-Standard system/hidden/read-only fields (e.g. content type, version, created/modified stamps, author/editor) will be excluded from the payload as a rule. The exact exclusion list is generated from the live schema export (`Hidden eq true`, `ReadOnlyField eq true`) — not enumerable until then.
+- `LinkTitle (Computed, displays as 'Opportunity')`
+- `_ColorTag (read-only)`
+- `ComplianceAssetId (read-only)`
+- `ID (Counter)`
+- `ContentType (Computed)`
+- `Modified`
+- `Created`
+- `Author (Created By)`
+- `Editor (Modified By)`
+- `_UIVersionString (Version)`
+- `Attachments`
+- `Edit (Computed)`
+- `LinkTitleNoMenu (Computed)`
+- `DocIcon (Computed)`
+- `ItemChildCount`
+- `FolderChildCount`
+- `_ComplianceFlags`
+- `_ComplianceTag`
+- `_ComplianceTagWrittenTime`
+- `_ComplianceTagUserId`
+- `_IsRecord (Computed)`
+- `AppAuthor`
+- `AppEditor`

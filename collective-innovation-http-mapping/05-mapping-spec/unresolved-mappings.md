@@ -2,9 +2,9 @@
 
 Generated 2026-07-28 by `scripts/build_reports.py`. Every row here is excluded from executable output. Resolution paths are in `EVIDENCE-REQUEST.md`.
 
-## A. SharePoint side — unresolved for ALL mappings
+## A. SharePoint side — RESOLVED (live schema export 2026-07-28)
 
-No live schema export exists in `03-sharepoint-schema/`, so every SharePoint internal name, type, required flag and choice set is Unresolved, including for the fields named in the task brief (Title, ReviewStatus, StrategicGoals, ImpactedProgrammes, OriginalSubmission, processing/audit fields). Those names are hints, not evidence.
+Every SharePoint internal name, type, required flag and choice set is now Confirmed from `03-sharepoint-schema/sanitized/knowledge-submissions-schema.json`. Remaining unresolved items are Forms-side keys and flow-layer expressions only.
 
 ## B. Probable Forms keys (human resolution required; not executable)
 

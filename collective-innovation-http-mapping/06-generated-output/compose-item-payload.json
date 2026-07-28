@@ -2,8 +2,21 @@
   "_status": {
     "generated": "2026-07-28",
     "generated_by": "scripts/generate_artifacts.py",
-    "executable_mappings": 0,
-    "notice": "Only mappings with BOTH sides Existing/Confirmed are emitted. SharePoint schema evidence is currently ABSENT (03-sharepoint-schema/), so this payload is intentionally EMPTY. Populate the schema evidence, update the spec, and regenerate. Do not hand-add properties here."
+    "executable_mappings": 12,
+    "notice": "Only mappings with BOTH sides Existing/Confirmed and fully evidenced expression sources are emitted. Still pending evidence (excluded here): FormResponseID (trigger response-ID path unverified), OriginalSubmission (flow expression), all Probable/Unresolved Forms keys. Before deployment, verify the Get response details action name matches 'Get_response_details' (underscores for spaces) or rename the references."
   },
-  "compose_input": {}
+  "compose_input": {
+    "Title": "@if(empty(outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab']), concat('Form submission ', outputs('Get_response_details')?['body/submitDate']), if(greater(length(outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab']), 255), concat(substring(outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab'], 0, 252), '...'), outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab']))",
+    "Respondent": "@outputs('Get_response_details')?['body/responder']",
+    "SubmittedDate": "@concat(formatDateTime(outputs('Get_response_details')?['body/submitDate'], 'yyyy-MM-ddTHH:mm:ss'), 'Z')",
+    "OpportunityDescription": "@if(empty(outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab']), null, outputs('Get_response_details')?['body/r5caae6a11afb406a8e77e0b242fb4cab'])",
+    "AnticipatedLaunchDate": "@if(empty(outputs('Get_response_details')?['body/r8718cecca56b4ed692e9042452d04195']), null, outputs('Get_response_details')?['body/r8718cecca56b4ed692e9042452d04195'])",
+    "ImplementationTimeline": "@if(empty(outputs('Get_response_details')?['body/rf8348c8485dd40b08c00e76f66a3d428']), null, outputs('Get_response_details')?['body/rf8348c8485dd40b08c00e76f66a3d428'])",
+    "StrategicGoals": "@if(empty(outputs('Get_response_details')?['body/r1da539bd1a494208849da87ee257c128']), null, join(json(outputs('Get_response_details')?['body/r1da539bd1a494208849da87ee257c128']), '; '))",
+    "StrategicAlignmentRationale": "@if(empty(outputs('Get_response_details')?['body/rf9f8fa67e4fb4dfead61d31cba86aa7a']), null, outputs('Get_response_details')?['body/rf9f8fa67e4fb4dfead61d31cba86aa7a'])",
+    "OperationalImpactExplanation": "@if(empty(outputs('Get_response_details')?['body/r650d9f2a4d1f43e8938032a9cd60c658']), null, outputs('Get_response_details')?['body/r650d9f2a4d1f43e8938032a9cd60c658'])",
+    "ReputationalImpactExplanation": "@if(empty(outputs('Get_response_details')?['body/r577a0e5e42554b6f8d82f7c24b8f183b']), null, outputs('Get_response_details')?['body/r577a0e5e42554b6f8d82f7c24b8f183b'])",
+    "InternalStakeholdersConsulted": "@if(empty(outputs('Get_response_details')?['body/rc12c559d019d4f9f9f8ed773c21c686f']), null, outputs('Get_response_details')?['body/rc12c559d019d4f9f9f8ed773c21c686f'])",
+    "InternalConsultationOutcomes": "@if(empty(outputs('Get_response_details')?['body/r5d267e063680468b8f77617ee0269b60']), null, outputs('Get_response_details')?['body/r5d267e063680468b8f77617ee0269b60'])"
+  }
 }

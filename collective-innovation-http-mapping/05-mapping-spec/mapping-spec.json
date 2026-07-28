@@ -5,15 +5,15 @@
     "generated": "2026-07-28",
     "confidence_states": {
       "Existing": "Preserved from a working flow mapping (requires 04-existing-flow evidence).",
-      "Confirmed": "Supported by authoritative structural or distinctive dummy-test evidence.",
+      "Confirmed": "Supported by authoritative structural, distinctive dummy-test, or unique label-match evidence.",
       "Probable": "Strongly suggested but unproved; requires human resolution; NEVER executable.",
       "Unresolved": "Missing, ambiguous, obsolete, or contradictory."
     },
-    "executability_rule": "executable == true requires forms side AND SharePoint side each Existing or Confirmed. Enforced by scripts/validate_spec.py and scripts/generate_artifacts.py.",
+    "executability_rule": "executable == true requires forms side AND SharePoint side each Existing/Confirmed, with every expression source evidenced. Enforced by scripts/validate_spec.py and scripts/generate_artifacts.py.",
     "evidence_sources": {
       "forms_excel": "01-forms-excel/sanitized/Innovation-Intake-Form-responses-reference.xlsx (6 dummy responses)",
       "get_response_details": "02-get-response-details/sanitized/get-response-details-response-6.body.json (dummy response 6)",
-      "sharepoint_schema": "ABSENT — 03-sharepoint-schema/ empty",
+      "sharepoint_schema": "03-sharepoint-schema/sanitized/knowledge-submissions-schema.json (live export 2026-07-28)",
       "existing_flow": "ABSENT — 04-existing-flow/ empty"
     },
     "layer_model": [
@@ -25,24 +25,47 @@
   },
   "forms_metadata_mappings": [
     {
+      "map_id": "M-TITLE",
+      "source": "Opportunity Description key (Q07) with a submitDate-based fallback",
+      "description": "Required-by-convention Title, built by the flow.",
+      "forms_key_confidence": "Confirmed",
+      "forms_key_evidence": "Built solely from Confirmed sources: the Q07 key and the structural submitDate property. (Live schema shows Title is not actually Required on this list; it is populated anyway for usable views. Fallback deliberately avoids the trigger response-ID path, which is unverified until the flow export lands.)",
+      "sharepoint": {
+        "display_name": "Title",
+        "internal_name": "Title",
+        "type": "Text",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'Title' (Text) — display name corresponds uniquely to this source; no competing candidate field."
+      },
+      "normalization": "Opportunity Description truncated to 255 chars with ellipsis; if blank, 'Form submission <submitDate>'. Never null, never ''.",
+      "executable": true,
+      "notes": [
+        "Linked-title view column displays as 'Opportunity'."
+      ]
+    },
+    {
       "map_id": "M-RESPONDER",
       "source": "body('Get_response_details')?['responder']",
       "description": "Submitter email (Forms metadata, not an r-key).",
       "forms_key_confidence": "Confirmed",
       "forms_key_evidence": "Structural property of the Get-response-details body; observed populated in the response-6 capture and corresponding to the Excel 'Email' metadata column.",
       "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
+        "display_name": "Respondent",
+        "internal_name": "Respondent",
+        "type": "Text",
+        "required": false,
         "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'Respondent' (Text) — display name corresponds uniquely to this source; no competing candidate field."
       },
-      "normalization": "Plain string. Only usable for a Person field via a lookup/claims resolution step — do not post a bare email string to a Person column without testing.",
-      "executable": false,
+      "normalization": "Plain string into the Text column. (Not a Person field — no claims resolution needed.)",
+      "executable": true,
       "notes": [
-        "Excel 'Name' column has no Get-response-details equivalent; derive from Office 365 Users connector if needed, or leave to SharePoint Created By."
+        "Excel 'Name' column has no Get-response-details equivalent; no destination exists for it in the live schema either."
       ]
     },
     {
@@ -52,16 +75,17 @@
       "forms_key_confidence": "Confirmed",
       "forms_key_evidence": "Structural property of the body. Observed 'M/d/yyyy h:mm:ss AM/PM' in UTC: the response-6 capture shows 3:23:34 PM against the Excel completion time 17:23:34 (tenant-local, UTC+2 at capture).",
       "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
+        "display_name": "SubmittedDate",
+        "internal_name": "SubmittedDate",
+        "type": "DateTime",
+        "required": false,
         "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'SubmittedDate' (DateTime) — display name corresponds uniquely to this source; no competing candidate field."
       },
-      "normalization": "formatDateTime(..., 'yyyy-MM-ddTHH:mm:ssZ') — treat the source as UTC. Never send ''.",
-      "executable": false,
+      "normalization": "concat(formatDateTime(value, 'yyyy-MM-ddTHH:mm:ss'), 'Z') — source is UTC. Never ''.",
+      "executable": true,
       "notes": []
     },
     {
@@ -69,21 +93,20 @@
       "source": "triggerOutputs()?['body/resourceData/responseId']",
       "description": "Form response ID — duplicate-prevention key and audit reference.",
       "forms_key_confidence": "Probable",
-      "forms_key_evidence": "Documented output path of the 'When a new response is submitted' trigger; the expression is the standard pattern but has not been verified against this flow's export. The Excel ID column (1..6) shows the sequential IDs exist. Verify the exact path in the live flow's Get-response-details 'Response Id' parameter.",
+      "forms_key_evidence": "Documented output path of the 'When a new response is submitted' trigger; the standard pattern, but NOT yet verified against this flow's export — so this mapping stays out of executable output despite its destination being Confirmed. Verify via 04-existing-flow evidence (trigger.json / get-response-details.json).",
       "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
+        "display_name": "FormResponseID",
+        "internal_name": "FormResponseID",
+        "type": "Text",
+        "required": false,
         "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'FormResponseID' (Text) — display name corresponds uniquely to this source; no competing candidate field. NOTE: Text column, not Number — send the ID as a quoted string and quote it in the duplicate-check $filter."
       },
-      "normalization": "Integer. Store as Number or single-line text; used for idempotency lookup before create.",
+      "normalization": "string(response ID) into the Text column. Duplicate-check filter: FormResponseID eq '<id>'.",
       "executable": false,
-      "notes": [
-        "Excel metadata 'Start time' and 'Last modified time' have no Get-response-details equivalent; no destination proposed."
-      ]
+      "notes": []
     }
   ],
   "question_mappings": [
@@ -96,18 +119,19 @@
       "forms_key_confidence": "Confirmed",
       "forms_key_evidence": "response-6 correlation: Excel row ID 6 vs sanitized Get-response-details body for response 6: distinctive dummy value 'Pilot a searchable online resource hub for schools.' matches exactly one column and exactly one key within the response.",
       "forms_key_candidates": null,
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "executable": true,
+      "notes": [],
       "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
+        "display_name": "OpportunityDescription",
+        "internal_name": "OpportunityDescription",
+        "type": "Note",
+        "required": false,
         "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Pass through unmodified (preserve line breaks); blank -> omit/JSON null. Object-member escaping as for text.",
-      "executable": false,
-      "notes": []
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'OpportunityDescription' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q08",
@@ -118,18 +142,19 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Trim; blank answer -> omit/JSON null. Pass the value as a JSON object member (never string-concatenated JSON) so quotes, apostrophes, line breaks and Unicode are escaped by the platform.",
+      "normalization": "Trim; blank answer -> JSON null. Pass the value as a JSON object member (never string-concatenated JSON) so quotes, apostrophes, line breaks and Unicode are escaped by the platform.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "Sponsor",
+        "internal_name": "Sponsor",
+        "type": "Text",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'Sponsor' (Text) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q09",
@@ -140,18 +165,19 @@
       "forms_key_confidence": "Confirmed",
       "forms_key_evidence": "response-6 correlation: Excel row ID 6 vs sanitized Get-response-details body for response 6: only ISO-date value in the body ('2026-12-01') matches the only date answer in the row (Excel renders it as 2026-12-01 00:00:00).",
       "forms_key_candidates": null,
+      "normalization": "DateTime (DateOnly) destination: send the key's 'yyyy-MM-dd' string as-is. Blank -> JSON null. NEVER send ''.",
+      "executable": true,
+      "notes": [],
       "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
+        "display_name": "AnticipatedLaunchDate",
+        "internal_name": "AnticipatedLaunchDate",
+        "type": "DateTime (DateOnly)",
+        "required": false,
         "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "If SharePoint type is DateTime: send ISO 8601 (the key already carries 'yyyy-MM-dd'; add 'T00:00:00Z' only if the live field rejects date-only). Blank -> JSON null. NEVER send ''.",
-      "executable": false,
-      "notes": []
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'AnticipatedLaunchDate' (DateTime, DateOnly) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q10",
@@ -162,18 +188,19 @@
       "forms_key_confidence": "Confirmed",
       "forms_key_evidence": "response-6 correlation: Excel row ID 6 vs sanitized Get-response-details body for response 6: distinctive dummy value 'Build in October, test in November, and pilot in December 2026.' matches exactly one column and one key.",
       "forms_key_candidates": null,
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "executable": true,
+      "notes": [],
       "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
+        "display_name": "ImplementationTimeline",
+        "internal_name": "ImplementationTimeline",
+        "type": "Note",
+        "required": false,
         "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Pass through unmodified (preserve line breaks); blank -> omit/JSON null. Object-member escaping as for text.",
-      "executable": false,
-      "notes": []
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ImplementationTimeline' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q11",
@@ -190,18 +217,22 @@
         "r587705b554a5436aa6663834b1582469",
         "rbc83faed4a274e0fb254a5c4c21edd73"
       ],
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "If SharePoint type is Choice: pass 'Yes'/'No' verbatim after verifying live choice set. If Boolean: equals(value,'Yes'). Blank -> JSON null; never invent 'N/A' or false.",
+      "normalization": "Choice destination (choices verified in live schema): pass the answer string through verbatim ('Yes'/'No', and for ComplianceBoundaryAdaptation also \"I don't know\"). Blank -> JSON null; never invent 'N/A' or false.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "ExternalPartnerInvolved",
+        "internal_name": "ExternalPartnerInvolved",
+        "type": "Choice",
+        "required": false,
+        "allowed_choices": [
+          "Yes",
+          "No"
+        ],
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ExternalPartnerInvolved' (Choice) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q12",
@@ -212,18 +243,19 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Trim; blank answer -> omit/JSON null. Pass the value as a JSON object member (never string-concatenated JSON) so quotes, apostrophes, line breaks and Unicode are escaped by the platform.",
+      "normalization": "Trim; blank answer -> JSON null. Pass the value as a JSON object member (never string-concatenated JSON) so quotes, apostrophes, line breaks and Unicode are escaped by the platform.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "PartnerOrganisation",
+        "internal_name": "PartnerOrganisation",
+        "type": "Text",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'PartnerOrganisation' (Text) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q13",
@@ -234,18 +266,19 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Trim; blank answer -> omit/JSON null. Pass the value as a JSON object member (never string-concatenated JSON) so quotes, apostrophes, line breaks and Unicode are escaped by the platform.",
+      "normalization": "Trim; blank answer -> JSON null. Pass the value as a JSON object member (never string-concatenated JSON) so quotes, apostrophes, line breaks and Unicode are escaped by the platform.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "PartnerContactPerson",
+        "internal_name": "PartnerContactPerson",
+        "type": "Text",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'PartnerContactPerson' (Text) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q14",
@@ -256,18 +289,19 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Trim; blank answer -> omit/JSON null. Pass the value as a JSON object member (never string-concatenated JSON) so quotes, apostrophes, line breaks and Unicode are escaped by the platform.",
+      "normalization": "Trim; blank answer -> JSON null. Pass the value as a JSON object member (never string-concatenated JSON) so quotes, apostrophes, line breaks and Unicode are escaped by the platform.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "PartnerContactRole",
+        "internal_name": "PartnerContactRole",
+        "type": "Text",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'PartnerContactRole' (Text) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q15",
@@ -278,20 +312,21 @@
       "forms_key_confidence": "Confirmed",
       "forms_key_evidence": "response-6 correlation: Excel row ID 6 vs sanitized Get-response-details body for response 6: only JSON-array-serialized value in the body ('[\"Driver A1\"]') matches the multi-choice serialization of the row's Strategic Goals value ('Driver A1;'). The only other multi-choice question (Impacted Programme(s)) is blank in this response.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Value arrives as a JSON-array *string* (e.g. '[\"A\",\"B\"]'). If the destination is multiline text (as the brief indicates for StrategicGoals/ImpactedProgrammes): join(json(value), '; '). If the live schema instead shows MultiChoice: {'results': json(value)}. Blank -> omit/JSON null.",
-      "executable": false,
+      "normalization": "Value arrives as a JSON-array *string* (e.g. '[\"A\",\"B\"]'). Destination is CONFIRMED multiline text (Note): join(json(value), '; '). Blank -> JSON null.",
+      "executable": true,
       "notes": [
-        "Brief indicates the likely destination is a multiline-text column (StrategicGoals named in the task brief — hint only, not schema evidence); serialize as joined text, not SharePoint multi-choice syntax."
-      ]
+        "Destination CONFIRMED as multiline text (Note), not MultiChoice — '; '-joined text serialization applies."
+      ],
+      "sharepoint": {
+        "display_name": "StrategicGoals",
+        "internal_name": "StrategicGoals",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'StrategicGoals' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q16",
@@ -302,18 +337,19 @@
       "forms_key_confidence": "Confirmed",
       "forms_key_evidence": "response-6 correlation: Excel row ID 6 vs sanitized Get-response-details body for response 6: deliberate marker value — plain string 'Driver A1' exactly matches the rationale column, and is structurally distinct from the JSON-array form carried by the Strategic Goals key.",
       "forms_key_candidates": null,
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "executable": true,
+      "notes": [],
       "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
+        "display_name": "StrategicAlignmentRationale",
+        "internal_name": "StrategicAlignmentRationale",
+        "type": "Note",
+        "required": false,
         "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Pass through unmodified (preserve line breaks); blank -> omit/JSON null. Object-member escaping as for text.",
-      "executable": false,
-      "notes": []
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'StrategicAlignmentRationale' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q17",
@@ -330,18 +366,22 @@
         "r587705b554a5436aa6663834b1582469",
         "rbc83faed4a274e0fb254a5c4c21edd73"
       ],
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "If SharePoint type is Choice: pass 'Yes'/'No' verbatim after verifying live choice set. If Boolean: equals(value,'Yes'). Blank -> JSON null; never invent 'N/A' or false.",
+      "normalization": "Choice destination (choices verified in live schema): pass the answer string through verbatim ('Yes'/'No', and for ComplianceBoundaryAdaptation also \"I don't know\"). Blank -> JSON null; never invent 'N/A' or false.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "LocalMarketImpact",
+        "internal_name": "LocalMarketImpact",
+        "type": "Choice",
+        "required": false,
+        "allowed_choices": [
+          "Yes",
+          "No"
+        ],
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'LocalMarketImpact' (Choice) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q18",
@@ -352,18 +392,19 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Trim; blank answer -> omit/JSON null. Pass the value as a JSON object member (never string-concatenated JSON) so quotes, apostrophes, line breaks and Unicode are escaped by the platform.",
+      "normalization": "Trim; blank answer -> JSON null. Pass the value as a JSON object member (never string-concatenated JSON) so quotes, apostrophes, line breaks and Unicode are escaped by the platform.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "LocalMarketDetails",
+        "internal_name": "LocalMarketDetails",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'LocalMarketDetails' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q19",
@@ -374,18 +415,25 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "If SharePoint type is Choice: pass 'Yes'/'No' verbatim after verifying live choice set. If Boolean: equals(value,'Yes'). Blank -> JSON null; never invent 'N/A' or false.",
+      "normalization": "Choice destination (choices verified in live schema): pass the answer string through verbatim ('Yes'/'No', and for ComplianceBoundaryAdaptation also \"I don't know\"). Blank -> JSON null; never invent 'N/A' or false.",
       "executable": false,
-      "notes": []
+      "notes": [
+        "Live choice set includes a third option \"I don't know\" — pass-through, never coerce to Yes/No."
+      ],
+      "sharepoint": {
+        "display_name": "ComplianceBoundaryAdaptation",
+        "internal_name": "ComplianceBoundaryAdaptation",
+        "type": "Choice",
+        "required": false,
+        "allowed_choices": [
+          "Yes",
+          "No",
+          "I don't know"
+        ],
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ComplianceBoundaryAdaptation' (Choice) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q20",
@@ -396,18 +444,22 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "If SharePoint type is Choice: pass 'Yes'/'No' verbatim after verifying live choice set. If Boolean: equals(value,'Yes'). Blank -> JSON null; never invent 'N/A' or false.",
+      "normalization": "Choice destination (choices verified in live schema): pass the answer string through verbatim ('Yes'/'No', and for ComplianceBoundaryAdaptation also \"I don't know\"). Blank -> JSON null; never invent 'N/A' or false.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "ChiefSupportSecured",
+        "internal_name": "ChiefSupportSecured",
+        "type": "Choice",
+        "required": false,
+        "allowed_choices": [
+          "Yes",
+          "No"
+        ],
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ChiefSupportSecured' (Choice) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q21",
@@ -418,18 +470,19 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Pass through unmodified (preserve line breaks); blank -> omit/JSON null. Object-member escaping as for text.",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "ChiefSupportDetails",
+        "internal_name": "ChiefSupportDetails",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ChiefSupportDetails' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q22",
@@ -438,22 +491,21 @@
       "forms_answer_shape": "display-only notice (no input observed)",
       "forms_response_key": null,
       "forms_key_confidence": "Unresolved",
-      "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
+      "forms_key_evidence": null,
       "forms_key_candidates": null,
+      "normalization": "No destination (confirmed); nothing sent.",
+      "executable": false,
+      "notes": [],
       "sharepoint": {
         "display_name": null,
         "internal_name": null,
         "type": null,
         "required": null,
         "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "No destination proposed; nothing sent.",
-      "executable": false,
-      "notes": [
-        "Implementation Readiness Notice: blank in ALL six reference responses including the fully completed response 2, so it carries no respondent data. Determination: NO SharePoint destination required. Confirm against the live form that it is a text/section element without an input control; if the flow export shows it referenced anywhere, revisit."
-      ]
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): Display-only notice element (blank in all six reference responses) and the live schema has no corresponding field. Determination: no destination required.",
+        "no_destination": true
+      }
     },
     {
       "map_id": "Q23",
@@ -464,18 +516,19 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "If SharePoint type is Number: int(value). Blank -> JSON null. NEVER send '' or 0 for unanswered.",
+      "normalization": "Number destination: int(value). Blank -> JSON null. NEVER send '' or 0 for unanswered.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "StrategicImportanceScore",
+        "internal_name": "StrategicImportanceScore",
+        "type": "Number",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'StrategicImportanceScore' (Number) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q24",
@@ -486,18 +539,19 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Pass through unmodified (preserve line breaks); blank -> omit/JSON null. Object-member escaping as for text.",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "StrategicImportanceExplanation",
+        "internal_name": "StrategicImportanceExplanation",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'StrategicImportanceExplanation' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q25",
@@ -508,18 +562,19 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "If SharePoint type is Number: int(value). Blank -> JSON null. NEVER send '' or 0 for unanswered.",
+      "normalization": "Number destination: int(value). Blank -> JSON null. NEVER send '' or 0 for unanswered.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "LocalizedServiceOfferingScore",
+        "internal_name": "LocalizedServiceOfferingScore",
+        "type": "Number",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'LocalizedServiceOfferingScore' (Number) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q26",
@@ -530,18 +585,19 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Pass through unmodified (preserve line breaks); blank -> omit/JSON null. Object-member escaping as for text.",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "LocalizedServiceOfferingExplanation",
+        "internal_name": "LocalizedServiceOfferingExplanat",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'LocalizedServiceOfferingExplanat' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q27",
@@ -552,18 +608,19 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Pass through unmodified (preserve line breaks); blank -> omit/JSON null. Object-member escaping as for text.",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "ImpactDescription",
+        "internal_name": "ImpactDescription",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ImpactDescription' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q28",
@@ -574,18 +631,19 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Pass through unmodified (preserve line breaks); blank -> omit/JSON null. Object-member escaping as for text.",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "DataEvidence",
+        "internal_name": "DataEvidence",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'DataEvidence' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q29",
@@ -596,18 +654,19 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Pass through unmodified (preserve line breaks); blank -> omit/JSON null. Object-member escaping as for text.",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "ExpectedEvidence",
+        "internal_name": "ExpectedEvidence",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ExpectedEvidence' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q30",
@@ -618,20 +677,21 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Value arrives as a JSON-array *string* (e.g. '[\"A\",\"B\"]'). If the destination is multiline text (as the brief indicates for StrategicGoals/ImpactedProgrammes): join(json(value), '; '). If the live schema instead shows MultiChoice: {'results': json(value)}. Blank -> omit/JSON null.",
+      "normalization": "Value arrives as a JSON-array *string* (e.g. '[\"A\",\"B\"]'). Destination is CONFIRMED multiline text (Note): join(json(value), '; '). Blank -> JSON null.",
       "executable": false,
       "notes": [
-        "Brief indicates the likely destination is a multiline-text column (ImpactedProgrammes named in the task brief — hint only, not schema evidence); serialize as joined text, not SharePoint multi-choice syntax."
-      ]
+        "Destination CONFIRMED as multiline text (Note), not MultiChoice — '; '-joined text serialization applies."
+      ],
+      "sharepoint": {
+        "display_name": "ImpactedProgrammes",
+        "internal_name": "ImpactedProgrammes",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ImpactedProgrammes' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q31",
@@ -642,18 +702,19 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Pass through unmodified (preserve line breaks); blank -> omit/JSON null. Object-member escaping as for text.",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "StakeholderFeedbackSummary",
+        "internal_name": "StakeholderFeedbackSummary",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'StakeholderFeedbackSummary' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q32",
@@ -667,18 +728,19 @@
         "r90c6dc19b575459fa68b7a65b23a9a06",
         "re95a3bb4ed594260b8745180ba8d56a7"
       ],
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "If SharePoint type is Number: int(value). Blank -> JSON null. NEVER send '' or 0 for unanswered.",
+      "normalization": "Number destination: int(value). Blank -> JSON null. NEVER send '' or 0 for unanswered.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "FinancialImpactScore",
+        "internal_name": "FinancialImpactScore",
+        "type": "Number",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'FinancialImpactScore' (Number) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q33",
@@ -689,18 +751,19 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Pass through unmodified (preserve line breaks); blank -> omit/JSON null. Object-member escaping as for text.",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "FinancialImpactExplanation",
+        "internal_name": "FinancialImpactExplanation",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'FinancialImpactExplanation' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q34",
@@ -711,18 +774,19 @@
       "forms_key_confidence": "Probable",
       "forms_key_evidence": "response-6 correlation: Excel row ID 6 vs sanitized Get-response-details body for response 6: value '2' is unique within the response's four-rating multiset {1,1,2,3} and the row's answered ratings form the same multiset, with '2' on this column. Capped at Probable because the brief rules 1-5 values non-distinctive. Resolve with a distinct-permutation test submission.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "If SharePoint type is Number: int(value). Blank -> JSON null. NEVER send '' or 0 for unanswered.",
+      "normalization": "Number destination: int(value). Blank -> JSON null. NEVER send '' or 0 for unanswered.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "OperationalSupportScore",
+        "internal_name": "OperationalSupportScore",
+        "type": "Number",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'OperationalSupportScore' (Number) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q35",
@@ -736,18 +800,19 @@
         "r90c6dc19b575459fa68b7a65b23a9a06",
         "re95a3bb4ed594260b8745180ba8d56a7"
       ],
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "If SharePoint type is Number: int(value). Blank -> JSON null. NEVER send '' or 0 for unanswered.",
+      "normalization": "Number destination: int(value). Blank -> JSON null. NEVER send '' or 0 for unanswered.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "OperationalChangesScore",
+        "internal_name": "OperationalChangesScore",
+        "type": "Number",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'OperationalChangesScore' (Number) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q36",
@@ -758,18 +823,19 @@
       "forms_key_confidence": "Confirmed",
       "forms_key_evidence": "response-6 correlation: Excel row ID 6 vs sanitized Get-response-details body for response 6: distinctive dummy value 'Limited support is expected and no operational changes are planned.' matches exactly one column and one key.",
       "forms_key_candidates": null,
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "executable": true,
+      "notes": [],
       "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
+        "display_name": "OperationalImpactExplanation",
+        "internal_name": "OperationalImpactExplanation",
+        "type": "Note",
+        "required": false,
         "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Pass through unmodified (preserve line breaks); blank -> omit/JSON null. Object-member escaping as for text.",
-      "executable": false,
-      "notes": []
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'OperationalImpactExplanation' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q37",
@@ -780,18 +846,19 @@
       "forms_key_confidence": "Probable",
       "forms_key_evidence": "response-6 correlation: Excel row ID 6 vs sanitized Get-response-details body for response 6: value '3' is unique within the response's four-rating multiset; same reasoning and same Probable cap as the Operational-support rating. Resolve with a distinct-permutation test submission.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "If SharePoint type is Number: int(value). Blank -> JSON null. NEVER send '' or 0 for unanswered.",
+      "normalization": "Number destination: int(value). Blank -> JSON null. NEVER send '' or 0 for unanswered.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "ReputationalImpactScore",
+        "internal_name": "ReputationalImpactScore",
+        "type": "Number",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ReputationalImpactScore' (Number) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q38",
@@ -802,18 +869,19 @@
       "forms_key_confidence": "Confirmed",
       "forms_key_evidence": "response-6 correlation: Excel row ID 6 vs sanitized Get-response-details body for response 6: distinctive dummy value 'The reputational risk is currently uncertain.' matches exactly one column and one key.",
       "forms_key_candidates": null,
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "executable": true,
+      "notes": [],
       "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
+        "display_name": "ReputationalImpactExplanation",
+        "internal_name": "ReputationalImpactExplanation",
+        "type": "Note",
+        "required": false,
         "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Pass through unmodified (preserve line breaks); blank -> omit/JSON null. Object-member escaping as for text.",
-      "executable": false,
-      "notes": []
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ReputationalImpactExplanation' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q39",
@@ -824,18 +892,19 @@
       "forms_key_confidence": "Confirmed",
       "forms_key_evidence": "response-6 correlation: Excel row ID 6 vs sanitized Get-response-details body for response 6: distinctive dummy value 'Professional Learning team.' matches exactly one column and one key.",
       "forms_key_candidates": null,
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "executable": true,
+      "notes": [],
       "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
+        "display_name": "InternalStakeholdersConsulted",
+        "internal_name": "InternalStakeholdersConsulted",
+        "type": "Note",
+        "required": false,
         "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Pass through unmodified (preserve line breaks); blank -> omit/JSON null. Object-member escaping as for text.",
-      "executable": false,
-      "notes": []
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'InternalStakeholdersConsulted' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q40",
@@ -846,18 +915,19 @@
       "forms_key_confidence": "Confirmed",
       "forms_key_evidence": "response-6 correlation: Excel row ID 6 vs sanitized Get-response-details body for response 6: distinctive dummy value 'The team supported testing a small pilot.' matches exactly one column and one key.",
       "forms_key_candidates": null,
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
+      "executable": true,
+      "notes": [],
       "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
+        "display_name": "InternalConsultationOutcomes",
+        "internal_name": "InternalConsultationOutcomes",
+        "type": "Note",
+        "required": false,
         "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Pass through unmodified (preserve line breaks); blank -> omit/JSON null. Object-member escaping as for text.",
-      "executable": false,
-      "notes": []
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'InternalConsultationOutcomes' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q41",
@@ -874,18 +944,22 @@
         "r587705b554a5436aa6663834b1582469",
         "rbc83faed4a274e0fb254a5c4c21edd73"
       ],
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "If SharePoint type is Choice: pass 'Yes'/'No' verbatim after verifying live choice set. If Boolean: equals(value,'Yes'). Blank -> JSON null; never invent 'N/A' or false.",
+      "normalization": "Choice destination (choices verified in live schema): pass the answer string through verbatim ('Yes'/'No', and for ComplianceBoundaryAdaptation also \"I don't know\"). Blank -> JSON null; never invent 'N/A' or false.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "IBENImpact",
+        "internal_name": "IBENImpact",
+        "type": "Choice",
+        "required": false,
+        "allowed_choices": [
+          "Yes",
+          "No"
+        ],
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'IBENImpact' (Choice) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q42",
@@ -896,18 +970,19 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Pass through unmodified (preserve line breaks); blank -> omit/JSON null. Object-member escaping as for text.",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "IBENImpactDescription",
+        "internal_name": "IBENImpactDescription",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'IBENImpactDescription' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q43",
@@ -924,18 +999,22 @@
         "r587705b554a5436aa6663834b1582469",
         "rbc83faed4a274e0fb254a5c4c21edd73"
       ],
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "If SharePoint type is Choice: pass 'Yes'/'No' verbatim after verifying live choice set. If Boolean: equals(value,'Yes'). Blank -> JSON null; never invent 'N/A' or false.",
+      "normalization": "Choice destination (choices verified in live schema): pass the answer string through verbatim ('Yes'/'No', and for ComplianceBoundaryAdaptation also \"I don't know\"). Blank -> JSON null; never invent 'N/A' or false.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "ProfessionalLearningImpact",
+        "internal_name": "ProfessionalLearningImpact",
+        "type": "Choice",
+        "required": false,
+        "allowed_choices": [
+          "Yes",
+          "No"
+        ],
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ProfessionalLearningImpact' (Choice) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q44",
@@ -946,18 +1025,19 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Pass through unmodified (preserve line breaks); blank -> omit/JSON null. Object-member escaping as for text.",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "ProfessionalLearningImpactDescription",
+        "internal_name": "ProfessionalLearningImpactDescri",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'ProfessionalLearningImpactDescri' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q45",
@@ -974,18 +1054,22 @@
         "r587705b554a5436aa6663834b1582469",
         "rbc83faed4a274e0fb254a5c4c21edd73"
       ],
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "If SharePoint type is Choice: pass 'Yes'/'No' verbatim after verifying live choice set. If Boolean: equals(value,'Yes'). Blank -> JSON null; never invent 'N/A' or false.",
+      "normalization": "Choice destination (choices verified in live schema): pass the answer string through verbatim ('Yes'/'No', and for ComplianceBoundaryAdaptation also \"I don't know\"). Blank -> JSON null; never invent 'N/A' or false.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "AdditionalFactors",
+        "internal_name": "AdditionalFactors",
+        "type": "Choice",
+        "required": false,
+        "allowed_choices": [
+          "Yes",
+          "No"
+        ],
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'AdditionalFactors' (Choice) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q46",
@@ -996,18 +1080,19 @@
       "forms_key_confidence": "Unresolved",
       "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
       "forms_key_candidates": null,
-      "sharepoint": {
-        "display_name": null,
-        "internal_name": null,
-        "type": null,
-        "required": null,
-        "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Pass through unmodified (preserve line breaks); blank -> omit/JSON null. Object-member escaping as for text.",
+      "normalization": "Pass through unmodified (preserve line breaks); blank -> JSON null. Object-member escaping as for text.",
       "executable": false,
-      "notes": []
+      "notes": [],
+      "sharepoint": {
+        "display_name": "AdditionalFactorsDescription",
+        "internal_name": "AdditionalFactorsDescription",
+        "type": "Note",
+        "required": false,
+        "allowed_choices": null,
+        "default_value": null,
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): field 'AdditionalFactorsDescription' (Note) — display name corresponds uniquely to this source; no competing candidate field."
+      }
     },
     {
       "map_id": "Q47",
@@ -1016,69 +1101,99 @@
       "forms_answer_shape": "file upload",
       "forms_response_key": null,
       "forms_key_confidence": "Unresolved",
-      "forms_key_evidence": "Blank in response 6, and blank Forms properties cannot be attributed to questions (30 blank keys vs 23 blank questions). Resolve by capturing the Get-response-details body for reference response 2, whose distinctive dummy answers cover most of these fields.",
+      "forms_key_evidence": null,
       "forms_key_candidates": null,
+      "normalization": "No list-field destination (confirmed). Phase 1: excluded from the payload entirely.",
+      "executable": false,
+      "notes": [],
       "sharepoint": {
         "display_name": null,
         "internal_name": null,
         "type": null,
         "required": null,
         "allowed_choices": null,
-        "confidence": "Unresolved",
-        "evidence": "No SharePoint schema evidence in the repository (03-sharepoint-schema/ is empty). Internal names, types, required flags and choice sets must come from a live schema export — see 03-sharepoint-schema/COLLECTION-INSTRUCTIONS.md."
-      },
-      "normalization": "Do NOT post to an ordinary list field expecting attachments to appear. Phase 1 scope: either omit entirely, or store the raw answer string (uploaded-file names/URLs as provided by Forms) in a text column explicitly labelled as a reference, not an attachment.",
-      "executable": false,
-      "notes": [
-        "Phase 1 file scope: Forms uploads land in the form owner's OneDrive/SharePoint upload folder; the answer is a reference string, not transferable attachment content via a list field. Defined separately in the implementation instructions."
-      ]
+        "confidence": "Confirmed",
+        "evidence": "Live schema export 2026-07-28 (03-sharepoint-schema/sanitized/knowledge-submissions-schema.json): File-upload answer. The live schema has no supporting-files column (only the standard Attachments facility). Phase 1 excludes file references from the payload — see implementation instructions.",
+        "no_destination": true
+      }
     }
   ],
   "backend_fields_not_form_questions": [
     {
-      "name_hint": "Innovation Type",
+      "internal_names": [
+        "AISummary",
+        "Topics",
+        "KeyFindings",
+        "Examples",
+        "OpenQuestions",
+        "DifferentPerspectives",
+        "ClaimsToVerify",
+        "RelatedKnowledge",
+        "FullAIOutput"
+      ],
       "layer": "AI-generated analysis",
-      "initial_create_behaviour": "Preserve the existing flow's AI/Select mapping once the flow export is in 04-existing-flow/; never source from raw Forms answers."
+      "initial_create_behaviour": "Preserve the existing flow's AI/Select mappings once the flow export is in 04-existing-flow/; never source from raw Forms answers."
     },
     {
-      "name_hint": "Horizon",
-      "layer": "AI-generated analysis",
-      "initial_create_behaviour": "Same as Innovation Type."
+      "internal_names": [
+        "HumanReviewRequired",
+        "HumanReviewReason",
+        "ReviewStatus"
+      ],
+      "layer": "Human review and governance",
+      "initial_create_behaviour": "Not in the raw-answer payload. ReviewStatus default 'Not reviewed' is CONFIRMED by the live schema (column default) — omitting it from the payload applies it. HumanReviewRequired defaults to No (0); whether the flow's AI branch overrides it awaits the flow export."
     },
     {
-      "name_hint": "Categorization",
-      "layer": "AI-generated analysis",
-      "initial_create_behaviour": "Same as Innovation Type."
-    },
-    {
-      "name_hint": "Ownership",
-      "layer": "AI-generated analysis / governance",
-      "initial_create_behaviour": "Same as Innovation Type; confirm layer from flow export."
-    },
-    {
-      "name_hint": "Projected-impact measures",
-      "layer": "Human review / governance",
-      "initial_create_behaviour": "Intentionally blank at item creation."
-    },
-    {
-      "name_hint": "Governance and review fields (incl. ReviewStatus)",
-      "layer": "Human review / governance",
-      "initial_create_behaviour": "Intentionally blank except agreed defaults; ReviewStatus stays 'Not reviewed' unless the flow export proves a different working default."
-    },
-    {
-      "name_hint": "Processing/audit fields (processing status, error detail)",
+      "internal_names": [
+        "ProcessingStatus",
+        "ProcessedDate",
+        "ProcessingError",
+        "PromptVersion",
+        "SourceForm"
+      ],
       "layer": "Processing and audit metadata",
-      "initial_create_behaviour": "Set by the flow itself per the error-handling design; internal names require schema evidence."
+      "initial_create_behaviour": "ProcessingStatus choices Received/Processing/Processed/Failed with column default 'Processed' (confirmed); SourceForm defaults to the form name; PromptVersion defaults '1.0'. Whether the flow sets these explicitly awaits the flow export — until then the payload omits them and defaults apply."
     },
     {
-      "name_hint": "OriginalSubmission",
+      "internal_names": [
+        "OriginalSubmission"
+      ],
       "layer": "Processing and audit metadata",
-      "initial_create_behaviour": "Preserve the existing labelled-submission construction output verbatim once the flow export is available; do not reconstruct it."
+      "initial_create_behaviour": "Destination CONFIRMED (Note). Source expression is the existing labelled-submission construction — preserved verbatim once the flow export is available; absent from the payload until then."
     },
     {
-      "name_hint": "FormResponseId (or equivalent)",
+      "internal_names": [
+        "FormResponseID",
+        "SubmittedDate",
+        "Respondent"
+      ],
       "layer": "Processing and audit metadata",
-      "initial_create_behaviour": "Duplicate-prevention key. Whether a column exists is unknown — see evidence request; if absent, one must be added to the list before cutover."
+      "initial_create_behaviour": "All three CONFIRMED to exist. SubmittedDate/Respondent are executable now; FormResponseID awaits trigger-expression verification (see M-RESPONSEID)."
     }
+  ],
+  "system_fields_excluded": [
+    "LinkTitle (Computed, displays as 'Opportunity')",
+    "_ColorTag (read-only)",
+    "ComplianceAssetId (read-only)",
+    "ID (Counter)",
+    "ContentType (Computed)",
+    "Modified",
+    "Created",
+    "Author (Created By)",
+    "Editor (Modified By)",
+    "_UIVersionString (Version)",
+    "Attachments",
+    "Edit (Computed)",
+    "LinkTitleNoMenu (Computed)",
+    "DocIcon (Computed)",
+    "ItemChildCount",
+    "FolderChildCount",
+    "_ComplianceFlags",
+    "_ComplianceTag",
+    "_ComplianceTagWrittenTime",
+    "_ComplianceTagUserId",
+    "_IsRecord (Computed)",
+    "AppAuthor",
+    "AppEditor"
   ]
 }

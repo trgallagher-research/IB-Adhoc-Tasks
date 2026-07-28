@@ -49,8 +49,8 @@ Blank handling contract (already encoded in the generated expressions):
 | unanswered text/multiline question (`''`) | `null` |
 | unanswered rating (`''`) | `null` (never `''`, never `0`) |
 | unanswered date (`''`) | `null` (never `''`) |
-| unanswered Yes/No (`''`) | `null` (never `false`, never `'N/A'`) |
-| multi-choice answer `'["A","B"]'` | `'A; B'` (text serialization, per brief for `<<StrategicGoals>>`/`<<ImpactedProgrammes>>`) |
+| unanswered Yes/No (`''`) | `null` (never `false`, never `'N/A'`) — pass answers through verbatim; `ComplianceBoundaryAdaptation` also accepts "I don't know" |
+| multi-choice answer `'["A","B"]'` | `'A; B'` (text serialization — `StrategicGoals`/`ImpactedProgrammes` confirmed as multiline text, not MultiChoice) |
 | answered value | trimmed value, typed per live schema |
 
 ## 2. Duplicate check (GET)
@@ -59,19 +59,20 @@ Blank handling contract (already encoded in the generated expressions):
   existing Create item)
 - Site Address: `<<site-url>>`
 - Method: `GET`
-- Uri:
+- Uri (`FormResponseID` confirmed by the live schema as a **Text** column, so
+  the filter value is **quoted**):
 
   ```
-  _api/web/lists/getbytitle('Knowledge Submissions')/items?$select=Id&$top=1&$filter=<<FormResponseIdInternalName>> eq @{triggerOutputs()?['body/resourceData/responseId']}
+  _api/web/lists/getbytitle('Knowledge Submissions')/items?$select=Id&$top=1&$filter=FormResponseID eq '@{triggerOutputs()?['body/resourceData/responseId']}'
   ```
 
 - Headers: `Accept: application/json;odata=nometadata`
 - Condition: `@empty(body('Duplicate_check')?['value'])` → *yes* = safe to create.
 
-Requirements this imposes (in the evidence request): a column holding the Form
-response ID must exist on the list; if the list may exceed 5,000 items, index
-that column. If the response ID column turns out to be text, quote the filter
-value (`eq '@{…}'`).
+Still gated on EV‑2: the trigger expression above is the documented pattern but
+unverified against this flow, so the duplicate check and the `FormResponseID`
+payload property stay out of executable output until the flow export confirms
+it. If the list may exceed 5,000 items, index `FormResponseID` (permission P7).
 
 ## 3. Create item (POST)
 
@@ -92,26 +93,31 @@ With `odata=nometadata` on both headers, no `__metadata`/entity-type wrapper is
 required. Success returns **201** with the created item (capture
 `body(...)?['Id']` if downstream steps want it).
 
-## 4. Required Title
+## 4. Title
 
-`Title` is the one internal name standard on every list, but its live settings
-(required flag, length) still need confirming. The generated expression never
-sends null: it uses the Opportunity Description, truncated to 255 characters
-with an ellipsis, and falls back to `Form response <id>` when the description
-is blank.
+Live schema: `Title` is **not required** on this list (and its linked-title
+view column displays as "Opportunity"), but the payload populates it anyway for
+usable views. The generated expression never sends null: Opportunity
+Description truncated to 255 characters with an ellipsis, falling back to
+`Form submission <submitDate>` when blank. (The fallback deliberately avoids
+the unverified trigger response-ID path; switch it to the response ID after
+EV‑2 confirms the expression.)
 
 ## 5. OriginalSubmission
 
-Preserved, not rebuilt: once the flow export is in `04-existing-flow/`, the
-existing labelled-submission output expression is copied verbatim into the
-payload property `<<OriginalSubmissionInternalName>>` with confidence
-`Existing`. Until then it is deliberately absent from the payload.
+Destination confirmed: `OriginalSubmission` (multiline text, plain). The
+source expression is preserved, not rebuilt: once the flow export is in
+`04-existing-flow/`, the existing labelled-submission output expression is
+copied verbatim into that property with confidence `Existing`. Until then it
+is deliberately absent from the payload.
 
 ## 6. Processing status / error handling
 
-- If the schema confirms processing/audit columns, the create payload sets
-  `<<ProcessingStatusInternalName>>` to the flow's agreed "created" value and
-  leaves error detail null.
+- Confirmed columns: `ProcessingStatus` (Choice: Received / Processing /
+  Processed / Failed; column default **Processed**), `ProcessedDate`
+  (DateTime), `ProcessingError` (multiline). The Phase 1 payload omits them so
+  the column defaults apply; whether the existing flow sets them explicitly
+  awaits the flow export.
 - CATCH scope (runs after TRY fails or times out):
   1. `Compose_error_detail`: `@{result('TRY')}` — captures which action failed
      and the raw error body.
@@ -120,8 +126,9 @@ payload property `<<OriginalSubmissionInternalName>>` with confidence
   3. Do **not** attempt a second create from the catch path — failed runs are
      replayed from the run history (**Resubmit**) after the cause is fixed;
      the duplicate check makes resubmission idempotent.
-- `ReviewStatus` stays at its default (`Not reviewed` assumed, pending flow
-  evidence); reviewer and projected-impact fields are never in the payload.
+- `ReviewStatus` stays at its column default — **`Not reviewed`, confirmed by
+  the live schema**; reviewer and projected-impact fields are never in the
+  payload.
 
 ## 7. Distinguishing permission errors from payload errors
 
