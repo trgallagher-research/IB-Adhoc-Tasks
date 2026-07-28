@@ -30,7 +30,13 @@ serialization, date shape, Title truncation, and the character escaping.
    Inputs: the response number you want to replay, e.g. `7`.
    *(This is the only thing you edit between test runs.)*
 3. **+ New step** → Microsoft Forms → **Get response details**.
-   - *Form Id*: pick the innovation intake form from the dropdown.
+   - *Form Id*: pick the innovation intake form from the dropdown. **If it is
+     not listed** — expected, because the dropdown shows only forms you
+     personally own and this one is group-owned — choose **Enter custom value**
+     and paste the form ID. Get it from the original flow: `Get response
+     details` → **⋯ → Peek code** → the `form_id` value (88 characters, ends
+     `PWcu`). It is deliberately redacted in `04-existing-flow/sanitized/`, so
+     the live flow is the source of truth for it; do not commit it.
    - *Response Id*: click **fx** → `outputs('Compose_response_id')`.
    - Confirm the action is named exactly **`Get response details`** (rename if
      the designer appended a number — the expressions depend on it).
