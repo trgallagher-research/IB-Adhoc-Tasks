@@ -23,3 +23,9 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# collective-innovation-http-mapping: unredacted, local-only source inputs
+collective-innovation-http-mapping/01-forms-excel/raw/
+collective-innovation-http-mapping/02-get-response-details/raw/
+collective-innovation-http-mapping/03-sharepoint-schema/raw/
+collective-innovation-http-mapping/04-existing-flow/raw/
