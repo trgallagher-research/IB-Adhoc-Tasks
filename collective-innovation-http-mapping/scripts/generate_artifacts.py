@@ -230,6 +230,9 @@ def run_production(spec):
     write_paste_actions(payload, template)
     write_text_template(prop_meta)
     write_smoke_template(prop_meta)
+    n_sandbox, skipped = write_sandbox_template(prop_meta)
+    print(f"sandbox template: {n_sandbox} properties "
+          f"({len(skipped)} AI/Select-dependent omitted)")
 
     type_of = {p["internal_name"]: p["sp_type"] for p in prop_meta}
     results = run_simulation(prop_meta, q07_key(spec), type_of, template)
@@ -310,6 +313,39 @@ def template_fragment(p):
             return f'"@{{{e}}}"'
         return f"@{{if(empty({e}), 'null', {STR(e)})}}"   # AI text / joins, null-safe
     raise ValueError(kind)
+
+
+AI_DEPENDENT = ("outputs('Run_a_prompt')", "body('Select_")
+
+
+def write_sandbox_template(prop_meta):
+    """Payload variant for the standalone test harness (manual-trigger flow).
+
+    Two substitutions make it runnable outside the real flow:
+      - the trigger response-ID expression becomes outputs('Compose_response_id'),
+        a small Compose the tester edits to replay any response;
+      - properties sourced from the AI/Select actions are omitted (those actions
+        do not exist in the harness). They are verbatim-preserved from the
+        working flow anyway, so live test T2 is their check.
+    Everything Forms-derived — i.e. everything this project actually built — is
+    included, so the harness exercises the whole risk surface.
+    """
+    kept, skipped = [], []
+    for p in prop_meta:
+        frag = template_fragment(p)
+        if any(marker in frag for marker in AI_DEPENDENT):
+            skipped.append(p["internal_name"])
+            continue
+        kept.append((p["internal_name"],
+                     frag.replace(RESPONSE_ID_EXPR, "outputs('Compose_response_id')")))
+    lines = ["{"]
+    for i, (name, frag) in enumerate(kept):
+        comma = "," if i < len(kept) - 1 else ""
+        lines.append(f'"{name}": {frag}{comma}')
+    lines.append("}")
+    (ROOT / "06-generated-output/compose-item-payload.SANDBOX.txt").write_text(
+        "\n".join(lines) + "\n")
+    return len(kept), skipped
 
 
 def write_smoke_template(prop_meta):
