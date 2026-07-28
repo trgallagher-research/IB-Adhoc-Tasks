@@ -33,9 +33,18 @@ degree 1) so two near-simultaneous submissions cannot race the duplicate check.
 
 ## 1. Compose: item payload
 
-Action name suggestion: `Compose_item_payload`. Input: the object in
-`compose-item-payload.json` (regenerated whenever the spec gains executable
-mappings). Authoring rules that make it safe:
+Action name: **`Compose item payload`** (referenced in expressions as
+`Compose_item_payload`).
+
+**Transfer format — read `BUILD-ROUTE-text-template.md` first.** This tenant's
+designer does not accept clipboard-pasted actions, so the payload is
+transferred as `compose-item-payload.template.txt` (a JSON text template using
+`@{...}` interpolation) pasted into the Compose **Inputs** field. Prove the
+mechanism with `compose-item-payload.SMOKETEST.txt` (3 properties) before
+pasting all 61. The object form below describes the intended semantics and
+remains the canonical artefact.
+
+Authoring rules that make it safe:
 
 - Build the input as a **JSON object in the designer**, with each property's
   value being a single expression token — in code view that is the

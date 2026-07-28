@@ -228,9 +228,17 @@ def run_production(spec):
         json.dumps(artefact, indent=2, ensure_ascii=False) + "\n")
 
     write_paste_actions(payload, template)
+    write_text_template(prop_meta)
+    write_smoke_template(prop_meta)
 
     type_of = {p["internal_name"]: p["sp_type"] for p in prop_meta}
     results = run_simulation(prop_meta, q07_key(spec), type_of, template)
+    # cross-check: assembling the simulated values as JSON text (what the text
+    # template produces) must parse back to the identical object
+    for sim in results.values():
+        text = "{\n" + ",\n".join(f"\"{k}\": {json.dumps(v, ensure_ascii=False)}"
+                                  for k, v in sim.items()) + "\n}"
+        assert json.loads(text) == sim
     (outdir / "simulation-results.json").write_text(json.dumps({
         "_notice": "Semantic simulation of the non-flow-layer payload properties against dummy bodies "
                    "(sanitized response 6; synthetic edge-case). Flow-layer (AI/constants) properties "
@@ -241,6 +249,96 @@ def run_production(spec):
     print(f"production mode: {len(prop_meta)} properties ({n_raw} raw + {n_meta} metadata + "
           f"{n_flow} flow-layer); simulations passed")
     return prop_meta
+
+
+def STR(expr):
+    """Expression emitting a QUOTED, JSON-escaped string literal for expr.
+
+    Explicit character escaping — deterministic and independent of how the
+    platform formats string()/json() output. Order is load-bearing: backslash
+    first (so escapes added later are not re-escaped), then the double quote,
+    then CR/LF/TAB via decodeUriComponent so no literal control characters
+    appear inside the expression text.
+
+    Power Automate string literals use single quotes and treat backslash as an
+    ordinary character, so '\\' below is one literal backslash and '\\\\' is two.
+    """
+    e = expr
+    e = f"replace({e}, '\\', '\\\\')"                                  # \  -> \\
+    e = f"replace({e}, '\"', '\\\"')"                                  # "  -> \"
+    e = f"replace({e}, decodeUriComponent('%0D'), '\\r')"              # CR -> \r
+    e = f"replace({e}, decodeUriComponent('%0A'), '\\n')"              # LF -> \n
+    e = f"replace({e}, decodeUriComponent('%09'), '\\t')"              # TAB-> \t
+    return f"concat('\"', {e}, '\"')"
+
+
+def template_fragment(p):
+    """Value fragment (text with @{...} interpolations) for one property in the
+    input-box-safe JSON text template. Must be semantically identical to the
+    object payload's bare-@ expression for the same property."""
+    kind, key = p["kind"], p.get("forms_key")
+    v = grd(key) if key else None
+    if kind in ("text", "multiline", "date", "yesno_choice"):
+        return f"@{{if(empty({v}), 'null', {STR(v)})}}"
+    if kind == "rating":
+        return f"@{{if(empty({v}), 'null', int({v}))}}"
+    if kind == "multichoice_as_text":
+        j = f"join(json({v}), '; ')"
+        return f"@{{if(empty({v}), 'null', {STR(j)})}}"
+    if kind == "responder":
+        responder = "outputs('" + GRD_ACTION + "')?['body/responder']"
+        return "@{" + STR(responder) + "}"
+    if kind == "submitdate":
+        return ('"@{concat(formatDateTime(outputs(\'' + GRD_ACTION +
+                "')?['body/submitDate'], 'yyyy-MM-ddTHH:mm:ss'), 'Z')}\"")
+    if kind == "responseid_string":
+        return f'"@{{{RESPONSE_ID_EXPR}}}"'
+    if kind == "original_submission":
+        return "@{" + STR("outputs('Compose_labelled_submission')") + "}"
+    if kind == "title_from_description":
+        fallback = f"concat('Form response ', string({RESPONSE_ID_EXPR}))"
+        title = (f"if(empty({v}), {fallback}, "
+                 f"if(greater(length({v}), 255), concat(substring({v}, 0, 252), '...'), {v}))")
+        return f"@{{{STR(title)}}}"
+    if kind == "verbatim":
+        if p["expression"] is None:
+            return json.dumps(p["constant"])
+        e = p["expression"]
+        if p["internal_name"] == "HumanReviewRequired":   # boolean -> raw true/false, null-safe
+            return f"@{{coalesce({e}, 'null')}}"
+        if p["internal_name"] == "ProcessedDate":         # fixed ISO format, no escapables
+            return f'"@{{{e}}}"'
+        return f"@{{if(empty({e}), 'null', {STR(e)})}}"   # AI text / joins, null-safe
+    raise ValueError(kind)
+
+
+def write_smoke_template(prop_meta):
+    """Three-property cut of the text template: one escaped string, one Number
+    (null-capable) and one plain interpolation. Lets the mechanism be proven in
+    the designer in two minutes before the full 61-property paste."""
+    wanted = ["Title", "OpportunityDescription", "ReputationalImpactScore"]
+    chosen = [p for name in wanted for p in prop_meta if p["internal_name"] == name]
+    lines = ["{"]
+    for i, p in enumerate(chosen):
+        comma = "," if i < len(chosen) - 1 else ""
+        lines.append(f'"{p["internal_name"]}": {template_fragment(p)}{comma}')
+    lines.append("}")
+    (ROOT / "06-generated-output/compose-item-payload.SMOKETEST.txt").write_text(
+        "\n".join(lines) + "\n")
+
+
+def write_text_template(prop_meta):
+    """Input-box-safe variant of the payload: a JSON *text* template whose
+    Compose output is a JSON string (HTTP body accepts it directly). Exists
+    because the clipboard-paste of the object-form action is tenant-dependent;
+    this file is pasted into the ordinary Compose Inputs field."""
+    lines = ["{"]
+    for i, p in enumerate(prop_meta):
+        comma = "," if i < len(prop_meta) - 1 else ""
+        lines.append(f'"{p["internal_name"]}": {template_fragment(p)}{comma}')
+    lines.append("}")
+    (ROOT / "06-generated-output/compose-item-payload.template.txt").write_text(
+        "\n".join(lines) + "\n")
 
 
 def write_paste_actions(payload, template):
