@@ -77,8 +77,15 @@ Blank handling contract (already encoded in the generated expressions):
   the filter value is **quoted**):
 
   ```
-  _api/web/lists/getbytitle('Knowledge Submissions')/items?$select=Id&$top=1&$filter=FormResponseID eq '@{triggerOutputs()?['body/resourceData/responseId']}'
+  _api/web/lists/getbytitle('Knowledge Submissions')/items?$select=Id&$top=1&$filter=FormResponseID eq '@{triggerOutputs()?['body/resourceData/responseId']}' and SourceForm eq 'Innovation Intake Form (Knowledge-Bank)'
   ```
+
+  ⚠ **The `SourceForm` clause is not optional.** Response IDs restart at 1 per
+  form, so once a second form feeds this list, its response 7 would match the
+  item created by this form's response 7 — and the flow would treat a genuine
+  new submission as a duplicate and silently skip creating it. The clause costs
+  nothing today and prevents silent data loss later. See
+  `multi-form-architecture.md`.
 
 - Headers: `Accept: application/json;odata=nometadata`
 - Condition: `@empty(body('Duplicate_check')?['value'])` → *yes* = safe to create.

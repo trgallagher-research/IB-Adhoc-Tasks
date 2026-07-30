@@ -14,6 +14,7 @@ tests — expected to fail in a specific way.
 | T5 | Multi-choice serialization | Strategic Goals with 3 selections; Impacted Programmes with 2 | 201; stored as `'A; B; C'` joined text (per brief's multiline-text expectation) |
 | T6 | Title fallback + truncation | (a) blank-description dummy if the form allows; (b) description > 255 chars | (a) Title = `Form response <id>`; (b) Title truncated at 255 with `...` |
 | T7 | Duplicate prevention | Resubmit the successful T2 run from run history | run succeeds but takes the duplicate branch; **no second item** |
+| T7b | Duplicate check is form-scoped | inspect the `Duplicate check` Uri | filter includes `and SourceForm eq '<form name>'`. Without it, a second form's response 7 would match this form's response 7 and its submission would be silently skipped — see `multi-form-architecture.md` |
 | T8 | Concurrency | two dummy submissions ~simultaneously | two items, no duplicates, no collision (trigger concurrency = 1) |
 | T9 | Timezone | note submission local time; compare stored submitted-on value | stored UTC instant equals the submission moment (submitDate is UTC; Excel export is tenant-local — do not "correct" twice) |
 | T10 ⚠ | Wrong internal name detection | POST with one deliberately misspelled property | 400 "property does not exist" — confirms the error signature used in triage |
